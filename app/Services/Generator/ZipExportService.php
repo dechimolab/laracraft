@@ -145,20 +145,25 @@ class ZipExportService
             $files['app/Http/Controllers/Auth/LoginController.php'] = $this->buildLoginController();
             $files['resources/views/auth/login.blade.php'] = $this->buildLoginBlade($projectConfig);
             $files['resources/views/demo/ldap.blade.php'] = $this->buildDemoLdapBlade($projectConfig);
+            $files['database/migrations/2026_01_01_000001_add_ldap_columns_to_users_table.php'] = $this->buildAddLdapColumnsMigration();
+        }
+
+        // Module: UMS BUU Authentication & Scaffolding Pipeline
+        if (!empty($projectConfig['modules']['ums_buu']) || !empty($projectConfig['use_ums_buu'])) {
+            $files['config/ums.php'] = $this->buildConfigUms();
+            $files['app/Services/Auth/UmsBuuAuthService.php'] = $this->buildUmsBuuAuthService();
+            $files['app/Http/Controllers/Auth/LoginUmsController.php'] = $this->buildLoginUmsController();
+            $files['resources/views/auth/login.blade.php'] = $this->buildLoginUmsBlade($projectConfig);
+            $files['resources/views/auth/switch_group.blade.php'] = $this->buildUmsSwitchGroupBlade($projectConfig);
+        }
+
+        // Shared Authentication & Biometrics (Passkey & WebAuthn) for LDAP & UMS
+        if (!empty($projectConfig['modules']['buu_ldap']) || !empty($projectConfig['modules']['ums_buu']) || !empty($projectConfig['use_ums_buu'])) {
             $files['app/Http/Middleware/EnsureActiveUser.php'] = $this->buildEnsureActiveUserMiddleware();
             $files['app/Models/UsersCredentialsModel.php'] = $this->buildUsersCredentialsModel();
-            $files['database/migrations/2026_01_01_000001_add_ldap_columns_to_users_table.php'] = $this->buildAddLdapColumnsMigration();
             $files['database/migrations/2026_01_01_000004_create_users_credentials_table.php'] = $this->buildUsersCredentialsMigration();
             $files['app/Services/Auth/WebauthnService.php'] = $this->buildWebauthnService();
             $files['app/Http/Controllers/Auth/WebauthnController.php'] = $this->buildWebauthnController();
-        }
-
-        // Module: UMS BUU Authentication & Mock Login
-        if (!empty($projectConfig['modules']['ums_buu'])) {
-            $files['config/ums.php'] = $this->buildConfigUms();
-            $files['app/Services/Auth/UmsBuuAuthService.php'] = $this->buildUmsBuuAuthService();
-            $files['app/Http/Controllers/Auth/UmsBuuController.php'] = $this->buildUmsBuuController();
-            $files['resources/views/auth/ums_mock.blade.php'] = $this->buildUmsMockBlade($projectConfig);
         }
 
         // Module: User & Role Management
@@ -997,8 +1002,14 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id('role_id')->comment('รหัสบทบาทผู้ใช้งาน (Primary Key)');
-            $table->string('name', 50)->unique()->comment('ชื่อรหัสบทบาท (superadmin, admin, user)');
-            $table->string('label', 100)->nullable()->comment('ชื่อแสดงบทบาท');
+            $table->string('name', 50)->unique()->comment('ชื่อรหัสบทบาท (เช่น applicant, staff_admin หรือ admin)');
+            $table->string('label', 100)->nullable()->comment('ชื่อแสดงบทบาทภาษาไทย');
+            $table->integer('gpid')->nullable()->index()->comment('รหัสกลุ่ม UMS (GPID เช่น 434-440)');
+            $table->string('label_en', 100)->nullable()->comment('ชื่อแสดงบทบาทภาษาอังกฤษ');
+            $table->string('desc', 255)->nullable()->comment('คำอธิบายขอบเขตหน้าที่');
+            $table->boolean('is_default')->default(false)->comment('สิทธิ์เริ่มต้นทั่วไปหรือสำหรับบุคลากร');
+            $table->char('is_default_person', 1)->nullable()->comment('สิทธิ์เริ่มต้นสำหรับบุคลากร (Y/N)');
+            $table->char('is_default_student', 1)->nullable()->comment('สิทธิ์เริ่มต้นสำหรับนิสิต (Y/N)');
             $table->string('created_by', 100)->nullable()->comment('สร้างโดย');
             $table->timestamp('created_at')->nullable()->comment('วันเวลาที่สร้าง');
             $table->string('updated_by', 100)->nullable()->comment('แก้ไขล่าสุดโดย');
@@ -1114,6 +1125,12 @@ class RolesModel extends Model
     protected $fillable = [
         'name',
         'label',
+        'gpid',
+        'label_en',
+        'desc',
+        'is_default',
+        'is_default_person',
+        'is_default_student',
         'created_by',
         'created_at',
         'updated_by',
@@ -2053,6 +2070,7 @@ PHP;
     {
         $appName = htmlspecialchars($config['name'] ?? 'Artisan App');
         $hasBuuLdap = !empty($config['modules']['buu_ldap']);
+        $hasUmsBuu = !empty($config['modules']['ums_buu']) || !empty($config['use_ums_buu']);
         $hasUserRole = !empty($config['modules']['user_role']);
         $hasAuditTrail = !empty($config['modules']['audit_trail']);
         $hasSettings = !empty($config['modules']['system_settings']);
@@ -2062,6 +2080,9 @@ PHP;
         $navLinks = [];
         if ($hasBuuLdap) {
             $navLinks[] = '<li class="nav-item"><a class="nav-link text-white-50" href="{{ route(\'demo.ldap\') }}"><i class="bi bi-shield-lock me-1"></i> BUU LDAP &amp; Passkey</a></li>';
+        }
+        if ($hasUmsBuu) {
+            $navLinks[] = '<li class="nav-item"><a class="nav-link text-white-50" href="{{ route(\'switch.group\') }}"><i class="bi bi-arrow-left-right me-1"></i> UMS บทบาท</a></li>';
         }
         if ($hasUserRole) {
             $navLinks[] = '<li class="nav-item"><a class="nav-link text-white-50" href="{{ route(\'demo.roles\') }}"><i class="bi bi-people me-1"></i> จัดการสิทธิ์ (RBAC)</a></li>';
@@ -2104,6 +2125,40 @@ PHP;
                     @else
                         <li class="nav-item">
                             <a class="nav-link text-info" href="{{ route('login') }}"><i class="bi bi-box-arrow-in-right me-1"></i> เข้าสู่ระบบ (BUU LDAP)</a>
+                        </li>
+                    @endauth
+                </ul>
+BLADE;
+        } elseif ($hasUmsBuu) {
+            $authNav = <<<'BLADE'
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    @auth
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle me-1"></i> {{ session('userFullNameTH') ?? (Auth::user()->name ?? Auth::user()->username) }}
+                                <span class="badge bg-primary ms-1">{{ session('userPermitName') ?? (Auth::user()->role->name ?? (Auth::user()->role ?? 'user')) }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                <li><span class="dropdown-item-text small">{{ session('userEmail') ?? (Auth::user()->email ?? Auth::user()->username) }}</span></li>
+                                @if(session()->has('userGroup') && count(session('userGroup', [])) > 1)
+                                <li>
+                                    <a class="dropdown-item text-primary" href="{{ route('switch.group') }}">
+                                        <i class="bi bi-arrow-repeat me-1"></i> สลับกลุ่มงาน (Switch Role)
+                                    </a>
+                                </li>
+                                @endif
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-1"></i> ออกจากระบบ</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    @else
+                        <li class="nav-item">
+                            <a class="nav-link text-info" href="{{ route('login') }}"><i class="bi bi-box-arrow-in-right me-1"></i> เข้าสู่ระบบ (UMS BUU)</a>
                         </li>
                     @endauth
                 </ul>
@@ -3483,29 +3538,33 @@ MD;
         ];
         $routeLines = [];
 
+        $hasBiometrics = ($hasBuuLdap || $hasUmsBuu);
+
         if ($hasBuuLdap) {
             $useLines[] = "use App\\Http\\Controllers\\Auth\\LoginController;";
-            $useLines[] = "use App\\Http\\Controllers\\Auth\\WebauthnController;";
             $routeLines[] = "// Authentication Routes (BUU LDAP & Local Fallback)";
             $routeLines[] = "Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');";
             $routeLines[] = "Route::post('/login', [LoginController::class, 'login'])->name('login.post');";
             $routeLines[] = "Route::post('/logout', [LoginController::class, 'logout'])->name('logout');";
             $routeLines[] = "";
-            $routeLines[] = "// Public WebAuthn / Passkey Biometric Login Routes";
-            $routeLines[] = "Route::prefix('webauthn')->name('webauthn.')->group(function () {\n    Route::post('/login/options', [WebauthnController::class, 'loginOptions'])->name('login.options');\n    Route::post('/login/verify', [WebauthnController::class, 'loginVerify'])->name('login.verify');\n});";
-            $routeLines[] = "";
         }
 
         if ($hasUmsBuu) {
-            $useLines[] = "use App\\Http\\Controllers\\Auth\\UmsBuuController;";
-            $routeLines[] = "// UMS BUU Single Sign-On & Mock Login Endpoints";
-            $routeLines[] = "Route::prefix('auth/ums')->name('ums.')->group(function () {\n    Route::get('/login', [UmsBuuController::class, 'login'])->name('login');\n    Route::get('/mock', [UmsBuuController::class, 'mockPage'])->name('mock');\n    Route::post('/mock-submit', [UmsBuuController::class, 'mockSubmit'])->name('mock.submit');\n    Route::get('/callback', [UmsBuuController::class, 'callback'])->name('callback');\n});";
+            $useLines[] = "use App\\Http\\Controllers\\Auth\\LoginUmsController;";
+            $routeLines[] = "// UMS BUU Authentication & Role Switching Routes";
+            $routeLines[] = "Route::get('/login', [LoginUmsController::class, 'index'])->name('login');";
+            $routeLines[] = "Route::post('/login', [LoginUmsController::class, 'checklogin'])->name('login.post');";
+            $routeLines[] = "Route::post('/logout', [LoginUmsController::class, 'logout'])->name('logout');";
+            $routeLines[] = "Route::match(['get', 'post'], '/switch-group', [LoginUmsController::class, 'switchGroup'])->name('switch.group');";
+            $routeLines[] = "Route::get('/auth/ums/login', [LoginUmsController::class, 'index'])->name('ums.login');";
             $routeLines[] = "";
-            if (!$hasBuuLdap) {
-                $routeLines[] = "Route::get('/login', [UmsBuuController::class, 'login'])->name('login');";
-                $routeLines[] = "Route::post('/logout', [UmsBuuController::class, 'logout'])->name('logout');";
-                $routeLines[] = "";
-            }
+        }
+
+        if ($hasBiometrics) {
+            $useLines[] = "use App\\Http\\Controllers\\Auth\\WebauthnController;";
+            $routeLines[] = "// Public WebAuthn / Passkey Biometric Login Routes";
+            $routeLines[] = "Route::prefix('webauthn')->name('webauthn.')->group(function () {\n    Route::post('/login/options', [WebauthnController::class, 'loginOptions'])->name('login.options');\n    Route::post('/login/verify', [WebauthnController::class, 'loginVerify'])->name('login.verify');\n});";
+            $routeLines[] = "";
         }
 
         // Demo Showcase & Enterprise Module Demos (Protected)
@@ -3525,44 +3584,46 @@ MD;
             $demoProtectedRoutes[] = "    Route::get('/demo/audit', [DemoController::class, 'auditDemo'])->name('demo.audit');";
             $demoProtectedRoutes[] = "    Route::post('/demo/audit/simulate', [DemoController::class, 'simulateAudit'])->name('demo.audit.simulate');";
         }
-        if ($hasBuuLdap) {
+        if ($hasBiometrics) {
             $demoProtectedRoutes[] = "    Route::prefix('webauthn')->name('webauthn.')->group(function () {\n        Route::post('/register/options', [WebauthnController::class, 'registerOptions'])->name('register.options');\n        Route::post('/register/verify', [WebauthnController::class, 'registerVerify'])->name('register.verify');\n        Route::get('/credentials', [WebauthnController::class, 'listCredentials'])->name('credentials.list');\n        Route::delete('/credentials/{id}', [WebauthnController::class, 'deleteCredential'])->name('credentials.delete');\n    });";
         }
 
-        $mw = $hasBuuLdap ? "['active', 'nocache']" : "['nocache']";
+        $mw = ($hasBuuLdap || $hasUmsBuu) ? "['active', 'nocache']" : "['nocache']";
         $demoRoutesStr = implode("\n", $demoProtectedRoutes);
         $routeLines[] = "// Application Demo Showcase & Module Demos (Protected)";
         $routeLines[] = "Route::middleware({$mw})->group(function () {\n{$demoRoutesStr}\n});";
 
+        $adminRole = $hasUmsBuu ? 'staff_admin,dean' : 'admin,superadmin';
+
         if ($hasUserRole) {
             $useLines[] = "use App\\Http\\Controllers\\UserController;";
             $routeLines[] = "\n// User & Role Management Routes (Protected by Middleware)";
-            $mw = $hasBuuLdap ? "['active', 'nocache', 'role:admin,superadmin']" : "['nocache', 'role:admin,superadmin']";
+            $mw = ($hasBuuLdap || $hasUmsBuu) ? "['active', 'nocache', 'role:{$adminRole}']" : "['nocache', 'role:{$adminRole}']";
             $routeLines[] = "Route::middleware({$mw})->group(function () {\n    Route::resource('users', UserController::class);\n});";
         }
 
         if ($hasSystemSettings) {
             $useLines[] = "use App\\Http\\Controllers\\SettingController;";
             $routeLines[] = "\n// System Settings Routes";
-            $mw = $hasBuuLdap ? ($hasUserRole ? "['active', 'nocache', 'role:admin,superadmin']" : "['active', 'nocache']") : ($hasUserRole ? "['nocache', 'role:admin,superadmin']" : "['nocache']");
+            $mw = ($hasBuuLdap || $hasUmsBuu) ? ($hasUserRole ? "['active', 'nocache', 'role:{$adminRole}']" : "['active', 'nocache']") : ($hasUserRole ? "['nocache', 'role:{$adminRole}']" : "['nocache']");
             $routeLines[] = "Route::middleware({$mw})->group(function () {\n    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');\n    Route::post('/settings', [SettingController::class, 'store'])->name('settings.store');\n});";
         }
 
         if (!empty($projectConfig['modules']['notifications'])) {
             $useLines[] = "use App\\Http\\Controllers\\NotificationController;";
             $routeLines[] = "\n// Notifications Engine Routes";
-            $mw = $hasBuuLdap ? "['active', 'nocache']" : "['nocache']";
+            $mw = ($hasBuuLdap || $hasUmsBuu) ? "['active', 'nocache']" : "['nocache']";
             $routeLines[] = "Route::middleware({$mw})->group(function () {\n    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');\n    Route::post('/notifications/simulate', [NotificationController::class, 'simulate'])->name('notifications.simulate');\n    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');\n    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');\n});";
         }
 
         if (!empty($projectConfig['modules']['media_storage'])) {
             $useLines[] = "use App\\Http\\Controllers\\MediaController;";
             $routeLines[] = "\n// Media & Attachment Vault Routes";
-            $mw = $hasBuuLdap ? "['active', 'nocache']" : "['nocache']";
+            $mw = ($hasBuuLdap || $hasUmsBuu) ? "['active', 'nocache']" : "['nocache']";
             $routeLines[] = "Route::middleware({$mw})->group(function () {\n    Route::get('/media', [MediaController::class, 'index'])->name('media.index');\n    Route::post('/media', [MediaController::class, 'store'])->name('media.store');\n    Route::delete('/media/{id}', [MediaController::class, 'destroy'])->name('media.destroy');\n});";
         }
 
-        if ($hasBuuLdap) {
+        if ($hasBuuLdap || $hasUmsBuu) {
             $homeRoute = "Route::get('/', function () {\n    if (\\Illuminate\\Support\\Facades\\Auth::check()) {\n        return redirect()->route('demo.index');\n    }\n    return redirect()->route('login');\n});";
         } else {
             $homeRoute = "Route::get('/', function () {\n    return redirect()->route('demo.index');\n});";
@@ -4167,12 +4228,13 @@ JS;
     protected function buildBootstrapApp(array $projectConfig = []): string
     {
         $hasBuuLdap = !empty($projectConfig['modules']['buu_ldap']);
+        $hasUmsBuu = !empty($projectConfig['modules']['ums_buu']) || !empty($projectConfig['use_ums_buu']);
         $hasUserRole = !empty($projectConfig['modules']['user_role']);
 
         $aliases = [
             "            'nocache' => \\App\\Http\\Middleware\\NoCacheAuthenticated::class,",
         ];
-        if ($hasBuuLdap) {
+        if ($hasBuuLdap || $hasUmsBuu) {
             $aliases[] = "            'active' => \\App\\Http\\Middleware\\EnsureActiveUser::class,";
         }
         if ($hasUserRole) {
@@ -4716,8 +4778,10 @@ PHP;
     protected function buildUserModel(array $projectConfig = []): string
     {
         $hasBuuLdap = !empty($projectConfig['modules']['buu_ldap']);
+        $hasUmsBuu = !empty($projectConfig['modules']['ums_buu']) || !empty($projectConfig['use_ums_buu']);
+        $hasBiometrics = ($hasBuuLdap || $hasUmsBuu);
 
-        $credentialsRelation = $hasBuuLdap ? "\n    public function userCredentials()\n    {\n        return \$this->hasMany(UsersCredentialsModel::class, 'user_id', 'user_id');\n    }\n" : "";
+        $credentialsRelation = $hasBiometrics ? "\n    public function userCredentials()\n    {\n        return \$this->hasMany(UsersCredentialsModel::class, 'user_id', 'user_id');\n    }\n" : "";
 
         $roleRelation = "\n    public function role()\n    {\n        return \$this->belongsTo(RolesModel::class, 'role_id', 'role_id');\n    }\n";
 
@@ -4746,9 +4810,16 @@ class UsersModel extends Authenticatable
 
     protected \$fillable = [
         'name',
+        'name_en',
         'username',
         'email',
         'citizen_id',
+        'psn_id',
+        'position',
+        'fac_id',
+        'fac_name',
+        'dep_id',
+        'dep_name',
         'password',
         'role_id',
         'department',
@@ -4841,6 +4912,37 @@ PHP;
 
     protected function buildDatabaseSeeder(array $projectConfig = []): string
     {
+        $isUmsBuu = !empty($projectConfig['modules']['ums_buu']) || !empty($projectConfig['use_ums_buu']);
+
+        if ($isUmsBuu) {
+            return <<<'PHP'
+<?php
+
+namespace Database\Seeders;
+
+use App\Services\Auth\UmsBuuAuthService;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
+
+class DatabaseSeeder extends Seeder
+{
+    public function run(): void
+    {
+        // Dynamically sync registered roles from UMS Central Gateway for configured SystemID
+        try {
+            if (class_exists(UmsBuuAuthService::class)) {
+                $umsAuth = app(UmsBuuAuthService::class);
+                $syncedCount = $umsAuth->syncRolesFromUms();
+                $this->command?->info("UMS Roles synchronized from central gateway: {$syncedCount} roles.");
+            }
+        } catch (\Throwable $e) {
+            Log::info("UMS dynamic role sync deferred during seeding: " . $e->getMessage());
+        }
+    }
+}
+PHP;
+        }
+
         return <<<'PHP'
 <?php
 
@@ -4907,10 +5009,10 @@ PHP;
 
     protected function buildUsersMigration(array $projectConfig = []): string
     {
-        $hasBuuLdap = !empty($projectConfig['modules']['buu_ldap']);
+        $hasAuth = !empty($projectConfig['modules']['buu_ldap']) || !empty($projectConfig['modules']['ums_buu']) || !empty($projectConfig['use_ums_buu']);
         $hasDatabaseSession = ($projectConfig['session_driver'] ?? 'file') === 'database';
 
-        if ($hasBuuLdap) {
+        if ($hasAuth) {
             $sessionsSchema = '';
             $sessionsDrop = '';
             if ($hasDatabaseSession) {
@@ -4948,12 +5050,19 @@ return new class extends Migration
         Schema::create('users', function (Blueprint \$table) {
             \$table->id('user_id')->comment('รหัสผู้ใช้งานหลัก (Primary Key)');
             \$table->string('name')->comment('ชื่อ-นามสกุล หรือชื่อแสดงของผู้ใช้งาน');
-            \$table->string('username', 100)->nullable()->unique()->comment('ชื่อผู้ใช้งาน Active Directory / ระบบ');
+            \$table->string('name_en')->nullable()->comment('ชื่อ-นามสกุล ภาษาอังกฤษ');
+            \$table->string('username', 100)->nullable()->unique()->comment('ชื่อผู้ใช้งาน Active Directory / UMS / ระบบ');
             \$table->string('email')->unique()->comment('อีเมลของผู้ใช้งาน');
-            \$table->string('citizen_id', 13)->nullable()->unique()->comment('เลขประจำตัวประชาชน 13 หลัก');
+            \$table->string('citizen_id', 20)->nullable()->unique()->comment('เลขประจำตัวประชาชน 13 หลัก');
+            \$table->string('psn_id', 20)->nullable()->comment('รหัสบุคลากร');
+            \$table->string('position', 150)->nullable()->comment('ตำแหน่งงาน / ตำแหน่งวิชาการ');
+            \$table->string('fac_id', 20)->nullable()->comment('รหัสคณะ');
+            \$table->string('fac_name', 255)->nullable()->comment('ชื่อคณะ');
+            \$table->string('dep_id', 20)->nullable()->comment('รหัสภาควิชา/ส่วนงาน');
+            \$table->string('dep_name', 255)->nullable()->comment('ชื่อภาควิชา/ส่วนงาน');
             \$table->timestamp('email_verified_at')->nullable()->comment('วันและเวลาที่ยืนยันอีเมลสำเร็จ');
             \$table->string('password')->comment('รหัสผ่านที่ผ่านการเข้ารหัส');
-            \$table->unsignedBigInteger('role_id')->nullable()->default(3)->comment('รหัสบทบาทผู้ใช้งานหลัก (FK roles)');
+            \$table->unsignedBigInteger('role_id')->nullable()->default(1)->comment('รหัสบทบาทผู้ใช้งานหลัก (FK roles)');
             \$table->string('department', 255)->nullable()->comment('หน่วยงาน / ภาควิชา / คณะต้นสังกัด');
             \$table->char('active', 1)->default('Y')->comment('สถานะการเปิดใช้งาน (Y/N)');
             \$table->rememberToken()->comment('โทเค็นสำหรับจดจำการเข้าสู่ระบบ');
@@ -5130,6 +5239,7 @@ PHP;
     {
         $appName = htmlspecialchars($config['name'] ?? 'Laravel');
         $hasBuuLdap = !empty($config['modules']['buu_ldap']);
+        $hasUmsBuu = !empty($config['modules']['ums_buu']) || !empty($config['use_ums_buu']);
         $hasUmsBuu = !empty($config['modules']['ums_buu']);
         $hasUserRole = !empty($config['modules']['user_role']);
         $hasSettings = !empty($config['modules']['system_settings']);
@@ -5138,9 +5248,9 @@ PHP;
 
         $buttons = [];
         if ($hasUmsBuu) {
-            $buttons[] = '<a href="{{ route(\'ums.login\') }}" class="btn btn-outline-theme-primary me-2 mb-2"><i class="bi bi-hub me-1"></i> เข้าสู่ระบบ (UMS BUU SSO)</a>';
+            $buttons[] = '<a href="{{ route(\'login\') }}" class="btn btn-outline-theme-primary me-2 mb-2"><i class="bi bi-hub me-1"></i> เข้าสู่ระบบ (UMS BUU)</a>';
         }
-        if ($hasBuuLdap) {
+        if ($hasBuuLdap || $hasUmsBuu) {
             $buttons[] = '<a href="{{ route(\'login\') }}" class="btn btn-outline-info me-2 mb-2"><i class="bi bi-box-arrow-in-right me-1"></i> เข้าสู่ระบบ (BUU LDAP)</a>';
         }
         if ($hasUserRole) {
@@ -5246,19 +5356,11 @@ return [
     |--------------------------------------------------------------------------
     | UMS BUU (Burapha University Identity Management System) Configuration
     |--------------------------------------------------------------------------
+    | Generic integration for any UMS SystemID registered with BUU Central Gateway.
     */
-    'base_url' => env('UMS_BASE_URL', 'https://ums.buu.ac.th'),
-    'client_id' => env('UMS_CLIENT_ID', 'artisancraft_app'),
-    'client_secret' => env('UMS_CLIENT_SECRET', 'secret_key'),
-    'redirect_uri' => env('UMS_REDIRECT_URI', env('APP_URL', 'http://localhost:8000') . '/auth/ums/callback'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Mock Mode Flag
-    |--------------------------------------------------------------------------
-    | When true, bypasses live network calls to UMS and uses local mock profiles.
-    */
-    'mock_mode' => env('UMS_MOCK_MODE', true),
+    'system_id' => env('UMS_SYSTEM_ID', ''),
+    'service_key' => env('UMS_SERVICE_KEY', ''),
+    'service_url' => env('UMS_SERVICE_URL', 'https://ums.buu.ac.th/index.php'),
 ];
 PHP;
     }
@@ -5270,167 +5372,489 @@ PHP;
 
 namespace App\Services\Auth;
 
+use App\Models\RolesModel;
 use App\Models\UsersModel;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class UmsBuuAuthService
 {
-    /**
-     * Standard Mock Personas for Burapha University
-     */
-    public function getMockPersonas(): array
+    protected string $systemId;
+    protected string $serviceKey;
+    protected string $serviceUrl;
+
+    public function __construct()
     {
-        return [
-            'staff' => [
-                'username' => 'boonsong.s',
-                'name' => 'อาจารย์ ดร. บุญส่ง สมบูรณ์',
-                'email' => 'boonsong.s@buu.ac.th',
-                'citizen_id' => '3209900123456',
-                'role_id' => 2, // admin / staff
-                'department' => 'คณะวิทยาการสารสนเทศ (Faculty of Informatics)',
-                'position' => 'อาจารย์ประจำภาควิชาวิทยาการคอมพิวเตอร์',
-                'badge' => 'อาจารย์ / บุคลากรวิชาการ',
-                'badge_class' => 'bg-primary',
-            ],
-            'officer' => [
-                'username' => 'rattana.p',
-                'name' => 'นางสาว รัตนา พัฒนาระบบ',
-                'email' => 'rattana.p@buu.ac.th',
-                'citizen_id' => '1100500987654',
-                'role_id' => 2, // admin
-                'department' => 'กองบริการการศึกษา (Division of Educational Services)',
-                'position' => 'นักวิชาการศึกษาชำนาญการ',
-                'badge' => 'เจ้าหน้าที่สายสนับสนุน',
-                'badge_class' => 'bg-info text-dark',
-            ],
-            'student' => [
-                'username' => '65160001',
-                'name' => 'นาย สมชาย นิสิตบูรพา',
-                'email' => '65160001@go.buu.ac.th',
-                'citizen_id' => '1209800654321',
-                'role_id' => 3, // user / student
-                'department' => 'คณะวิทยาการสารสนเทศ (หลักสูตร วท.บ. วิทยาการคอมพิวเตอร์)',
-                'position' => 'นิสิตระดับปริญญาตรี ชั้นปีที่ 4',
-                'badge' => 'นิสิต มหาวิทยาลัยบูรพา',
-                'badge_class' => 'bg-success',
-            ],
-            'superadmin' => [
-                'username' => 'pantakarn.m',
-                'name' => 'นาย ปัณฑกาญจน์ มั่นจันทร์',
-                'email' => 'pantakarn@buu.ac.th',
-                'citizen_id' => '1103700123999',
-                'role_id' => 1, // superadmin
-                'department' => 'สำนักคอมพิวเตอร์ มหาวิทยาลัยบูรพา (BUU Computer Center)',
-                'position' => 'หัวหน้าทีมพัฒนาระบบสารสนเทศ (Dev Lead)',
-                'badge' => 'ผู้ดูแลระบบสูงสุด',
-                'badge_class' => 'bg-danger',
-            ],
-        ];
+        $this->systemId = (string) (config('constants.configUms.SystemID') ?? config('ums.system_id', env('UMS_SYSTEM_ID', '')));
+        $this->serviceKey = (string) (config('constants.configUms.ServiceKey') ?? config('ums.service_key', env('UMS_SERVICE_KEY', '')));
+        $this->serviceUrl = rtrim((string) (config('constants.configUms.ServiceUrl') ?? config('ums.service_url', env('UMS_SERVICE_URL', 'https://ums.buu.ac.th/index.php'))), '/');
     }
 
     /**
-     * Authenticate or create user in users table and log in session.
+     * URL encrypt based on ServiceUms
      */
-    public function authenticateMockPersona(string $personaKey): array
+    public function my_encrypt(string $string): string
     {
-        $personas = $this->getMockPersonas();
-        if (!isset($personas[$personaKey])) {
-            throw new \InvalidArgumentException("ไม่พบข้อมูล Mock Persona: {$personaKey}");
+        if (str_starts_with($string, '/')) {
+            $string = substr($string, 1);
+        }
+        $skey = date('d');
+        $string = $skey . '||' . $string;
+        $data = base64_encode($string);
+        $data = str_replace(['+', '/', '='], ['-', '_', ''], $data);
+        return '/' . $data;
+    }
+
+    /**
+     * Reversible cipher encode function matching UMS Service standard
+     */
+    public function encode(string $string, string $secret = 'E20jTw8Iy'): string
+    {
+        $secret = md5(serialize($secret));
+        $strLen = strlen($string);
+        $secretLen = strlen($secret) - 1;
+        $j = 0;
+        $hash = '';
+        for ($i = 0; $i < $strLen; $i++) {
+            $ordStr = ord(substr($string, $i, 1));
+            if ($j > $secretLen) {
+                $j -= $secretLen;
+            }
+            $ordSecret = ord(substr($secret, $j, 1));
+            $j += 9;
+            $hash .= strrev(base_convert(dechex($ordStr + $ordSecret), 16, 36));
+        }
+        return $hash;
+    }
+
+    /**
+     * Reversible cipher decode function matching UMS Service standard
+     */
+    public function decode(string $string, string $secret = 'E20jTw8Iy'): string
+    {
+        $secret = md5(serialize($secret));
+        $strLen = strlen($string);
+        $secretLen = strlen($secret) - 1;
+        $j = 0;
+        $hash = '';
+        for ($i = 0; $i < $strLen; $i += 2) {
+            $ordStr = hexdec(base_convert(strrev(substr($string, $i, 2)), 36, 16));
+            if ($j > $secretLen) {
+                $j -= $secretLen;
+            }
+            $ordSecret = ord(substr($secret, $j, 1));
+            $j += 9;
+            $hash .= chr($ordStr - $ordSecret);
+        }
+        return $hash;
+    }
+
+    /**
+     * Send HTTP POST to UMS Gateway via cURL or stream context
+     */
+    public function url_get_contents(string $url, $context, array $postdata): string|false
+    {
+        if (function_exists('curl_exec')) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-HTTP-Method-Override: PUT']);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+            $url_get_contents_data = curl_exec($ch);
+            curl_close($ch);
+            return $url_get_contents_data;
         }
 
-        $data = $personas[$personaKey];
-        return $this->loginOrCreateUser($data);
+        if (function_exists('file_get_contents')) {
+            return @file_get_contents($url, false, $context);
+        }
+
+        return false;
     }
 
     /**
-     * Authenticate custom mock input.
+     * Dispatch payload to UMS Service endpoint
      */
-    public function authenticateCustomMock(array $data): array
+    public function call_service(array $aData): object
     {
-        $username = trim($data['username'] ?? 'demo.user');
-        $name = trim($data['name'] ?? $username);
-        $email = trim($data['email'] ?? $username . '@buu.ac.th');
-        $roleId = (int)($data['role_id'] ?? 3);
+        if (empty($this->systemId) || empty($this->serviceKey)) {
+            return (object) [
+                'Error' => false,
+                'Message' => 'ไม่ได้กำหนด SystemID หรือ ServiceKey ในการเชื่อมต่อ UMS',
+                'aData' => null,
+            ];
+        }
 
-        $userData = [
-            'username' => $username,
-            'name' => $name,
-            'email' => $email,
-            'citizen_id' => $data['citizen_id'] ?? '1234567890123',
-            'role_id' => $roleId,
-            'department' => $data['department'] ?? 'มหาวิทยาลัยบูรพา',
-            'position' => $data['position'] ?? 'ผู้ใช้งานระบบ',
+        $service_url = $this->serviceUrl . $this->my_encrypt('syscontrol/umserviceforlaravel/service_check_parameter');
+        $jsonData = json_encode($aData, JSON_UNESCAPED_UNICODE);
+        $encrypted = base64_encode($this->encode($jsonData, $this->serviceKey));
+        $postdata = [
+            'SystemID' => $this->systemId,
+            'Data' => $encrypted,
         ];
 
-        return $this->loginOrCreateUser($userData);
+        $opts = [
+            'http' => [
+                'method' => 'POST',
+                'header' => 'Content-type: application/x-www-form-urlencoded',
+                'content' => http_build_query($postdata),
+                'timeout' => 15,
+            ],
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+            ],
+        ];
+        $context = stream_context_create($opts);
+
+        try {
+            $result = $this->url_get_contents($service_url, $context, $postdata);
+            if ($result === false || $result === '') {
+                return (object) [
+                    'Error' => false,
+                    'Message' => 'ไม่สามารถเชื่อมต่อ UMS Service Gateway ได้',
+                    'aData' => null,
+                ];
+            }
+
+            $rawDecrypted = $this->decode(base64_decode((string) $result), $this->serviceKey);
+            $aReceiveData = json_decode($rawDecrypted);
+
+            if (empty($aReceiveData)) {
+                return (object) [
+                    'Error' => false,
+                    'Message' => 'ไม่สามารถถอดรหัสข้อมูลได้เนื่องจาก Service Key หรือการตอบกลับไม่ถูกต้อง',
+                    'aData' => null,
+                ];
+            }
+
+            return (object) $aReceiveData;
+        } catch (\Throwable $e) {
+            Log::error('UMS call_service exception: ' . $e->getMessage());
+            return (object) [
+                'Error' => false,
+                'Message' => 'เกิดข้อผิดพลาดในการเชื่อมต่อ UMS: ' . $e->getMessage(),
+                'aData' => null,
+            ];
+        }
     }
 
     /**
-     * Helper to find or create user and perform Auth::login.
+     * FunctionID 1: Verify username and password against BUU Active Directory
      */
-    protected function loginOrCreateUser(array $data): array
+    public function check_from_ad(string $username, string $password): object
+    {
+        if (trim($username) === '' || trim($password) === '') {
+            return (object) [
+                'Error' => false,
+                'Message' => 'กรุณาระบุชื่อผู้ใช้และรหัสผ่าน',
+                'aData' => null,
+            ];
+        }
+
+        return $this->call_service([
+            'FunctionID' => 1,
+            'Username' => $username,
+            'Password' => $password,
+        ]);
+    }
+
+    /**
+     * FunctionID 7: Verify user existence in UMS
+     */
+    public function check_user_from_ums(string $username, string $password): object
+    {
+        return $this->call_service([
+            'FunctionID' => 7,
+            'Username' => $username,
+            'Password' => $password,
+        ]);
+    }
+
+    /**
+     * FunctionID 8: Get personnel details by person ID
+     */
+    public function check_person_from_id(string $psn_id, string $status = 'N'): object
+    {
+        return $this->call_service([
+            'FunctionID' => 8,
+            'PersonID' => $psn_id,
+            'Status' => $status,
+        ]);
+    }
+
+    /**
+     * FunctionID 11: Get personnel details from HR by Citizen ID
+     */
+    public function check_person_from_idcard(string $idcard, string $status = 'N', string $username = ''): object
+    {
+        return $this->call_service([
+            'FunctionID' => 11,
+            'IDCard' => $idcard,
+            'Status' => $status,
+            'Username' => $username,
+        ]);
+    }
+
+    /**
+     * FunctionID 10: Check assigned user groups in UMS system
+     */
+    public function check_user_group($usid, string $who = 'P', bool $default = false): object
+    {
+        return $this->call_service([
+            'FunctionID' => 10,
+            'UmsUserID' => $usid,
+            'Who' => $who,
+            'Default' => $default,
+        ]);
+    }
+
+    /**
+     * FunctionID 12: Check default user group in system
+     */
+    public function check_default_user_group(string $who = 'P'): object
+    {
+        return $this->call_service([
+            'FunctionID' => 12,
+            'Who' => $who,
+        ]);
+    }
+
+    /**
+     * FunctionID 17: Get all registered roles/groups for configured SystemID
+     */
+    public function get_group_in_system(): object
+    {
+        return $this->call_service([
+            'FunctionID' => 17,
+        ]);
+    }
+
+    /**
+     * Dynamically sync roles from UMS Central Gateway for the configured SystemID.
+     * STRICT REQUIREMENT: Strictly excludes any superadmin role completely.
+     */
+    public function syncRolesFromUms(): int
+    {
+        $apiRes = $this->get_group_in_system();
+        if (empty($apiRes->Error) || empty($apiRes->aData) || !is_array($apiRes->aData)) {
+            Log::info('UMS get_group_in_system returned no groups or error: ' . ($apiRes->Message ?? 'unknown'));
+            return 0;
+        }
+
+        $count = 0;
+        foreach ($apiRes->aData as $group) {
+            $gpid = (string) ($group->GPID ?? $group->gpid ?? '');
+            if ($gpid === '') {
+                continue;
+            }
+
+            $nameEn = trim((string) ($group->GPNAMEE ?? $group->gpnamee ?? ''));
+            $nameTh = trim((string) ($group->GPNAMET ?? $group->gpnamet ?? ''));
+            $desc = trim((string) ($group->GPDESC ?? $group->gpdesc ?? ''));
+
+            // STRICT: Exclude superadmin role completely
+            $slugCheck = strtolower($nameEn);
+            if ($slugCheck === 'superadmin' || str_contains($slugCheck, 'superadmin') || str_contains(strtolower($nameTh), 'superadmin')) {
+                continue;
+            }
+
+            $slugName = !empty($nameEn) ? Str::slug($nameEn, '_') : ('role_' . $gpid);
+
+            $isPerson = strtolower(trim((string) ($group->GPPERSON ?? $group->gpperson ?? ''))) === 'y';
+            $isStudent = strtolower(trim((string) ($group->GPSTUDENT ?? $group->gpstudent ?? ''))) === 'y';
+            $isDefaultAll = strtolower(trim((string) ($group->GPDEFAULTALL ?? $group->gpdefaultall ?? ''))) === 'y';
+            $isDefault = strtolower(trim((string) ($group->GPDEFAULT ?? $group->gpdefault ?? ''))) === 'y' || $isPerson || $isDefaultAll;
+
+            DB::table('roles')->updateOrInsert(
+                ['gpid' => $gpid],
+                [
+                    'name' => $slugName,
+                    'label' => !empty($nameTh) ? $nameTh : (!empty($nameEn) ? $nameEn : ('Role ' . $gpid)),
+                    'label_en' => !empty($nameEn) ? $nameEn : null,
+                    'desc' => !empty($desc) ? $desc : null,
+                    'is_default' => $isDefault,
+                    'is_default_person' => $isPerson ? 'Y' : 'N',
+                    'is_default_student' => $isStudent ? 'Y' : 'N',
+                    'updated_by' => 'UMS_API_SYNC',
+                    'updated_at' => now(),
+                    'created_by' => 'UMS_API_SYNC',
+                    'created_at' => now(),
+                    'request_uri' => request()->getRequestUri() ?? '/ums/sync-roles',
+                ]
+            );
+            $count++;
+        }
+
+        return $count;
+    }
+
+    /**
+     * Alias for backward compatibility.
+     */
+    public function syncRolesToDatabase(): int
+    {
+        return $this->syncRolesFromUms();
+    }
+
+    /**
+     * Upsert user in `users` and attach groups in `users_roles` pivot.
+     * Dynamic and system-agnostic for any UMS roles.
+     */
+    public function syncUserAndRoles(array $userData, array $groups): object
     {
         $userModelClass = class_exists(UsersModel::class) ? UsersModel::class : User::class;
+        $username = trim($userData['username'] ?? '');
 
-        $user = $userModelClass::where('username', $data['username'])
-            ->orWhere('email', $data['email'])
-            ->first();
+        // Resolve primary role_id from active permitId or first group
+        $permitGpid = (string) ($userData['permitId'] ?? '');
+        $primaryRole = null;
+        if ($permitGpid !== '') {
+            $primaryRole = DB::table('roles')->where('gpid', $permitGpid)->first();
+            if (!$primaryRole) {
+                $permitName = $userData['permitName'] ?? ('Role ' . $permitGpid);
+                $roleId = DB::table('roles')->insertGetId([
+                    'gpid' => $permitGpid,
+                    'name' => Str::slug($permitName, '_'),
+                    'label' => $permitName,
+                    'label_en' => $userData['permitNameEn'] ?? null,
+                    'created_by' => 'UMS_AUTH_GATEWAY',
+                    'created_at' => now(),
+                    'updated_by' => 'UMS_AUTH_GATEWAY',
+                    'updated_at' => now(),
+                    'request_uri' => request()->getRequestUri() ?? '/auth/ums/login',
+                ]);
+                $primaryRole = (object) ['role_id' => $roleId];
+            }
+        }
 
+        if (!$primaryRole) {
+            $primaryRole = DB::table('roles')->orderBy('role_id')->first();
+        }
+        $primaryRoleId = $primaryRole ? $primaryRole->role_id : null;
+
+        $user = $userModelClass::where('username', $username)->first();
         if (!$user) {
             $user = new $userModelClass();
-            $user->username = $data['username'];
-            $user->email = $data['email'];
-            $user->name = $data['name'];
-            $user->citizen_id = $data['citizen_id'] ?? null;
-            $user->role_id = $data['role_id'] ?? 3;
+            $user->username = $username;
             $user->password = Hash::make(Str::random(32));
-            $user->active = 'Y';
-            if (isset($user->created_by)) $user->created_by = 'UMS_MOCK_SSO';
-            if (isset($user->request_uri)) $user->request_uri = request()->getRequestUri();
-            $user->save();
-        } else {
-            $user->name = $data['name'];
-            $user->active = 'Y';
-            if (isset($data['role_id'])) {
-                $user->role_id = $data['role_id'];
-            }
-            if (isset($user->updated_by)) $user->updated_by = 'UMS_MOCK_SSO';
-            if (isset($user->request_uri)) $user->request_uri = request()->getRequestUri();
-            $user->save();
+            $user->created_by = 'UMS_AUTH_GATEWAY';
+            $user->created_at = now();
         }
 
-        Auth::login($user, true);
+        $user->name = $userData['nameth'] ?? $userData['name'] ?? $username;
+        $user->name_en = $userData['nameen'] ?? null;
+        $user->email = $userData['email'] ?? ($username . '@buu.ac.th');
+        $user->citizen_id = $userData['idcard'] ?? null;
+        $user->psn_id = $userData['psn_id'] ?? null;
+        $user->position = $userData['liw_name'] ?? $userData['position'] ?? null;
+        $user->fac_id = $userData['fac_id'] ?? null;
+        $user->fac_name = $userData['fac_name'] ?? null;
+        $user->dep_id = $userData['dep_id'] ?? null;
+        $user->dep_name = $userData['dep_name'] ?? null;
+        if ($primaryRoleId) {
+            $user->role_id = $primaryRoleId;
+        }
+        $user->active = 'Y';
+        $user->updated_by = 'UMS_AUTH_GATEWAY';
+        $user->updated_at = now();
+        $user->request_uri = request()->getRequestUri() ?? '/auth/ums/login';
+        $user->save();
 
-        // Record to log_login if model exists
-        if (class_exists(\App\Models\LogLogin::class)) {
-            try {
-                \App\Models\LogLogin::create([
-                    'psn_id' => $user->user_id ?? $user->id,
-                    'lg_user_name' => $user->username,
-                    'lg_action' => 'เข้าสู่ระบบสำเร็จผ่าน UMS BUU (Mock SSO)',
-                    'lg_ip' => request()->ip(),
-                    'lg_user_agent' => request()->userAgent(),
-                ]);
-            } catch (\Throwable $e) {
-                Log::warning('LogLogin failed: ' . $e->getMessage());
+        $userId = $user->user_id ?? $user->id;
+
+        // Clean up any non-default roles from users_roles for this user
+        DB::table('users_roles')
+            ->where('user_id', $userId)
+            ->whereNotIn('role_id', function ($query) {
+                $query->select('role_id')->from('roles')->where('is_default', 1)->orWhere('is_default_person', 'Y');
+            })
+            ->delete();
+
+        // Sync users_roles pivot: ONLY attach the default role from UMS
+        if (!empty($groups)) {
+            foreach ($groups as $grp) {
+                $grpGpid = is_object($grp) ? ($grp->GPID ?? $grp->gpid ?? '') : ($grp['GPID'] ?? $grp['gpid'] ?? '');
+                if (!$grpGpid) continue;
+
+                $role = DB::table('roles')->where('gpid', (string)$grpGpid)->first();
+                if (!$role) {
+                    $grpName = is_object($grp) ? ($grp->GPNAMET ?? $grp->gpnamet ?? '') : ($grp['GPNAMET'] ?? $grp['gpnamet'] ?? '');
+                    $grpNameEn = is_object($grp) ? ($grp->GPNAMEE ?? $grp->gpnamee ?? '') : ($grp['GPNAMEE'] ?? $grp['gpnamee'] ?? '');
+                    $roleId = DB::table('roles')->insertGetId([
+                        'gpid' => (string) $grpGpid,
+                        'name' => Str::slug($grpNameEn ?: ($grpName ?: ('role_' . $grpGpid)), '_'),
+                        'label' => $grpName ?: ('Role ' . $grpGpid),
+                        'label_en' => $grpNameEn ?: null,
+                        'created_by' => 'UMS_AUTH_GATEWAY',
+                        'created_at' => now(),
+                        'updated_by' => 'UMS_AUTH_GATEWAY',
+                        'updated_at' => now(),
+                        'request_uri' => request()->getRequestUri() ?? '/auth/ums/login',
+                    ]);
+                    $role = (object) ['role_id' => $roleId, 'is_default' => 0, 'is_default_person' => 'N'];
+                }
+
+                // Strictly filter: only assign roles that are default from UMS
+                $isDefaultRole = !empty($role->is_default) || (($role->is_default_person ?? '') === 'Y');
+                if (!$isDefaultRole) {
+                    continue;
+                }
+
+                if ($role) {
+                    DB::table('users_roles')->updateOrInsert(
+                        [
+                            'user_id' => $userId,
+                            'role_id' => $role->role_id,
+                        ],
+                        [
+                            'created_by' => 'UMS_AUTH_GATEWAY',
+                            'created_at' => now(),
+                            'updated_by' => 'UMS_AUTH_GATEWAY',
+                            'updated_at' => now(),
+                            'request_uri' => request()->getRequestUri() ?? '/auth/ums/login',
+                        ]
+                    );
+                }
             }
         }
 
-        return [
-            'success' => true,
-            'user' => $user,
-            'message' => "เข้าสู่ระบบสำเร็จในฐานะ {$data['name']} ({$data['position']})",
-        ];
+        // Guarantee default role is attached to users_roles
+        $hasUserRole = DB::table('users_roles')->where('user_id', $userId)->exists();
+        if (!$hasUserRole) {
+            $defRole = DB::table('roles')->where('is_default', 1)->orWhere('is_default_person', 'Y')->first();
+            if ($defRole) {
+                DB::table('users_roles')->updateOrInsert(
+                    [
+                        'user_id' => $userId,
+                        'role_id' => $defRole->role_id,
+                    ],
+                    [
+                        'created_by' => 'UMS_AUTH_GATEWAY',
+                        'created_at' => now(),
+                        'updated_by' => 'UMS_AUTH_GATEWAY',
+                        'updated_at' => now(),
+                        'request_uri' => request()->getRequestUri() ?? '/auth/ums/login',
+                    ]
+                );
+            }
+        }
+
+        return $user;
     }
 }
 PHP;
     }
 
-    protected function buildUmsBuuController(): string
+    protected function buildLoginUmsController(): string
     {
         return <<<'PHP'
 <?php
@@ -5441,201 +5865,644 @@ use App\Http\Controllers\Controller;
 use App\Services\Auth\UmsBuuAuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Session;
 
-class UmsBuuController extends Controller
+class LoginUmsController extends Controller
 {
+    private const LOGIN_FAILED_MESSAGE = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+
     public function __construct(
-        protected UmsBuuAuthService $umsService
+        protected UmsBuuAuthService $umsAuth
     ) {}
 
     /**
-     * Entry point for UMS SSO Login.
+     * Show the application login form.
      */
-    public function login()
+    public function index(Request $request)
     {
         if (Auth::check()) {
             return redirect()->route('demo.index');
         }
 
-        if (config('ums.mock_mode', true)) {
-            return redirect()->route('ums.mock');
-        }
+        return view('auth.login');
+    }
 
-        // Live UMS BUU OAuth authorization redirect (To be configured with user spec later)
-        $authUrl = config('ums.base_url') . '/oauth/authorize?' . http_build_query([
-            'client_id' => config('ums.client_id'),
-            'redirect_uri' => config('ums.redirect_uri'),
-            'response_type' => 'code',
-            'scope' => 'profile email buu_identity',
+    /**
+     * Process authentication request via UMS / AD with Pentest Rate Limiting & Uniform Error.
+     */
+    public function checklogin(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ], [
+            'username.required' => 'กรุณากรอกชื่อผู้ใช้งาน (Username)',
+            'password.required' => 'กรุณากรอกรหัสผ่าน (Password)',
         ]);
 
-        return redirect()->away($authUrl);
-    }
+        $username = trim($request->input('username'));
+        $password = (string) $request->input('password');
 
-    /**
-     * Render Mock UMS BUU Portal page.
-     */
-    public function mockPage()
-    {
-        $personas = $this->umsService->getMockPersonas();
-        return view('auth.ums_mock', compact('personas'));
-    }
+        // Pentest Rule sec-login-rate-limit: 5 attempts per minute per IP + username
+        $throttleKey = $request->ip() . '|' . strtolower($username);
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            $minutes = (int) max(1, ceil($seconds / 60));
+            return back()->withInput()->with('error', "พยายามเข้าสู่ระบบมากเกินไป กรุณารออีก {$minutes} นาทีแล้วลองใหม่");
+        }
 
-    /**
-     * Handle mock persona selection or custom mock login.
-     */
-    public function mockSubmit(Request $request)
-    {
-        try {
-            if ($request->filled('persona')) {
-                $result = $this->umsService->authenticateMockPersona($request->input('persona'));
-            } else {
-                $result = $this->umsService->authenticateCustomMock($request->all());
+        // 1. Authenticate against BUU Active Directory via UMS Service Function 1
+        $cAD = $this->umsAuth->check_from_ad($username, $password);
+
+        if (empty($cAD->Error)) {
+            RateLimiter::hit($throttleKey, 60);
+            $this->logLoginAttempt($username, 'Login ไม่สำเร็จ: AD Authentication Failed');
+            return back()->withInput()->with('error', self::LOGIN_FAILED_MESSAGE);
+        }
+
+        // AD Success: Clear rate limit
+        RateLimiter::clear($throttleKey);
+
+        $rowAD = $cAD->aData ?? null;
+        $employeeId = $rowAD->Employeeid ?? '';
+
+        // 2. Query HR Person Info via Function 11 (Citizen ID) or Function 8
+        $cPSN = $this->umsAuth->check_person_from_idcard($employeeId, 'N', $username);
+        $rowPSN = null;
+        if (!empty($cPSN->Error) && !empty($cPSN->aData)) {
+            $rowPSN = is_array($cPSN->aData) ? ($cPSN->aData[0] ?? null) : $cPSN->aData;
+        }
+
+        // 3. Query Assigned Groups in UMS for this specific system
+        $aUserGroup = [];
+        $cUM = $this->umsAuth->check_user_from_ums($username, $password);
+        if (!empty($cUM->Error) && !empty($cUM->aData->USID)) {
+            if (!$rowPSN && !empty($cUM->aData->USPSCODE)) {
+                $cPSN2 = $this->umsAuth->check_person_from_id($cUM->aData->USPSCODE, 'N');
+                if (!empty($cPSN2->Error) && !empty($cPSN2->aData)) {
+                    $rowPSN = is_array($cPSN2->aData) ? ($cPSN2->aData[0] ?? null) : $cPSN2->aData;
+                }
             }
 
-            return redirect()->route('demo.index')->with('success', $result['message']);
-        } catch (\Throwable $e) {
-            return redirect()->route('ums.mock')->with('error', 'ข้อผิดพลาด: ' . $e->getMessage());
+            $cGroup = $this->umsAuth->check_user_group($cUM->aData->USID, 'P', true);
+            if (!empty($cGroup->Error) && !empty($cGroup->aData)) {
+                $aUserGroup = is_array($cGroup->aData) ? $cGroup->aData : [$cGroup->aData];
+            }
         }
+
+        if (empty($aUserGroup)) {
+            $cGroupDefault = $this->umsAuth->check_default_user_group('P');
+            if (!empty($cGroupDefault->Error) && !empty($cGroupDefault->aData)) {
+                $aUserGroup = is_array($cGroupDefault->aData) ? $cGroupDefault->aData : [$cGroupDefault->aData];
+            }
+        }
+
+        // If user has no assigned groups in this system, deny access
+        if (empty($aUserGroup)) {
+            RateLimiter::hit($throttleKey, 60);
+            $this->logLoginAttempt($username, 'Login ไม่สำเร็จ: ไม่มีกลุ่มสิทธิ์ในระบบนี้');
+            return back()->withInput()->with('error', 'ชื่อผู้ใช้ไม่ถูกต้องหรือไม่มีสิทธิ์ในการเข้าใช้งานระบบนี้');
+        }
+
+        $nameth = $username;
+        $nameen = '';
+        if ($rowPSN) {
+            $nameth = trim(($rowPSN->PRF_NAMETH ?? '') . ($rowPSN->PSN_FNAMETH ?? '') . ' ' . ($rowPSN->PSN_LNAMETH ?? ''));
+            $nameen = trim(($rowPSN->PRF_NAMEEN ?? '') . ($rowPSN->PSN_FNAMEEN ?? '') . ' ' . ($rowPSN->PSN_LNAMEEN ?? ''));
+        }
+
+        $firstGroup = $aUserGroup[0] ?? null;
+        $permitId = is_object($firstGroup) ? ($firstGroup->GPID ?? $firstGroup->gpid ?? '') : ($firstGroup['GPID'] ?? $firstGroup['gpid'] ?? '');
+        $permitName = is_object($firstGroup) ? ($firstGroup->GPNAMET ?? $firstGroup->gpnamet ?? '') : ($firstGroup['GPNAMET'] ?? $firstGroup['gpnamet'] ?? '');
+        $permitNameEn = is_object($firstGroup) ? ($firstGroup->GPNAMEE ?? $firstGroup->gpnamee ?? '') : ($firstGroup['GPNAMEE'] ?? $firstGroup['gpnamee'] ?? '');
+
+        $userData = [
+            'username' => $username,
+            'email' => $rowAD->Email ?? ($username . '@buu.ac.th'),
+            'idcard' => $rowPSN ? ($rowPSN->PSN_IDCARD ?? $employeeId) : $employeeId,
+            'nameth' => $nameth,
+            'nameen' => $nameen,
+            'psn_id' => $rowPSN ? ($rowPSN->PSN_ID ?? null) : null,
+            'liw_name' => $rowPSN ? ($rowPSN->LIW_NAMETH ?? '') : '',
+            'fac_name' => $rowPSN ? ($rowPSN->FAC_NAMETH ?? 'มหาวิทยาลัยบูรพา') : 'มหาวิทยาลัยบูรพา',
+            'dep_name' => $rowPSN ? ($rowPSN->DEP_NAMETH ?? '') : '',
+            'fac_id' => $rowPSN ? ($rowPSN->FAC_ID ?? '') : '',
+            'dep_id' => $rowPSN ? ($rowPSN->DEP_ID ?? '') : '',
+            'aUserGroup' => $aUserGroup,
+            'permitId' => $permitId,
+            'permitName' => $permitName,
+            'permitNameEn' => $permitNameEn,
+        ];
+
+        return $this->processLoginSuccess($userData, $request);
     }
 
     /**
-     * Callback endpoint for future live UMS BUU OAuth2 flow.
+     * Complete login pipeline: synchronize DB records, issue Auth session, populate UMS variables.
      */
-    public function callback(Request $request)
+    protected function processLoginSuccess(array $dataUM, Request $request)
     {
-        return redirect()->route('demo.index')->with('info', 'UMS BUU Callback stub ready');
+        // 1. Sync User and Roles in Database dynamically
+        $user = $this->umsAuth->syncUserAndRoles($dataUM, $dataUM['aUserGroup'] ?? []);
+
+        // 2. Authenticate through Laravel Auth Guard
+        Auth::login($user, true);
+
+        // 3. Establish session matching APS standard
+        Session::put([
+            'authLogin' => true,
+            'userLogin' => $dataUM['username'],
+            'userEmail' => $dataUM['email'],
+            'userIdcard' => $dataUM['idcard'] ?? '',
+            'userFullNameTH' => $dataUM['nameth'],
+            'userFullNameEN' => $dataUM['nameen'] ?? '',
+            'userPsnId' => $dataUM['psn_id'] ?? '',
+            'userLiwName' => $dataUM['liw_name'] ?? '',
+            'userFacName' => $dataUM['fac_name'] ?? '',
+            'userDepName' => $dataUM['dep_name'] ?? '',
+            'userFacId' => $dataUM['fac_id'] ?? '',
+            'userDepId' => $dataUM['dep_id'] ?? '',
+            'userGroup' => $dataUM['aUserGroup'] ?? [],
+            'userPermitId' => $dataUM['permitId'] ?? '',
+            'userPermitName' => $dataUM['permitName'] ?? '',
+        ]);
+
+        $this->logLoginAttempt($dataUM['username'], 'Login เข้าสู่ระบบสำเร็จ');
+
+        return redirect()->intended(route('demo.index'))->with('success', "ยินดีต้อนรับ {$dataUM['nameth']} ({$dataUM['permitName']})");
     }
 
     /**
-     * Logout helper.
+     * Switch active role/group when user has multiple assigned roles in this system.
+     */
+    public function switchGroup(Request $request)
+    {
+        if ($request->isMethod('get')) {
+            return view('auth.switch_group');
+        }
+
+        $request->validate([
+            'gpid' => 'required|string',
+        ]);
+
+        $targetGpid = $request->input('gpid');
+        $userGroups = Session::get('userGroup', []);
+
+        $found = null;
+        foreach ($userGroups as $grp) {
+            $gpid = is_object($grp) ? ($grp->GPID ?? $grp->gpid ?? '') : ($grp['GPID'] ?? $grp['gpid'] ?? '');
+            if ((string) $gpid === (string) $targetGpid) {
+                $found = $grp;
+                break;
+            }
+        }
+
+        if (!$found) {
+            return back()->with('error', 'ท่านไม่มีสิทธิ์ในกลุ่มที่เลือก');
+        }
+
+        $permitName = is_object($found) ? ($found->GPNAMET ?? $found->gpnamet ?? '') : ($found['GPNAMET'] ?? $found['gpnamet'] ?? '');
+        Session::put('userPermitId', $targetGpid);
+        Session::put('userPermitName', $permitName);
+
+        // Update active role_id in users table
+        $role = DB::table('roles')->where('gpid', $targetGpid)->first();
+        if ($role && Auth::check()) {
+            DB::table('users')->where('user_id', Auth::id())->update(['role_id' => $role->role_id]);
+        }
+
+        return back()->with('success', "สลับบทบาทการทำงานเป็น: {$permitName} เรียบร้อยแล้ว");
+    }
+
+    /**
+     * Terminate user session and flush auth tokens.
      */
     public function logout(Request $request)
     {
+        $username = Session::get('userLogin', Auth::user()?->username ?? 'unknown');
+        $this->logLoginAttempt($username, 'Logout ออกจากระบบ');
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('login')->with('success', 'ออกจากระบบเรียบร้อยแล้ว');
+    }
+
+    /**
+     * Write login events to log_login table if available.
+     */
+    protected function logLoginAttempt(string $username, string $action): void
+    {
+        try {
+            if (class_exists(\App\Models\LogLogin::class)) {
+                \App\Models\LogLogin::create([
+                    'psn_id' => Auth::id() ?? 0,
+                    'lg_user_name' => $username,
+                    'lg_action' => $action,
+                    'lg_ip' => request()->ip(),
+                    'lg_user_agent' => request()->userAgent(),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('LogLogin attempt error: ' . $e->getMessage());
+        }
     }
 }
 PHP;
     }
 
-    protected function buildUmsMockBlade(array $config): string
+    protected function buildLoginUmsBlade(array $config): string
     {
-        return <<<'HTML'
+        $appName = htmlspecialchars($config['name'] ?? 'Laravel Application');
+
+        $template = <<<'HTML'
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-4">
-    <!-- Header Banner -->
-    <div class="card border border-theme bg-theme-card shadow-sm mb-4">
-        <div class="card-body p-4 text-center">
-            <div class="d-inline-flex p-3 rounded-circle mb-3 bg-theme-primary">
-                <i class="bi bi-hub fs-2"></i>
-            </div>
-            <h3 class="fw-bold text-body mb-1">มหาวิทยาลัยบูรพา · UMS Identity Gateway</h3>
-            <p class="text-secondary small mb-2">ระบบจำลองการยืนยันตัวตนแบบ Single Sign-On (Mock UMS SSO Simulator)</p>
-            <div class="d-flex justify-content-center gap-2">
-                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1">
-                    <i class="bi bi-shield-check me-1"></i> Mock Simulation Active
-                </span>
-                <span class="badge bg-secondary font-monospace px-2.5 py-1">OAuth2 / UMS Protocol Ready</span>
-            </div>
-        </div>
-    </div>
-
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    <!-- One-Click Personas Grid -->
-    <div class="row g-3 mb-4">
-        @foreach($personas as $key => $p)
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="card border border-theme bg-theme-card shadow-sm h-100 d-flex flex-column justify-content-between p-3">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="badge {{ $p['badge_class'] ?? 'bg-primary' }}">{{ $p['badge'] ?? 'ผู้ใช้' }}</span>
-                        <code class="text-theme-subtext font-monospace small">{{ $p['username'] }}</code>
-                    </div>
-                    <h6 class="fw-bold text-body mb-1">{{ $p['name'] }}</h6>
-                    <div class="text-secondary small mb-2">{{ $p['position'] }}</div>
-                    <div class="text-secondary small font-monospace mb-3" style="font-size: 0.8rem;">
-                        <i class="bi bi-building me-1"></i> {{ $p['department'] }}
-                    </div>
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7 col-lg-6 col-xl-5">
+        <div class="card shadow-lg border-theme bg-theme-card">
+            <div class="card-header text-center py-4 border-bottom border-theme">
+                <div class="d-inline-flex p-3 rounded-circle mb-3 bg-theme-primary">
+                    <i class="bi bi-shield-lock-fill fs-2"></i>
                 </div>
-                <form action="{{ route('ums.mock.submit') }}" method="POST" class="mt-auto">
+                <h4 class="fw-bold mb-1 text-white">__APP_NAME__</h4>
+                <div class="d-flex align-items-center justify-content-center gap-2 mt-2">
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1">
+                        <i class="bi bi-hub me-1"></i> UMS BUU Protocol
+                    </span>
+                    <span class="badge bg-secondary font-monospace px-2.5 py-1">Active Directory</span>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                @if(session('error'))
+                    <div class="alert alert-danger py-2.5 px-3 small d-flex align-items-center mb-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2 fs-6"></i>
+                        <div>{{ session('error') }}</div>
+                    </div>
+                @endif
+                @if(session('success'))
+                    <div class="alert alert-success py-2.5 px-3 small d-flex align-items-center mb-3" role="alert">
+                        <i class="bi bi-check-circle-fill me-2 fs-6"></i>
+                        <div>{{ session('success') }}</div>
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('login.post') }}" id="loginForm">
                     @csrf
-                    <input type="hidden" name="persona" value="{{ $key }}">
-                    <button type="submit" class="btn btn-theme-primary btn-sm w-100 fw-semibold">
-                        <i class="bi bi-box-arrow-in-right me-1"></i> เข้าสู่ระบบด้วยบัญชีนี้
-                    </button>
-                </form>
-            </div>
-        </div>
-        @endforeach
-    </div>
+                    <div class="mb-3">
+                        <label for="username" class="form-label small text-uppercase text-secondary fw-semibold">
+                            ชื่อผู้ใช้งาน (BUU Account / Username)
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ old('username') }}" placeholder="เช่น pusit หรือชื่อผู้ใช้ AD" required autofocus>
+                        </div>
+                    </div>
 
-    <!-- Custom Mock Sign-In Accordion -->
-    <div class="accordion border border-theme rounded shadow-sm mb-4" id="customMockAccordion">
-        <div class="accordion-item bg-theme-card border-0">
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed bg-theme-card text-body fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#customMockCollapse">
-                    <i class="bi bi-sliders me-2 text-theme-primary"></i> หรือจำลองเข้าสู่ระบบด้วยข้อมูลกำหนดเอง (Custom Mock Credentials)
-                </button>
-            </h2>
-            <div id="customMockCollapse" class="accordion-collapse collapse" data-bs-parent="#customMockAccordion">
-                <div class="accordion-body p-4 border-top border-theme">
-                    <form action="{{ route('ums.mock.submit') }}" method="POST" class="row g-3">
-                        @csrf
-                        <div class="col-12 col-md-4">
-                            <label class="form-label text-secondary small fw-semibold">ชื่อผู้ใช้ (Username / BUU Account):</label>
-                            <input type="text" name="username" class="form-control" value="custom.staff" required>
+                    <div class="mb-3">
+                        <label for="password" class="form-label small text-uppercase text-secondary fw-semibold">
+                            รหัสผ่าน (BUU Password)
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="รหัสผ่านสำหรับเข้าสู่ระบบ" required>
                         </div>
-                        <div class="col-12 col-md-4">
-                            <label class="form-label text-secondary small fw-semibold">ชื่อ-นามสกุล (Full Name):</label>
-                            <input type="text" name="name" class="form-control" value="นาย ทดสอบ ผู้ใช้งานจำลอง" required>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <label class="form-label text-secondary small fw-semibold">อีเมล (BUU Email):</label>
-                            <input type="email" name="email" class="form-control" value="custom.staff@buu.ac.th" required>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <label class="form-label text-secondary small fw-semibold">สิทธิ์ในระบบ (Assigned Role):</label>
-                            <select name="role_id" class="form-select">
-                                <option value="1">1 - Superadmin (ผู้ดูแลระบบสูงสุด)</option>
-                                <option value="2" selected>2 - Admin (ผู้ดูแลระบบ / อาจารย์)</option>
-                                <option value="3">3 - User (ผู้ใช้งานทั่วไป / นิสิต)</option>
-                            </select>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <label class="form-label text-secondary small fw-semibold">คณะ / หน่วยงาน (Department):</label>
-                            <input type="text" name="department" class="form-control" value="คณะวิทยาการสารสนเทศ">
-                        </div>
-                        <div class="col-12 col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-theme-primary w-100 fw-semibold">
-                                <i class="bi bi-send-fill me-1"></i> เข้าสู่ระบบด้วยข้อมูลนี้
-                            </button>
-                        </div>
-                    </form>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                        <label class="form-check-label small text-secondary" for="remember">จดจำการเข้าสู่ระบบ (Remember Me)</label>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-theme-primary py-2.5 fw-semibold shadow-sm">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> เข้าสู่ระบบด้วย BUU Account
+                        </button>
+                        <button id="btn-biometric-login" type="button" onclick="loginWithBiometrics()" class="btn btn-outline-theme-primary py-2 fw-semibold d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-fingerprint fs-5"></i>
+                            <span>สแกนลายนิ้วมือ / Passkey (Windows Hello / Touch ID)</span>
+                        </button>
+                        <div id="biometric-status" class="small text-center text-secondary d-none mt-2"></div>
+                    </div>
+                </form>
+
+                <div class="mt-4 p-3 rounded border border-theme small" style="background-color: rgba(148, 163, 184, 0.08);">
+                    <div class="fw-semibold mb-1 text-theme-primary"><i class="bi bi-shield-check me-1"></i> มาตรฐานความปลอดภัย UMS BUU:</div>
+                    <ul class="mb-0 ps-3 text-secondary" style="font-size: 0.8rem;">
+                        <li>ยืนยันตัวตนผ่าน Active Directory กลางและดึงกลุ่มสิทธิ์จาก UMS Central Gateway</li>
+                        <li>รองรับการเข้าสู่ระบบแบบชีวมิติด้วยลายนิ้วมือ (W3C WebAuthn &amp; FIDO2 Passkey)</li>
+                        <li>ไม่มีบทบาท <code>superadmin</code> ในระบบ UMS ตามข้อกำหนดความปลอดภัย</li>
+                        <li>จำกัดความถี่การเข้าสู่ระบบ 5 ครั้งต่อนาทีเพื่อป้องกัน Brute Force Attack</li>
+                    </ul>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Return Link -->
-    <div class="text-center">
-        <a href="{{ url('/') }}" class="text-secondary small text-decoration-none">
-            <i class="bi bi-arrow-left me-1"></i> กลับสู่หน้าหลักแอปพลิเคชัน
-        </a>
+        <div class="text-center mt-3">
+            <a href="{{ url('/') }}" class="text-secondary small text-decoration-none">
+                <i class="bi bi-arrow-left me-1"></i> กลับสู่หน้าหลักแอปพลิเคชัน
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function bufferToBase64url(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+
+    function base64urlToUint8Array(base64url) {
+        let padding = '='.repeat((4 - (base64url.length % 4)) % 4);
+        let base64 = (base64url + padding).replace(/-/g, '+').replace(/_/g, '/');
+        let rawData = atob(base64);
+        let outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
+
+    async function loginWithBiometrics() {
+        const btnEl = document.getElementById('btn-biometric-login');
+        const statusEl = document.getElementById('biometric-status');
+        const usernameVal = document.getElementById('username')?.value.trim() || '';
+        const csrfToken = '{{ csrf_token() }}';
+
+        if (!window.PublicKeyCredential) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ไม่รองรับ WebAuthn',
+                    text: 'เบราว์เซอร์หรืออุปกรณ์ของคุณไม่รองรับการสแกนลายนิ้วมือ หรือยังไม่ได้เปิดใช้ HTTPS/Localhost',
+                    confirmButtonText: 'ตกลง'
+                });
+            } else {
+                alert('เบราว์เซอร์หรืออุปกรณ์ของคุณไม่รองรับ WebAuthn / Passkey');
+            }
+            return;
+        }
+
+        try {
+            if (btnEl) btnEl.disabled = true;
+            if (statusEl) {
+                statusEl.classList.remove('d-none', 'text-danger', 'text-success');
+                statusEl.classList.add('text-secondary');
+                statusEl.textContent = 'กำลังติดต่อเซิร์ฟเวอร์เพื่อขอ Challenge...';
+            }
+
+            const optionsRes = await fetch('{{ route("webauthn.login.options") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ username: usernameVal })
+            });
+
+            if (!optionsRes.ok) {
+                const errData = await optionsRes.json();
+                throw new Error(errData.error || 'ไม่สามารถสร้าง Challenge ได้');
+            }
+
+            const options = await optionsRes.json();
+
+            if (options.total_credentials === 0) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'ยังไม่มีข้อมูลลายนิ้วมือในระบบ',
+                        html: `
+                            <div class="text-start mt-2">
+                                <p class="mb-2">ระบบยังไม่พบลายนิ้วมือที่ผูกกับบัญชีผู้ใช้ใดๆ</p>
+                                <div class="p-3 rounded bg-dark border border-secondary small text-secondary">
+                                    <p class="fw-semibold text-info mb-1">📌 สำหรับการใช้งานครั้งแรก:</p>
+                                    <ol class="mb-0 ps-3">
+                                        <li>เข้าสู่ระบบด้วย <b>BUU Account</b> เพื่อเข้าสู่ระบบก่อน</li>
+                                        <li>จากนั้นสามารถลงทะเบียนอุปกรณ์หรือ Passkey ในหน้า Demo/Profile ได้</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        `,
+                        confirmButtonText: 'เข้าสู่ระบบด้วยรหัสผ่าน'
+                    }).then(() => {
+                        document.getElementById('username')?.focus();
+                    });
+                } else {
+                    alert('ยังไม่มีข้อมูลลายนิ้วมือในระบบ กรุณาเข้าสู่ระบบด้วยรหัสผ่านก่อน');
+                }
+                return;
+            }
+
+            options.challenge = base64urlToUint8Array(options.challenge);
+            if (options.allowCredentials && options.allowCredentials.length > 0) {
+                options.allowCredentials = options.allowCredentials.map(cred => {
+                    const desc = {
+                        id: base64urlToUint8Array(cred.id),
+                        type: cred.type || 'public-key'
+                    };
+                    if (Array.isArray(cred.transports) && cred.transports.length > 0) {
+                        desc.transports = cred.transports;
+                    }
+                    return desc;
+                });
+            }
+
+            if (statusEl) statusEl.textContent = 'กรุณาแตะลายนิ้วมือบนอุปกรณ์ของคุณ (Touch ID / Windows Hello)...';
+
+            const assertion = await navigator.credentials.get({
+                publicKey: options
+            });
+
+            if (!assertion) {
+                throw new Error('การสแกนลายนิ้วมือถูกยกเลิก');
+            }
+
+            if (statusEl) statusEl.textContent = 'กำลังตรวจสอบความถูกต้องของลายเซ็นดิจิทัล...';
+
+            const payload = {
+                id: assertion.id,
+                rawId: bufferToBase64url(assertion.rawId),
+                type: assertion.type,
+                response: {
+                    clientDataJSON: bufferToBase64url(assertion.response.clientDataJSON),
+                    authenticatorData: bufferToBase64url(assertion.response.authenticatorData),
+                    signature: bufferToBase64url(assertion.response.signature),
+                    userHandle: assertion.response.userHandle ? bufferToBase64url(assertion.response.userHandle) : null
+                }
+            };
+
+            const verifyRes = await fetch('{{ route("webauthn.login.verify") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const verifyData = await verifyRes.json();
+            if (!verifyRes.ok || !verifyData.success) {
+                throw new Error(verifyData.error || 'การยืนยันตัวตนไม่สำเร็จ');
+            }
+
+            if (statusEl) {
+                statusEl.classList.remove('text-secondary');
+                statusEl.classList.add('text-success');
+                statusEl.textContent = '✓ ยืนยันตัวตนสำเร็จ กำลังเข้าสู่ระบบ...';
+            }
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'ยืนยันตัวตนสำเร็จ',
+                    text: 'ยินดีต้อนรับกลับ กำลังนำคุณเข้าสู่ระบบ...',
+                    timer: 1200,
+                    showConfirmButton: false
+                });
+            }
+
+            setTimeout(() => {
+                window.location.href = verifyData.redirect || '{{ route("demo.index") }}';
+            }, 600);
+        } catch (err) {
+            console.error(err);
+            const errMsg = err.message || 'การสแกนลายนิ้วมือไม่สำเร็จ';
+            if (statusEl) {
+                statusEl.classList.remove('text-secondary');
+                statusEl.classList.add('text-danger');
+                statusEl.textContent = errMsg;
+            }
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เข้าสู่ระบบด้วยลายนิ้วมือไม่สำเร็จ',
+                    text: errMsg,
+                    confirmButtonText: 'รับทราบ'
+                });
+            } else {
+                alert(errMsg);
+            }
+        } finally {
+            if (btnEl) btnEl.disabled = false;
+        }
+    }
+</script>
+@endsection
+HTML;
+
+        return str_replace('__APP_NAME__', $appName, $template);
+    }
+
+    protected function buildUmsSwitchGroupBlade(array $config): string
+    {
+        $appName = htmlspecialchars($config['name'] ?? 'Laravel Application');
+
+        $template = <<<'HTML'
+@extends('layouts.app')
+
+@section('content')
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-theme bg-theme-card">
+            <div class="card-header text-center py-4 border-bottom border-theme">
+                <div class="d-inline-flex p-3 rounded-circle mb-3 bg-theme-primary">
+                    <i class="bi bi-arrow-left-right fs-2"></i>
+                </div>
+                <h4 class="fw-bold mb-1 text-white">สลับบทบาทการทำงาน (Switch Role)</h4>
+                <small class="text-secondary font-monospace">มหาวิทยาลัยบูรพา · UMS Identity Management</small>
+            </div>
+            <div class="card-body p-4">
+                @if(session('error'))
+                    <div class="alert alert-danger py-2.5 px-3 small mb-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
+                    </div>
+                @endif
+                @if(session('success'))
+                    <div class="alert alert-success py-2.5 px-3 small mb-3" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+                    </div>
+                @endif
+
+                <div class="p-3 rounded border border-theme mb-4 bg-dark bg-opacity-25">
+                    <div class="text-secondary small mb-1">บทบาทที่กำลังใช้งานในปัจจุบัน:</div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-success px-2.5 py-1.5 fs-6">
+                            <i class="bi bi-person-check-fill me-1"></i> {{ session('userPermitName', 'ผู้ใช้งานทั่วไป') }}
+                        </span>
+                        <code class="text-theme-subtext font-monospace small">GPID: {{ session('userPermitId', '-') }}</code>
+                    </div>
+                </div>
+
+                <div class="fw-semibold text-body mb-2 small">
+                    <i class="bi bi-collection-fill me-1 text-theme-primary"></i> เลือกบทบาทที่ต้องการสลับ:
+                </div>
+
+                @php
+                    $groups = session('userGroup', []);
+                    $currentGpid = (string) session('userPermitId');
+                @endphp
+
+                <div class="d-flex flex-column gap-2 mb-4">
+                    @forelse($groups as $grp)
+                        @php
+                            $gpid = is_object($grp) ? ($grp->GPID ?? $grp->gpid ?? '') : ($grp['GPID'] ?? $grp['gpid'] ?? '');
+                            $name = is_object($grp) ? ($grp->GPNAMET ?? $grp->gpnamet ?? '') : ($grp['GPNAMET'] ?? $grp['gpnamet'] ?? '');
+                            $isActive = ((string) $gpid === $currentGpid);
+                        @endphp
+                        <form method="POST" action="{{ route('switch.group') }}">
+                            @csrf
+                            <input type="hidden" name="gpid" value="{{ $gpid }}">
+                            <div class="d-flex align-items-center justify-content-between p-3 rounded border border-theme {{ $isActive ? 'border-primary bg-primary bg-opacity-10' : 'bg-dark bg-opacity-10' }}">
+                                <div>
+                                    <div class="fw-semibold text-body {{ $isActive ? 'text-primary' : '' }}">
+                                        {{ $name }}
+                                    </div>
+                                    <code class="text-theme-subtext font-monospace small">GPID: {{ $gpid }}</code>
+                                </div>
+                                <div>
+                                    @if($isActive)
+                                        <span class="badge bg-primary">กำลังใช้งาน</span>
+                                    @else
+                                        <button type="submit" class="btn btn-outline-theme-primary btn-sm px-3">
+                                            สลับไปยังบทบาทนี้
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                        </form>
+                    @empty
+                        <div class="alert alert-secondary py-2 small mb-0">
+                            ไม่พบรายการกลุ่มสิทธิ์เพิ่มเติม
+                        </div>
+                    @endforelse
+                </div>
+
+                <div class="text-center">
+                    <a href="{{ route('demo.index') }}" class="btn btn-outline-secondary btn-sm px-4">
+                        <i class="bi bi-arrow-left me-1"></i> กลับสู่หน้าแดชบอร์ด
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
 HTML;
+
+        return str_replace('__APP_NAME__', $appName, $template);
     }
 
     protected function buildConfigLdap(): string
@@ -6561,7 +7428,10 @@ class DemoController extends Controller
      */
     public function umsDemo()
     {
-        return redirect()->route('ums.mock');
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            return redirect()->route('switch.group');
+        }
+        return redirect()->route('login');
     }
 
     /**
@@ -6618,6 +7488,8 @@ PHP;
     protected function buildDemoIndexBlade(array $config): string
     {
         $appName = htmlspecialchars($config['name'] ?? 'Laravel Application');
+        $hasBuuLdap = !empty($config['modules']['buu_ldap']);
+        $hasUmsBuu = !empty($config['modules']['ums_buu']) || !empty($config['use_ums_buu']);
 
         $moduleCards = [];
         if (!empty($config['modules']['buu_ldap'])) {
@@ -6715,10 +7587,10 @@ HTML;
                                 <small class="text-theme-subtext font-monospace">ums_buu</small>
                             </div>
                             <h6 class="fw-bold text-theme-primary mb-1"><i class="bi bi-hub me-1"></i> UMS BUU (SSO)</h6>
-                            <p class="text-secondary small mb-3">ระบบยืนยันตัวตนกลาง ม.บูรพา พร้อม Mock Login Simulator</p>
+                            <p class="text-secondary small mb-3">ระบบยืนยันตัวตนกลาง ม.บูรพา &amp; จัดการบทบาท (UMS Identity)</p>
                         </div>
-                        <a href="{{ route('ums.mock') }}" class="btn btn-outline-theme-primary btn-sm w-100 fw-semibold">
-                            <i class="bi bi-arrow-right-circle me-1"></i> เปิดดู Demo UMS Mock
+                        <a href="{{ route('demo.ums') }}" class="btn btn-outline-theme-primary btn-sm w-100 fw-semibold">
+                            <i class="bi bi-arrow-right-circle me-1"></i> เข้าสู่ระบบ / สลับสิทธิ์ UMS
                         </a>
                     </div>
                 </div>
@@ -6752,6 +7624,316 @@ HTML;
 HTML;
         }
 
+        $bannerPasskeyBtn = '';
+        $biometricCardHtml = '';
+        $biometricInitJs = '';
+        $biometricMethodsJs = '';
+
+        if ($hasBuuLdap || $hasUmsBuu) {
+            $bannerPasskeyBtn = <<<'HTML'
+                        <button type="button" class="btn btn-theme-primary px-3 py-2 fw-semibold" onclick="registerWebauthnBiometric()">
+                            <i class="bi bi-fingerprint me-1"></i> บันทึกลายนิ้วมือใหม่ (Passkey)
+                        </button>
+HTML;
+
+            $biometricCardHtml = <<<'HTML'
+    <!-- Biometric Authentication (WebAuthn / Passkey) Card -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card border border-theme bg-theme-card shadow-sm">
+                <div class="card-header border-bottom border-theme py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-fingerprint text-theme-primary fs-5"></i>
+                        <span class="fw-semibold">ระบบยืนยันตัวตนชีวมิติ (WebAuthn / Passkey Biometrics)</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="webauthn-support-badge" class="badge bg-secondary font-monospace">กำลังตรวจสอบอุปกรณ์...</span>
+                        <button type="button" class="btn btn-outline-theme-primary btn-sm" onclick="loadWebauthnCredentials()" title="รีเฟรชรายการอุปกรณ์">
+                            <i class="bi bi-arrow-clockwise"></i> รีเฟรช
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3 align-items-center mb-3">
+                        <div class="col-12 col-md-8">
+                            <h6 class="fw-bold mb-1 text-theme-primary"><i class="bi bi-shield-check text-success me-1"></i> เข้าสู่ระบบด้วยลายนิ้วมือ Touch ID / Windows Hello แบบไร้รหัสผ่าน (Passwordless)</h6>
+                            <p class="mb-0 text-secondary small">สามารถบันทึกอุปกรณ์เครื่องนี้ผูกกับบัญชีผู้ใช้ของคุณ เพื่อใช้สแกนลายนิ้วมือเข้าใช้งานในหน้าล็อกอินได้ทันทีตามมาตรฐานความปลอดภัย W3C WebAuthn &amp; FIDO2</p>
+                        </div>
+                        <div class="col-12 col-md-4 text-md-end">
+                            <button type="button" class="btn btn-theme-primary px-3 py-2 fw-semibold shadow-sm" id="btn-register-biometric" onclick="registerWebauthnBiometric()">
+                                <i class="bi bi-fingerprint me-1"></i> บันทึกลายนิ้วมือเครื่องนี้
+                            </button>
+                        </div>
+                    </div>
+                    <div id="webauthn-credentials-container" class="border border-theme rounded p-3 bg-secondary bg-opacity-10">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small text-theme-subtext fw-semibold"><i class="bi bi-laptop me-1"></i> รายการอุปกรณ์และ Passkey ที่บันทึกไว้ในบัญชีของคุณ:</span>
+                            <span id="credential-count-badge" class="badge bg-theme-primary">0 รายการ</span>
+                        </div>
+                        <div id="credentials-list" class="text-secondary small">กำลังโหลดรายการอุปกรณ์...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+HTML;
+
+            $biometricInitJs = <<<'JS'
+        // 7. Check WebAuthn platform biometric support
+        const supportBadge = document.getElementById('webauthn-support-badge');
+        if (supportBadge) {
+            if (window.PublicKeyCredential) {
+                PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable?.().then(available => {
+                    if (available) {
+                        supportBadge.className = 'badge bg-success bg-opacity-25 text-success font-monospace';
+                        supportBadge.textContent = '✓ รองรับ Touch ID / Windows Hello';
+                    } else {
+                        supportBadge.className = 'badge bg-info bg-opacity-25 text-info font-monospace';
+                        supportBadge.textContent = '✓ รองรับ WebAuthn / Security Key';
+                    }
+                }).catch(() => {
+                    supportBadge.className = 'badge bg-info bg-opacity-25 text-info font-monospace';
+                    supportBadge.textContent = '✓ รองรับ WebAuthn';
+                });
+            } else {
+                supportBadge.className = 'badge bg-warning bg-opacity-25 text-warning font-monospace';
+                supportBadge.textContent = '⚠ เบราว์เซอร์ไม่รองรับ';
+            }
+        }
+        loadWebauthnCredentials();
+JS;
+
+            $biometricMethodsJs = <<<'JS'
+    function bufferToBase64url(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+
+    function base64urlToUint8Array(base64url) {
+        let padding = '='.repeat((4 - (base64url.length % 4)) % 4);
+        let base64 = (base64url + padding).replace(/-/g, '+').replace(/_/g, '/');
+        let rawData = atob(base64);
+        let outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
+
+    async function registerWebauthnBiometric() {
+        if (!window.PublicKeyCredential) {
+            if (window.artisanNotify) {
+                window.artisanNotify.error('ไม่รองรับ', 'อุปกรณ์หรือเบราว์เซอร์นี้ไม่รองรับการยืนยันตัวตนด้วยลายนิ้วมือ / Passkey');
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'เบราว์เซอร์ไม่รองรับ WebAuthn',
+                    text: 'อุปกรณ์หรือเบราว์เซอร์นี้ไม่รองรับการยืนยันตัวตนด้วยลายนิ้วมือ / Passkey'
+                });
+            } else {
+                alert('เบราว์เซอร์ไม่รองรับ WebAuthn');
+            }
+            return;
+        }
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const registerBtn = document.getElementById('btn-register-biometric');
+        const origBtnHtml = registerBtn ? registerBtn.innerHTML : '';
+        if (registerBtn) {
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังเชื่อมต่ออุปกรณ์...';
+        }
+
+        try {
+            const optRes = await fetch('{{ route("webauthn.register.options") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!optRes.ok) {
+                const err = await optRes.json().catch(() => ({}));
+                throw new Error(err.error || 'ไม่สามารถรับข้อมูลการลงทะเบียนจากเซิร์ฟเวอร์');
+            }
+
+            const options = await optRes.json();
+            options.challenge = base64urlToUint8Array(options.challenge);
+            if (options.user && options.user.id) {
+                options.user.id = base64urlToUint8Array(options.user.id);
+            }
+            if (options.excludeCredentials && options.excludeCredentials.length > 0) {
+                options.excludeCredentials = options.excludeCredentials.map(c => ({
+                    ...c,
+                    id: base64urlToUint8Array(c.id)
+                }));
+            }
+
+            const credential = await navigator.credentials.create({
+                publicKey: options
+            });
+
+            if (!credential) {
+                throw new Error('การลงทะเบียนลายนิ้วมือถูกยกเลิก');
+            }
+
+            const payload = {
+                id: credential.id,
+                rawId: bufferToBase64url(credential.rawId),
+                type: credential.type,
+                response: {
+                    clientDataJSON: bufferToBase64url(credential.response.clientDataJSON),
+                    attestationObject: bufferToBase64url(credential.response.attestationObject)
+                },
+                device_name: navigator.userAgent.includes('Windows') ? 'Windows Hello PC' : (navigator.userAgent.includes('Mac') ? 'Mac Touch ID' : 'Mobile Biometric')
+            };
+
+            const verifyRes = await fetch('{{ route("webauthn.register.verify") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const verifyData = await verifyRes.json();
+            if (!verifyRes.ok || !verifyData.success) {
+                throw new Error(verifyData.error || 'การตรวจสอบความถูกต้องของลายนิ้วมือไม่สำเร็จ');
+            }
+
+            if (window.artisanNotify) {
+                window.artisanNotify.success('บันทึกลายนิ้วมือสำเร็จ!', 'ผูกอุปกรณ์ของคุณเรียบร้อยแล้ว ท่านสามารถใช้ Touch ID / Windows Hello สแกนเข้าสู่ระบบในครั้งถัดไปได้ทันที');
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'บันทึกลายนิ้วมือสำเร็จ!',
+                    text: 'ผูกอุปกรณ์ของคุณเรียบร้อยแล้ว ท่านสามารถใช้ Touch ID / Windows Hello สแกนเข้าสู่ระบบในครั้งถัดไปได้ทันที'
+                });
+            } else {
+                alert('บันทึกลายนิ้วมือสำเร็จ! ผูกอุปกรณ์เรียบร้อยแล้ว');
+            }
+
+            loadWebauthnCredentials();
+        } catch (err) {
+            console.error(err);
+            let msg = err.message || 'บันทึกลายนิ้วมือไม่สำเร็จ';
+            if (err.name === 'NotAllowedError') {
+                msg = 'ผู้ใช้ยกเลิกการสแกนลายนิ้วมือ หรือไม่มีสิทธิ์เข้าถึงอุปกรณ์';
+            } else if (err.name === 'InvalidStateError' || msg.includes('no longer usable') || msg.includes('already registered')) {
+                msg = 'อุปกรณ์เครื่องนี้ได้ลงทะเบียนไว้กับบัญชีนี้เรียบร้อยแล้ว (หากต้องการทดสอบลงทะเบียนใหม่ กรุณากดปุ่มลบอุปกรณ์เดิมออกก่อน)';
+            }
+            if (window.artisanNotify) {
+                window.artisanNotify.error('เกิดข้อผิดพลาด', msg);
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ไม่สามารถบันทึกลายนิ้วมือได้',
+                    text: msg
+                });
+            } else {
+                alert('ข้อผิดพลาด: ' + msg);
+            }
+        } finally {
+            if (registerBtn) {
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = origBtnHtml;
+            }
+        }
+    }
+
+    async function loadWebauthnCredentials() {
+        const listEl = document.getElementById('credentials-list');
+        const badgeEl = document.getElementById('credential-count-badge');
+        if (!listEl) return;
+
+        try {
+            const res = await fetch('{{ route("webauthn.credentials.list") }}', {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!res.ok) {
+                listEl.innerHTML = '<span class="text-secondary">ยังไม่มีข้อมูล หรือจำเป็นต้องเข้าสู่ระบบ</span>';
+                return;
+            }
+            const data = await res.json();
+            const creds = data.credentials || [];
+            if (badgeEl) badgeEl.textContent = creds.length + ' รายการ';
+
+            if (creds.length === 0) {
+                listEl.innerHTML = '<span class="text-secondary">ยังไม่มีการลงทะเบียนอุปกรณ์ลายนิ้วมือ คลิกปุ่ม "บันทึกลายนิ้วมือเครื่องนี้" ด้านบนเพื่อเริ่มใช้งาน</span>';
+            } else {
+                let html = '<div class="list-group list-group-flush">';
+                creds.forEach(c => {
+                    const devName = c.device_name || 'Biometric Authenticator';
+                    const lastUsed = c.last_used_at ? 'ใช้งานล่าสุด: ' + c.last_used_at : 'ยังไม่เคยใช้งาน';
+                    html += '<div class="list-group-item bg-transparent border-bottom text-body d-flex align-items-center justify-content-between py-2 px-0">' +
+                        '<div>' +
+                            '<i class="bi bi-fingerprint text-success me-2"></i>' +
+                            '<span class="fw-semibold text-body">' + devName + '</span>' +
+                            '<small class="text-secondary d-block ms-4">ลงทะเบียนเมื่อ: ' + (c.created_at || '-') + ' • ' + lastUsed + '</small>' +
+                        '</div>' +
+                        '<button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteWebauthnCredential(' + c.cred_id + ')">' +
+                            '<i class="bi bi-trash3"></i>' +
+                        '</button>' +
+                    '</div>';
+                });
+                html += '</div>';
+                listEl.innerHTML = html;
+            }
+        } catch (e) {
+            listEl.innerHTML = '<span class="text-secondary">ไม่สามารถโหลดรายการอุปกรณ์ได้</span>';
+        }
+    }
+
+    async function deleteWebauthnCredential(id) {
+        const doDelete = async () => {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            try {
+                const res = await fetch('{{ url("/webauthn/credentials") }}/' + id, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    }
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    loadWebauthnCredentials();
+                    if (window.artisanNotify) {
+                        window.artisanNotify.success('ลบสำเร็จ', 'ลบอุปกรณ์ลายนิ้วมือเรียบร้อยแล้ว');
+                    }
+                } else {
+                    if (window.artisanNotify) {
+                        window.artisanNotify.error('ไม่สามารถลบได้', data.error || '');
+                    } else {
+                        alert(data.error || 'ไม่สามารถลบได้');
+                    }
+                }
+            } catch (e) {
+                if (window.artisanNotify) {
+                    window.artisanNotify.error('เกิดข้อผิดพลาดในการลบ');
+                } else {
+                    alert('เกิดข้อผิดพลาดในการลบ');
+                }
+            }
+        };
+
+        if (window.artisanNotify) {
+            window.artisanNotify.confirm('ยืนยันการลบ', 'คุณแน่ใจหรือไม่ว่าต้องการลบอุปกรณ์ลายนิ้วมือนี้?', doDelete);
+        } else if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบอุปกรณ์ลายนิ้วมือนี้?')) {
+            doDelete();
+        }
+    }
+JS;
+        }
+
         return <<<HTML
 @extends('layouts.app')
 
@@ -6773,9 +7955,7 @@ HTML;
                         <p class="text-secondary mb-0">ระบบบริหารจัดการและหน้าควบคุมต้นแบบ (Demo Showcase Dashboard) พร้อมส่วนประกอบ UI และระบบรักษาความปลอดภัยครบวงจร</p>
                     </div>
                     <div class="d-flex flex-wrap align-items-center gap-2">
-                        <button type="button" class="btn btn-theme-primary px-3 py-2 fw-semibold" onclick="registerWebauthnBiometric()">
-                            <i class="bi bi-fingerprint me-1"></i> บันทึกลายนิ้วมือใหม่ (Passkey)
-                        </button>
+{$bannerPasskeyBtn}
                         <button type="button" class="btn btn-outline-secondary px-3 py-2 fw-semibold" onclick="triggerSweetAlertDemo()">
                             <i class="bi bi-bell-fill me-1"></i> ทดสอบ SweetAlert2
                         </button>
@@ -6938,45 +8118,7 @@ HTML;
         </div>
     </div>
 
-    <!-- Biometric Authentication (WebAuthn / Passkey) Card -->
-    <div class="row g-4 mb-4">
-        <div class="col-12">
-            <div class="card border border-theme bg-theme-card shadow-sm">
-                <div class="card-header border-bottom border-theme py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-fingerprint text-theme-primary fs-5"></i>
-                        <span class="fw-semibold">ระบบยืนยันตัวตนชีวมิติ (WebAuthn / Passkey Biometrics)</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="webauthn-support-badge" class="badge bg-secondary font-monospace">กำลังตรวจสอบอุปกรณ์...</span>
-                        <button type="button" class="btn btn-outline-theme-primary btn-sm" onclick="loadWebauthnCredentials()" title="รีเฟรชรายการอุปกรณ์">
-                            <i class="bi bi-arrow-clockwise"></i> รีเฟรช
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row g-3 align-items-center mb-3">
-                        <div class="col-12 col-md-8">
-                            <h6 class="fw-bold mb-1 text-theme-primary"><i class="bi bi-shield-check text-success me-1"></i> เข้าสู่ระบบด้วยลายนิ้วมือ Touch ID / Windows Hello แบบไร้รหัสผ่าน (Passwordless)</h6>
-                            <p class="mb-0 text-secondary small">สามารถบันทึกอุปกรณ์เครื่องนี้ผูกกับบัญชีผู้ใช้ของคุณ เพื่อใช้สแกนลายนิ้วมือเข้าใช้งานในหน้าล็อกอินได้ทันทีตามมาตรฐานความปลอดภัย W3C WebAuthn &amp; FIDO2</p>
-                        </div>
-                        <div class="col-12 col-md-4 text-md-end">
-                            <button type="button" class="btn btn-theme-primary px-3 py-2 fw-semibold shadow-sm" id="btn-register-biometric" onclick="registerWebauthnBiometric()">
-                                <i class="bi bi-fingerprint me-1"></i> บันทึกลายนิ้วมือเครื่องนี้
-                            </button>
-                        </div>
-                    </div>
-                    <div id="webauthn-credentials-container" class="border border-theme rounded p-3 bg-secondary bg-opacity-10">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="small text-theme-subtext fw-semibold"><i class="bi bi-laptop me-1"></i> รายการอุปกรณ์และ Passkey ที่บันทึกไว้ในบัญชีของคุณ:</span>
-                            <span id="credential-count-badge" class="badge bg-theme-primary">0 รายการ</span>
-                        </div>
-                        <div id="credentials-list" class="text-secondary small">กำลังโหลดรายการอุปกรณ์...</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+{$biometricCardHtml}
 
     <!-- UI Components Demo: Chart.js & Form Controls -->
     <div class="row g-4 mb-4">
@@ -7582,28 +8724,7 @@ HTML;
             }
         }
 
-        // 7. Check WebAuthn platform biometric support
-        const supportBadge = document.getElementById('webauthn-support-badge');
-        if (supportBadge) {
-            if (window.PublicKeyCredential) {
-                PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable?.().then(available => {
-                    if (available) {
-                        supportBadge.className = 'badge bg-success bg-opacity-25 text-success font-monospace';
-                        supportBadge.textContent = '✓ รองรับ Touch ID / Windows Hello';
-                    } else {
-                        supportBadge.className = 'badge bg-info bg-opacity-25 text-info font-monospace';
-                        supportBadge.textContent = '✓ รองรับ WebAuthn / Security Key';
-                    }
-                }).catch(() => {
-                    supportBadge.className = 'badge bg-info bg-opacity-25 text-info font-monospace';
-                    supportBadge.textContent = '✓ รองรับ WebAuthn';
-                });
-            } else {
-                supportBadge.className = 'badge bg-warning bg-opacity-25 text-warning font-monospace';
-                supportBadge.textContent = '⚠ เบราว์เซอร์ไม่รองรับ';
-            }
-        }
-        loadWebauthnCredentials();
+{$biometricInitJs}
     });
 
     function togglePasswordVisibility(inputId, btn) {
@@ -7661,233 +8782,7 @@ HTML;
         }
     }
 
-    function bufferToBase64url(buffer) {
-        const bytes = new Uint8Array(buffer);
-        let binary = '';
-        for (let i = 0; i < bytes.byteLength; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
-        return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-    }
-
-    function base64urlToUint8Array(base64url) {
-        let padding = '='.repeat((4 - (base64url.length % 4)) % 4);
-        let base64 = (base64url + padding).replace(/-/g, '+').replace(/_/g, '/');
-        let rawData = atob(base64);
-        let outputArray = new Uint8Array(rawData.length);
-        for (let i = 0; i < rawData.length; ++i) {
-            outputArray[i] = rawData.charCodeAt(i);
-        }
-        return outputArray;
-    }
-
-    async function registerWebauthnBiometric() {
-        if (!window.PublicKeyCredential) {
-            if (window.artisanNotify) {
-                window.artisanNotify.error('ไม่รองรับ', 'อุปกรณ์หรือเบราว์เซอร์นี้ไม่รองรับการยืนยันตัวตนด้วยลายนิ้วมือ / Passkey');
-            } else if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'เบราว์เซอร์ไม่รองรับ WebAuthn',
-                    text: 'อุปกรณ์หรือเบราว์เซอร์นี้ไม่รองรับการยืนยันตัวตนด้วยลายนิ้วมือ / Passkey'
-                });
-            } else {
-                alert('เบราว์เซอร์ไม่รองรับ WebAuthn');
-            }
-            return;
-        }
-
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        const registerBtn = document.getElementById('btn-register-biometric');
-        const origBtnHtml = registerBtn ? registerBtn.innerHTML : '';
-        if (registerBtn) {
-            registerBtn.disabled = true;
-            registerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังเชื่อมต่ออุปกรณ์...';
-        }
-
-        try {
-            const optRes = await fetch('{{ route("webauthn.register.options") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json'
-                }
-            });
-
-            if (!optRes.ok) {
-                const err = await optRes.json().catch(() => ({}));
-                throw new Error(err.error || 'ไม่สามารถรับข้อมูลการลงทะเบียนจากเซิร์ฟเวอร์');
-            }
-
-            const options = await optRes.json();
-            options.challenge = base64urlToUint8Array(options.challenge);
-            if (options.user && options.user.id) {
-                options.user.id = base64urlToUint8Array(options.user.id);
-            }
-            if (options.excludeCredentials && options.excludeCredentials.length > 0) {
-                options.excludeCredentials = options.excludeCredentials.map(c => ({
-                    ...c,
-                    id: base64urlToUint8Array(c.id)
-                }));
-            }
-
-            const credential = await navigator.credentials.create({
-                publicKey: options
-            });
-
-            if (!credential) {
-                throw new Error('การลงทะเบียนลายนิ้วมือถูกยกเลิก');
-            }
-
-            const payload = {
-                id: credential.id,
-                rawId: bufferToBase64url(credential.rawId),
-                type: credential.type,
-                response: {
-                    clientDataJSON: bufferToBase64url(credential.response.clientDataJSON),
-                    attestationObject: bufferToBase64url(credential.response.attestationObject)
-                },
-                device_name: navigator.userAgent.includes('Windows') ? 'Windows Hello PC' : (navigator.userAgent.includes('Mac') ? 'Mac Touch ID' : 'Mobile Biometric')
-            };
-
-            const verifyRes = await fetch('{{ route("webauthn.register.verify") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            const verifyData = await verifyRes.json();
-            if (!verifyRes.ok || !verifyData.success) {
-                throw new Error(verifyData.error || 'การตรวจสอบความถูกต้องของลายนิ้วมือไม่สำเร็จ');
-            }
-
-            if (window.artisanNotify) {
-                window.artisanNotify.success('บันทึกลายนิ้วมือสำเร็จ!', 'ผูกอุปกรณ์ของคุณเรียบร้อยแล้ว ท่านสามารถใช้ Touch ID / Windows Hello สแกนเข้าสู่ระบบในครั้งถัดไปได้ทันที');
-            } else if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'บันทึกลายนิ้วมือสำเร็จ!',
-                    text: 'ผูกอุปกรณ์ของคุณเรียบร้อยแล้ว ท่านสามารถใช้ Touch ID / Windows Hello สแกนเข้าสู่ระบบในครั้งถัดไปได้ทันที'
-                });
-            } else {
-                alert('บันทึกลายนิ้วมือสำเร็จ! ผูกอุปกรณ์เรียบร้อยแล้ว');
-            }
-
-            loadWebauthnCredentials();
-        } catch (err) {
-            console.error(err);
-            let msg = err.message || 'บันทึกลายนิ้วมือไม่สำเร็จ';
-            if (err.name === 'NotAllowedError') {
-                msg = 'ผู้ใช้ยกเลิกการสแกนลายนิ้วมือ หรือไม่มีสิทธิ์เข้าถึงอุปกรณ์';
-            } else if (err.name === 'InvalidStateError' || msg.includes('no longer usable') || msg.includes('already registered')) {
-                msg = 'อุปกรณ์เครื่องนี้ได้ลงทะเบียนไว้กับบัญชีนี้เรียบร้อยแล้ว (หากต้องการทดสอบลงทะเบียนใหม่ กรุณากดปุ่มลบอุปกรณ์เดิมออกก่อน)';
-            }
-            if (window.artisanNotify) {
-                window.artisanNotify.error('เกิดข้อผิดพลาด', msg);
-            } else if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'ไม่สามารถบันทึกลายนิ้วมือได้',
-                    text: msg
-                });
-            } else {
-                alert('ข้อผิดพลาด: ' + msg);
-            }
-        } finally {
-            if (registerBtn) {
-                registerBtn.disabled = false;
-                registerBtn.innerHTML = origBtnHtml;
-            }
-        }
-    }
-
-    async function loadWebauthnCredentials() {
-        const listEl = document.getElementById('credentials-list');
-        const badgeEl = document.getElementById('credential-count-badge');
-        if (!listEl) return;
-
-        try {
-            const res = await fetch('{{ route("webauthn.credentials.list") }}', {
-                headers: { 'Accept': 'application/json' }
-            });
-            if (!res.ok) {
-                listEl.innerHTML = '<span class="text-secondary">ยังไม่มีข้อมูล หรือจำเป็นต้องเข้าสู่ระบบ</span>';
-                return;
-            }
-            const data = await res.json();
-            const creds = data.credentials || [];
-            if (badgeEl) badgeEl.textContent = creds.length + ' รายการ';
-
-            if (creds.length === 0) {
-                listEl.innerHTML = '<span class="text-secondary">ยังไม่มีการลงทะเบียนอุปกรณ์ลายนิ้วมือ คลิกปุ่ม "บันทึกลายนิ้วมือเครื่องนี้" ด้านบนเพื่อเริ่มใช้งาน</span>';
-            } else {
-                let html = '<div class="list-group list-group-flush">';
-                creds.forEach(c => {
-                    const devName = c.device_name || 'Biometric Authenticator';
-                    const lastUsed = c.last_used_at ? 'ใช้งานล่าสุด: ' + c.last_used_at : 'ยังไม่เคยใช้งาน';
-                    html += '<div class="list-group-item bg-transparent border-bottom text-body d-flex align-items-center justify-content-between py-2 px-0">' +
-                        '<div>' +
-                            '<i class="bi bi-fingerprint text-success me-2"></i>' +
-                            '<span class="fw-semibold text-body">' + devName + '</span>' +
-                            '<small class="text-secondary d-block ms-4">ลงทะเบียนเมื่อ: ' + (c.created_at || '-') + ' • ' + lastUsed + '</small>' +
-                        '</div>' +
-                        '<button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteWebauthnCredential(' + c.cred_id + ')">' +
-                            '<i class="bi bi-trash3"></i>' +
-                        '</button>' +
-                    '</div>';
-                });
-                html += '</div>';
-                listEl.innerHTML = html;
-            }
-        } catch (e) {
-            listEl.innerHTML = '<span class="text-secondary">ไม่สามารถโหลดรายการอุปกรณ์ได้</span>';
-        }
-    }
-
-    async function deleteWebauthnCredential(id) {
-        const doDelete = async () => {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-            try {
-                const res = await fetch('{{ url("/webauthn/credentials") }}/' + id, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
-                    }
-                });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    loadWebauthnCredentials();
-                    if (window.artisanNotify) {
-                        window.artisanNotify.success('ลบสำเร็จ', 'ลบอุปกรณ์ลายนิ้วมือเรียบร้อยแล้ว');
-                    }
-                } else {
-                    if (window.artisanNotify) {
-                        window.artisanNotify.error('ไม่สามารถลบได้', data.error || '');
-                    } else {
-                        alert(data.error || 'ไม่สามารถลบได้');
-                    }
-                }
-            } catch (e) {
-                if (window.artisanNotify) {
-                    window.artisanNotify.error('เกิดข้อผิดพลาดในการลบ');
-                } else {
-                    alert('เกิดข้อผิดพลาดในการลบ');
-                }
-            }
-        };
-
-        if (window.artisanNotify) {
-            window.artisanNotify.confirm('ยืนยันการลบ', 'คุณแน่ใจหรือไม่ว่าต้องการลบอุปกรณ์ลายนิ้วมือนี้?', doDelete);
-        } else if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบอุปกรณ์ลายนิ้วมือนี้?')) {
-            doDelete();
-        }
-    }
+{$biometricMethodsJs}
 </script>
 @endsection
 HTML;
@@ -8861,6 +9756,47 @@ class WebauthnController extends Controller
 
             Auth::login($user, true);
             $request->session()->regenerate();
+
+            if (config('ums.system_id') || class_exists(\App\Services\Auth\UmsBuuAuthService::class)) {
+                $primaryRole = $user->role ?? \Illuminate\Support\Facades\DB::table('roles')->where('role_id', $user->role_id)->first();
+                $gpid = $primaryRole->gpid ?? 0;
+                $gpName = $primaryRole->label ?? ($primaryRole->name ?? 'User');
+                $gpNameEn = $primaryRole->label_en ?? ($primaryRole->name ?? 'User');
+
+                session([
+                    'authLogin' => true,
+                    'userLogin' => $user->username,
+                    'userId' => $user->user_id ?? $user->id,
+                    'userCitizenId' => $user->citizen_id ?? '',
+                    'userNameTh' => $user->name ?? $user->username,
+                    'userNameEn' => $user->name_en ?? '',
+                    'userPermitId' => $gpid,
+                    'userPermitName' => $gpName,
+                    'userPermitNameEn' => $gpNameEn,
+                    'userFaculty' => $user->fac_name ?? '',
+                    'userDepartment' => $user->dep_name ?? '',
+                    'userPosition' => $user->position ?? '',
+                    'aUserGroup' => [
+                        (object)[
+                            'GPID' => (string) $gpid,
+                            'GPNAMET' => $gpName,
+                            'GPNAMEE' => $gpNameEn,
+                        ]
+                    ],
+                ]);
+            }
+
+            if (class_exists(\App\Models\LogLogin::class)) {
+                try {
+                    \App\Models\LogLogin::create([
+                        'psn_id' => $user->user_id ?? 0,
+                        'lg_user_name' => $user->username,
+                        'lg_action' => 'เข้าสู่ระบบสำเร็จ (WebAuthn / Passkey)',
+                        'lg_ip' => request()->ip(),
+                        'lg_user_agent' => request()->userAgent(),
+                    ]);
+                } catch (\Throwable $ex) {}
+            }
 
             return response()->json([
                 'success' => true,

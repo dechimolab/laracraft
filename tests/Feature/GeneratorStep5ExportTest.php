@@ -310,7 +310,9 @@ class GeneratorStep5ExportTest extends TestCase
         // 1. Verify UMS config & constants.php
         $this->assertNotFalse($zip->locateName('config/ums.php'));
         $configContent = $zip->getFromName('config/ums.php');
-        $this->assertStringContainsString('mock_mode', $configContent);
+        $this->assertStringContainsString('system_id', $configContent);
+        $this->assertStringContainsString('service_key', $configContent);
+        $this->assertStringContainsString('service_url', $configContent);
 
         $this->assertNotFalse($zip->locateName('config/constants.php'));
         $constantsContent = $zip->getFromName('config/constants.php');
@@ -332,19 +334,96 @@ class GeneratorStep5ExportTest extends TestCase
         $this->assertStringContainsString('KONG_DOMAIN_PROD=https://api-gw.buu.ac.th', $envContent);
         $this->assertStringContainsString('KONG_PK_UMS_GLGROUPINSYSTEM=test-pk-glgroup', $envContent);
 
-        // 3. Verify UmsBuuAuthService & UmsBuuController
+        // 3. Verify Generic UmsBuuAuthService & LoginUmsController & Blade Views
         $this->assertNotFalse($zip->locateName('app/Services/Auth/UmsBuuAuthService.php'));
         $serviceContent = $zip->getFromName('app/Services/Auth/UmsBuuAuthService.php');
-        $this->assertStringContainsString('getMockPersonas', $serviceContent);
-        $this->assertStringContainsString('boonsong.s', $serviceContent);
+        $this->assertStringContainsString('check_from_ad', $serviceContent);
+        $this->assertStringContainsString('check_person_from_idcard', $serviceContent);
+        $this->assertStringContainsString('get_group_in_system', $serviceContent);
+        $this->assertStringContainsString('syncRolesFromUms', $serviceContent);
+        $this->assertStringContainsString('my_encrypt', $serviceContent);
+        // Verify NO dev mock accounts or hardcoded roles in service
+        $this->assertStringNotContainsString('getDevMockAccounts', $serviceContent);
+        $this->assertStringNotContainsString('checkDevMockLogin', $serviceContent);
+        $this->assertStringNotContainsString('getDefaultUmsRoles', $serviceContent);
 
-        $this->assertNotFalse($zip->locateName('app/Http/Controllers/Auth/UmsBuuController.php'));
-        $this->assertNotFalse($zip->locateName('resources/views/auth/ums_mock.blade.php'));
+        $this->assertNotFalse($zip->locateName('app/Http/Controllers/Auth/LoginUmsController.php'));
+        $controllerContent = $zip->getFromName('app/Http/Controllers/Auth/LoginUmsController.php');
+        $this->assertStringContainsString('class LoginUmsController', $controllerContent);
+        $this->assertStringContainsString('checklogin', $controllerContent);
+        $this->assertStringContainsString('switchGroup', $controllerContent);
 
-        // 4. Verify routes/web.php contains ums routes
+        $this->assertNotFalse($zip->locateName('resources/views/auth/login.blade.php'));
+        $loginBladeContent = $zip->getFromName('resources/views/auth/login.blade.php');
+        $this->assertStringContainsString('route(\'login.post\')', $loginBladeContent);
+        // Verify NO mock personas in login blade
+        $this->assertStringNotContainsString('Developer Mock Personas', $loginBladeContent);
+
+        $this->assertNotFalse($zip->locateName('resources/views/auth/switch_group.blade.php'));
+        $switchBladeContent = $zip->getFromName('resources/views/auth/switch_group.blade.php');
+        $this->assertStringContainsString('route(\'switch.group\')', $switchBladeContent);
+
+        // 4. Verify routes/web.php contains ums routes pointing to LoginUmsController
         $routesContent = $zip->getFromName('routes/web.php');
-        $this->assertStringContainsString('Route::prefix(\'auth/ums\')', $routesContent);
-        $this->assertStringContainsString('UmsBuuController', $routesContent);
+        $this->assertStringContainsString('LoginUmsController', $routesContent);
+        $this->assertStringContainsString('Route::get(\'/login\', [LoginUmsController::class, \'index\'])', $routesContent);
+        $this->assertStringContainsString('switch-group', $routesContent);
+
+        // 5. Verify DatabaseSeeder has dynamic sync and STRICTLY NO SUPERADMIN and NO hardcoded roles
+        $this->assertNotFalse($zip->locateName('database/seeders/DatabaseSeeder.php'));
+        $seederContent = $zip->getFromName('database/seeders/DatabaseSeeder.php');
+        $this->assertStringContainsString('syncRolesFromUms', $seederContent);
+        $this->assertStringNotContainsString('superadmin', $seederContent);
+        $this->assertStringNotContainsString('434', $seederContent);
+
+        // 6. Verify Roles table migration has gpid, label_en, desc, is_default, is_default_person
+        $this->assertNotFalse($zip->locateName('database/migrations/0001_01_01_000000_create_roles_table.php'));
+        $rolesMigrationContent = $zip->getFromName('database/migrations/0001_01_01_000000_create_roles_table.php');
+        $this->assertStringContainsString('gpid', $rolesMigrationContent);
+        $this->assertStringContainsString('label_en', $rolesMigrationContent);
+        $this->assertStringContainsString('desc', $rolesMigrationContent);
+        $this->assertStringContainsString('is_default', $rolesMigrationContent);
+        $this->assertStringContainsString('is_default_person', $rolesMigrationContent);
+
+        // 7. Verify bootstrap/app.php registers 'active' middleware alias
+        $this->assertNotFalse($zip->locateName('bootstrap/app.php'));
+        $bootstrapAppContent = $zip->getFromName('bootstrap/app.php');
+        $this->assertStringContainsString("'active' => \\App\\Http\\Middleware\\EnsureActiveUser::class", $bootstrapAppContent);
+
+        // 8. Verify layouts/app.blade.php has UMS user identity and switch role dropdown
+        $this->assertNotFalse($zip->locateName('resources/views/layouts/app.blade.php'));
+        $layoutAppContent = $zip->getFromName('resources/views/layouts/app.blade.php');
+        $this->assertStringContainsString('userFullNameTH', $layoutAppContent);
+        $this->assertStringContainsString('userPermitName', $layoutAppContent);
+
+        // 9. Verify demo/index.blade.php has demo.ums link and webauthn components enabled for UMS BUU
+        $this->assertNotFalse($zip->locateName('resources/views/demo/index.blade.php'));
+        $demoBladeContent = $zip->getFromName('resources/views/demo/index.blade.php');
+        $this->assertStringContainsString('route(\'demo.ums\')', $demoBladeContent);
+        $this->assertStringContainsString('webauthn.register.options', $demoBladeContent);
+        $this->assertStringContainsString('registerWebauthnBiometric', $demoBladeContent);
+
+        // 10. Verify LoginUmsController handles array aData for personnel info
+        $this->assertStringContainsString('$cPSN->aData[0]', $controllerContent);
+
+        // 11. Verify WebAuthn files and biometric button on Login Blade for UMS BUU
+        $this->assertNotFalse($zip->locateName('database/migrations/2026_01_01_000004_create_users_credentials_table.php'));
+        $this->assertNotFalse($zip->locateName('app/Models/UsersCredentialsModel.php'));
+        $this->assertNotFalse($zip->locateName('app/Services/Auth/WebauthnService.php'));
+        $this->assertNotFalse($zip->locateName('app/Http/Controllers/Auth/WebauthnController.php'));
+        $this->assertStringContainsString('btn-biometric-login', $loginBladeContent);
+        $this->assertStringContainsString('loginWithBiometrics', $loginBladeContent);
+        $this->assertStringContainsString('webauthn.login.options', $loginBladeContent);
+
+        // 12. Verify routes/web.php contains WebAuthn routes
+        $this->assertStringContainsString('WebauthnController', $routesContent);
+        $this->assertStringContainsString('Route::prefix(\'webauthn\')', $routesContent);
+        $this->assertStringContainsString('loginOptions', $routesContent);
+        $this->assertStringContainsString('registerOptions', $routesContent);
+
+        // 13. Verify UmsBuuAuthService filters users_roles to only default roles
+        $this->assertStringContainsString('is_default', $serviceContent);
+        $this->assertStringContainsString('is_default_person', $serviceContent);
 
         $zip->close();
         if (file_exists($zipPath)) {
