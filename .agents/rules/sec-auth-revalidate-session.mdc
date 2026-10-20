@@ -1,0 +1,18 @@
+---
+description: >-
+  Every authenticated request reloads account status and session version from
+  the database and ends the session on mismatch. Use when editing auth middleware
+  or fixing sessions that survive account disable.
+alwaysApply: false
+---
+
+# ตรวจเซสชันกับฐานข้อมูลทุก request
+
+- กลุ่ม route ที่ต้องล็อกอินต้องโหลดสถานะผู้ใช้จากฐานข้อมูล
+- ไม่มีเซสชัน, ไม่พบแถว, หรือสถานะไม่ใช้งาน → ล้างเซสชันแล้วไปหน้าเข้าสู่ระบบ
+- เลขในเซสชันไม่ตรงเลขในฐานข้อมูล → ล้างเซสชันเช่นกัน
+- ห้ามเชื่อแฟล็กในเซสชันอย่างเดียว และห้ามลบแค่บางคีย์
+
+ทดสอบโดยปิดบัญชีขณะยังล็อกอินค้าง request ถัดไปต้องออกจากระบบ
+
+ขั้นตอนเต็มอยู่ในสกิล `sec-auth-revalidate-session`

@@ -1,0 +1,20 @@
+---
+description: >-
+  Limit password checks to 5 per minute per IP plus username. Use when editing
+  the login route, rate limits, or brute-force protection. Do not add database
+  lockout in this rule.
+alwaysApply: false
+---
+
+# จำกัดการลองล็อกอิน
+
+- นับ 5 ครั้งต่อนาทีต่อคู่ของ IP กับชื่อผู้ใช้ที่ตัดช่องว่างและเป็นตัวพิมพ์เล็ก
+- ใส่เฉพาะคำขอที่ตรวจรหัสผ่าน ไม่ใส่บนการเปิดฟอร์ม
+- เกินกำหนดแล้วกลับหน้าเข้าสู่ระบบพร้อมข้อความให้รอ ห้ามตอบ 500
+- อย่าเพิ่มการล็อกบัญชีในฐานข้อมูลจากกฎนี้
+
+```php
+return Limit::perMinute(5)->by($request->ip().'|'.$username);
+```
+
+ขั้นตอนเต็มอยู่ในสกิล `sec-login-rate-limit`

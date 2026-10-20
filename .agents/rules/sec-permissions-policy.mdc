@@ -1,0 +1,17 @@
+---
+description: >-
+  Web responses must disable unused browser features with Permissions-Policy.
+  Use when adding security headers or when the app does not need camera,
+  microphone, geolocation, payment, or USB.
+alwaysApply: false
+---
+
+# Permissions-Policy
+
+- ทั้งเว็บส่ง `geolocation=(), camera=(), microphone=(), payment=(), usb=(), interest-cohort=()`
+- วงเล็บว่างคือไม่อนุญาตทุก origin
+- เปิดเป็น `(self)` ได้เฉพาะฟีเจอร์ที่หน้าใช้งานจริง และต้องมีเหตุผลในโค้ด
+- ห้ามใช้ `*` ในรายการอนุญาต
+- การไม่เอ่ยชื่อฟีเจอร์ไม่เท่ากับปิด
+
+ขั้นตอนเต็มอยู่ในสกิล `sec-permissions-policy`

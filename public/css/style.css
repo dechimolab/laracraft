@@ -1,0 +1,368 @@
+/**
+ * ArtisanCraft Engine - Global Stylesheet
+ * Location: public/css/style.css
+ * Consolidated Forge Artisan Design System components, themes, and overrides
+ */
+
+/* ==========================================================================
+   1. Base & Layout Normalizations
+   ========================================================================== */
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overscroll-behavior: none;
+}
+
+main > :first-child {
+    margin-top: 0 !important;
+}
+
+main > :last-child {
+    margin-bottom: 0 !important;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* ==========================================================================
+   2. Light Mode High-Contrast Form Inputs & Cards
+   ========================================================================== */
+
+html:not(.dark) input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+html:not(.dark) select,
+html:not(.dark) textarea {
+    color: #0f172a;
+}
+
+/* Clear borders on input wrappers in Light Mode to eliminate visual wash-out */
+html:not(.dark) .bg-surface-container-lowest {
+    background-color: #ffffff;
+    border-color: rgb(var(--surface-container-highest));
+}
+
+html:not(.dark) .bg-surface-container-lowest:focus-within {
+    border-color: rgb(var(--primary)) !important;
+    box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.15) !important;
+}
+
+/* Subtle crisp elevation for cards in Light Mode */
+html:not(.dark) .bg-surface-container-low {
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================================================
+   3. ArtisanCraft Standard Action Buttons
+   ========================================================================== */
+
+/* Primary Glow Action Button (Continue / Submit / Main CTA) */
+.btn-artisan-continue,
+.btn-artisan-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 2.5rem; /* py-2.5 px-space-xl */
+    border-radius: 0.5rem;   /* 8px / rounded-lg */
+    background-color: rgb(var(--primary-container));
+    color: rgb(var(--on-primary));
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 500;
+    text-decoration: none !important;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 20px rgba(255, 85, 66, 0.3);
+    user-select: none;
+}
+
+.btn-artisan-continue:hover,
+.btn-artisan-primary:hover {
+    background-color: rgb(var(--inverse-primary));
+    color: rgb(var(--on-primary));
+    box-shadow: 0 0 24px rgba(255, 85, 66, 0.45);
+    transform: translateY(-1px);
+}
+
+.btn-artisan-continue:active,
+.btn-artisan-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 0 12px rgba(255, 85, 66, 0.25);
+}
+
+.btn-artisan-continue:focus-visible,
+.btn-artisan-primary:focus-visible {
+    outline: 2px solid rgb(var(--primary));
+    outline-offset: 2px;
+}
+
+/* Secondary / Navigation Back Button */
+.btn-artisan-secondary,
+.btn-artisan-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.5rem; /* py-2.5 px-space-lg */
+    border-radius: 0.5rem;   /* 8px / rounded-lg */
+    background-color: rgb(var(--surface-container));
+    color: rgb(var(--on-surface));
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 22px;
+    font-weight: 400;
+    text-decoration: none !important;
+    cursor: pointer;
+    border: 1px solid rgb(var(--surface-container-highest) / 0.6);
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    user-select: none;
+}
+
+.btn-artisan-secondary:hover,
+.btn-artisan-back:hover {
+    background-color: rgb(var(--surface-container-high));
+    color: rgb(var(--on-surface));
+    border-color: rgb(var(--surface-container-highest));
+}
+
+/* Compact Primary Action Button (for Toolbars like Step 5) */
+.btn-artisan-primary-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    background-color: rgb(var(--primary-container));
+    color: rgb(var(--on-primary));
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 22px;
+    font-weight: 500;
+    text-decoration: none !important;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 20px rgba(255, 85, 66, 0.3);
+    user-select: none;
+}
+
+.btn-artisan-primary-sm:hover {
+    background-color: rgb(var(--inverse-primary));
+    color: rgb(var(--on-primary));
+    box-shadow: 0 0 24px rgba(255, 85, 66, 0.45);
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   4. Forge Artisan SweetAlert2 Dynamic Theme
+   ========================================================================== */
+
+.swal2-popup,
+.artisan-swal-popup {
+    background-color: rgb(var(--surface-container-low)) !important;
+    color: rgb(var(--on-surface)) !important;
+    border: 1px solid rgb(var(--surface-container-high)) !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.15) !important;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    padding: 1.5rem !important;
+}
+
+.swal2-title,
+.artisan-swal-title {
+    color: rgb(var(--on-surface)) !important;
+    font-weight: 600 !important;
+    font-size: 1.25rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.swal2-html-container,
+.artisan-swal-html {
+    color: rgb(var(--on-surface-variant)) !important;
+    font-size: 0.925rem !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+}
+
+.swal2-actions {
+    gap: 0.5rem !important;
+    margin-top: 1.25rem !important;
+}
+
+.swal2-confirm,
+.artisan-swal-confirm {
+    background-color: #ff5542 !important;
+    color: #ffffff !important;
+    border-radius: 0.5rem !important;
+    padding: 0.6rem 1.4rem !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    box-shadow: 0 0 14px rgba(255, 85, 66, 0.35) !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    margin: 0.25rem !important;
+}
+
+.swal2-confirm:hover,
+.artisan-swal-confirm:hover {
+    opacity: 0.9 !important;
+}
+
+.swal2-cancel,
+.artisan-swal-cancel {
+    background-color: rgb(var(--surface-container-high)) !important;
+    color: rgb(var(--on-surface)) !important;
+    border-radius: 0.5rem !important;
+    padding: 0.6rem 1.4rem !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    border: 1px solid rgb(var(--surface-container-highest)) !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    margin: 0.25rem !important;
+}
+
+.swal2-cancel:hover,
+.artisan-swal-cancel:hover {
+    background-color: rgb(var(--surface-container-highest)) !important;
+}
+
+.swal2-input,
+.artisan-swal-input {
+    background-color: rgb(var(--surface-container)) !important;
+    color: rgb(var(--on-surface)) !important;
+    border: 1px solid rgb(var(--surface-container-high)) !important;
+    border-radius: 0.5rem !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    font-size: 0.9rem !important;
+    padding: 0.6rem 0.8rem !important;
+    width: 85% !important;
+    margin: 1rem auto !important;
+}
+
+.swal2-input:focus,
+.artisan-swal-input:focus {
+    border-color: #ff5542 !important;
+    box-shadow: 0 0 0 2px rgba(255, 85, 66, 0.25) !important;
+    outline: none !important;
+}
+
+.swal2-icon.swal2-success {
+    border-color: var(--sys-primary, #4edea3) !important;
+    color: var(--sys-primary, #4edea3) !important;
+}
+
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: var(--sys-primary, #4edea3) !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+    border: 4px solid rgba(var(--bs-primary-rgb, 78, 222, 163), 0.25) !important;
+}
+
+.swal2-icon.swal2-error {
+    border-color: #ff5542 !important;
+    color: #ff5542 !important;
+}
+
+.swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+    background-color: #ff5542 !important;
+}
+
+.swal2-icon.swal2-warning,
+.swal2-icon.swal2-info {
+    border-color: rgb(var(--secondary)) !important;
+    color: rgb(var(--secondary)) !important;
+}
+
+/* ==========================================================================
+   5. Standard Badges & Status Indicators
+   ========================================================================== */
+
+.badge-active {
+    background-color: rgba(78, 222, 163, 0.15);
+    color: #4edea3;
+    border: 1px solid rgba(78, 222, 163, 0.3);
+}
+
+.badge-audit {
+    background-color: rgba(173, 198, 255, 0.12);
+    color: #adc6ff;
+    border: 1px solid rgba(173, 198, 255, 0.25);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+}
+
+/* ==========================================================================
+   6. Form Component Styling: Select2, Dropzone, DataTables
+   ========================================================================== */
+
+/* Select2 Standard Height (42px) to match standard text inputs */
+.select2-container .select2-selection--single {
+    height: 42px !important;
+    border-radius: 0.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered,
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 40px !important;
+    padding-left: 0.75rem !important;
+    padding-right: 2rem !important;
+}
+
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow,
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 40px !important;
+    right: 8px !important;
+}
+
+/* ==========================================================================
+   7. Step 5 Workspace & File Tree Components
+   ========================================================================== */
+
+.workspace-tab {
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.workspace-tab.active-tab {
+    border-bottom: 2px solid rgb(var(--primary)) !important;
+    color: rgb(var(--primary)) !important;
+    font-weight: 600 !important;
+}
+
+.file-node {
+    user-select: none;
+    transition: all 0.15s ease;
+}
+
+.file-node.active-node {
+    background-color: rgba(255, 85, 66, 0.1) !important;
+    color: rgb(var(--primary)) !important;
+    font-weight: 600 !important;
+    border-left: 2px solid rgb(var(--primary)) !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ==========================================================================
+   8. Hero Banner & Theme Showcase Component
+   ========================================================================== */
+
+.hero-banner {
+    background: linear-gradient(135deg, var(--sys-card, #ffffff) 0%, rgba(var(--bs-primary-rgb, 15, 23, 42), 0.05) 100%) !important;
+    border: 1px solid rgba(var(--bs-primary-rgb, 15, 23, 42), 0.2) !important;
+}
+
+

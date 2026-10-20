@@ -1,0 +1,19 @@
+---
+description: >-
+  Store a database session version in the server session at successful login.
+  Use when adding sessionVer, session invalidation, or login session setup.
+alwaysApply: false
+---
+
+# เลขเวอร์ชันเซสชันตอนล็อกอิน
+
+- ตารางผู้ใช้มีคอลัมน์จำนวนเต็ม default 1
+- ตอนล็อกอินสำเร็จ อ่านค่าจากแถวนั้นลงเซสชัน ห้ามรับเลขจาก client
+- รัน SQL เพิ่มคอลัมน์ก่อน deploy โค้ดที่อ่านคอลัมน์
+- อย่าเพิ่มเลขทุกครั้งที่ล็อกอิน
+
+```php
+'sessionVer' => isset($row->SESSION_VER) ? (int) $row->SESSION_VER : 1,
+```
+
+ขั้นตอนเต็มอยู่ในสกิล `sec-session-version-on-login`

@@ -1,0 +1,20 @@
+---
+description: >-
+  Increment the session version when an account is deactivated or its role
+  changes. Use when saving users, editing permissions, or disabling accounts.
+alwaysApply: false
+---
+
+# เพิ่มเลขเซสชันเมื่อสถานะหรือบทบาทเปลี่ยน
+
+- ก่อนบันทึก ให้อ่านสถานะเดิมและบทบาทเดิม
+- เพิ่มเลขในฐานข้อมูลด้วย `ค่าเดิม + 1` เมื่อสถานะใช้งานเปลี่ยนหรือบทบาทเปลี่ยน
+- ห้ามรับเลขใหม่จากฟอร์ม
+- การแก้ชื่อหรือข้อมูลติดต่ออย่างเดียวไม่ต้องเพิ่มเลข
+- ทำในธุรกรรมเดียวกับการบันทึกผู้ใช้
+
+```sql
+UPDATE USERS SET SESSION_VER = IFNULL(SESSION_VER, 1) + 1 WHERE USER_ID = ?
+```
+
+ขั้นตอนเต็มอยู่ในสกิล `sec-invalidate-session-on-privilege-change`

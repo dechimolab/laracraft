@@ -1,0 +1,25 @@
+---
+description: >-
+  Self-service updates must use the server session user id and reject a
+  mismatched client owner id. Use when editing profile, account, IDOR, or
+  save-my-account endpoints.
+alwaysApply: false
+---
+
+# กัน IDOR ตอนแก้ข้อมูลตัวเอง
+
+- คีย์ที่ใช้เขียนต้องเป็นรหัสผู้ใช้จากเซสชันเท่านั้น
+- ถ้า request ส่งรหัสเจ้าของมาและไม่ตรงเซสชัน ให้ล้างเซสชันหรือตอบ 403 ห้ามอัปเดตแถวนั้น
+- ใช้กับทุกเมธอดที่บันทึกข้อมูลตัวเอง รวมเมธอดเก่าที่ route ยังชี้
+- ทางที่แอดมินแก้คนอื่นต้องแยก และต้องผ่านการตรวจสิทธิ์คนละชุด
+
+```php
+if ($deny = assertOwnUserIdOrLogout($request->input('USER_ID'))) {
+    return $deny;
+}
+$model->USER_ID = Session::get('userId');
+```
+
+ทดสอบด้วยการส่งรหัสผู้ใช้อื่น ข้อมูลคนนั้นต้องไม่เปลี่ยน
+
+ขั้นตอนเต็มอยู่ในสกิล `sec-idor-own-resource`

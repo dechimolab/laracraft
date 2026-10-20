@@ -1,0 +1,25 @@
+---
+description: >-
+  User input in SQL must be bound parameters. Numeric ids are cast and rejected
+  when not positive. Use when writing raw SQL, WHERE clauses, or fixing SQL injection.
+alwaysApply: false
+---
+
+# SQL ใช้ binding
+
+- ค่าจาก request ที่เข้า SQL ใช้ `?` ห้ามต่อเข้าสตริงคำสั่ง
+- รหัสตัวเลขแคสต์เป็น int และถ้า `<= 0` ให้ปฏิเสธก่อนเรียก model
+- ชื่อคอลัมน์หรือทิศ `ORDER BY` จากผู้ใช้ต้องมาจากรายการที่อนุญาตเท่านั้น
+- ไล่เมธอดคู่และหน้าเวอร์ชันเก่าที่ใช้คำสั่งแบบเดียวกัน
+
+```php
+$id = (int) $request->input('ID');
+if ($id <= 0) {
+    abort(404);
+}
+DB::select('SELECT COL_A FROM SOME_TABLE WHERE ID = ?', [$id]);
+```
+
+ห้ามใช้ `addslashes` แทน binding
+
+ขั้นตอนเต็มอยู่ในสกิล `sec-sql-parameter-binding`

@@ -1,0 +1,599 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary-fixed-variant":"#004395","surface-container":"#171f33","on-error-container":"#ffdad6","inverse-on-surface":"#283044","on-surface-variant":"#e8bcb6","on-primary-fixed":"#410000","error-container":"#93000a","surface-tint":"#ffb4a8","on-tertiary-fixed-variant":"#005236","on-background":"#dae2fd","primary":"#ffb4a8","background":"#0b1326","secondary-fixed-dim":"#adc6ff","secondary-fixed":"#d8e2ff","tertiary-fixed-dim":"#4edea3","outline":"#af8781","surface-container-high":"#222a3d","on-secondary-container":"#e6ecff","on-tertiary":"#003824","surface-container-highest":"#2d3449","tertiary-container":"#00a572","surface-bright":"#31394d","on-primary-fixed-variant":"#930001","on-primary-container":"#5c0000","surface":"#0b1326","inverse-primary":"#c00003","on-tertiary-container":"#00311f","surface-container-lowest":"#060e20","on-surface":"#dae2fd","surface-variant":"#2d3449","tertiary-fixed":"#6ffbbe","secondary":"#adc6ff","primary-fixed":"#ffdad5","secondary-container":"#0566d9","on-tertiary-fixed":"#002113","error":"#ffb4ab","outline-variant":"#5e3f3a","tertiary":"#4edea3","surface-dim":"#0b1326","on-secondary-fixed":"#001a42","primary-fixed-dim":"#ffb4a8","surface-container-low":"#131b2e","on-error":"#690005","on-secondary":"#002e6a","inverse-surface":"#dae2fd","primary-container":"#ff5542","on-primary":"#690001"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{margin:"1rem",gutter:"1rem","space-md":"1rem","space-xs":"0.25rem","space-sm":"0.5rem","space-lg":"1.5rem","margin-lg":"3rem","space-xl":"2.5rem","margin-md":"2rem","gutter-md":"1.5rem","gutter-lg":"2rem"},fontFamily:{"code-block":["JetBrains Mono"],"body-lg":["Inter"],"body-sm":["Inter"],"code-inline":["JetBrains Mono"],"headline-md":["Inter"],"label-sm":["JetBrains Mono"],"headline-sm":["Inter"],"display-hero":["Inter"],"headline-lg":["Inter"],"label-md":["JetBrains Mono"],"headline-lg-mobile":["Inter"],"body-md":["Inter"],"display-hero-mobile":["Inter"]},fontSize:{"code-block":["12px",{lineHeight:"20px",letterSpacing:"0em",fontWeight:"400"}],"body-lg":["16px",{lineHeight:"26px",letterSpacing:"-0.005em",fontWeight:"400"}],"body-sm":["12px",{lineHeight:"18px",letterSpacing:"0.005em",fontWeight:"400"}],"code-inline":["13px",{lineHeight:"20px",letterSpacing:"-0.01em",fontWeight:"400"}],"headline-md":["20px",{lineHeight:"28px",letterSpacing:"-0.015em",fontWeight:"600"}],"label-sm":["10px",{lineHeight:"14px",letterSpacing:"0.05em",fontWeight:"600"}],"headline-sm":["16px",{lineHeight:"24px",letterSpacing:"-0.01em",fontWeight:"600"}],"display-hero":["40px",{lineHeight:"48px",letterSpacing:"-0.025em",fontWeight:"700"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.02em",fontWeight:"600"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"500"}],"headline-lg-mobile":["22px",{lineHeight:"30px",letterSpacing:"-0.015em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"22px",letterSpacing:"0em",fontWeight:"400"}],"display-hero-mobile":["30px",{lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"700"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-md pt-space-lg pb-space-md"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center shadow-[0_0_16px_rgba(255,85,66,0.35)]"><span class="material-symbols-outlined text-on-primary-container text-[20px]">deployed_code</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-none">ArtisanCraft</span><div class="flex items-center gap-space-xs mt-1"><span class="inline-block px-1 py-0.2 rounded bg-surface-container-high text-primary font-label-sm text-label-sm uppercase tracking-wider">PHP 8.4</span><span class="inline-block px-1 py-0.2 rounded bg-surface-container-high text-secondary font-label-sm text-label-sm uppercase tracking-wider">BS 5.3</span></div></div></div></div><div class="px-space-md pt-space-md pb-space-xs"><span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Scaffold Pipeline</span></div><nav class="flex flex-col gap-1 px-space-sm" data-active-classes="bg-surface-container-highest text-primary font-semibold shadow-inner"><a class="group flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="project-setup" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-outline group-hover:text-primary transition-colors">tune</span><span class="font-body-md text-body-md">1. Project Setup</span></div><span class="font-label-sm text-label-sm text-outline-variant font-code-inline">CONFIG</span></a><a aria-current="page" class="group flex items-center justify-between px-space-md py-space-sm rounded-xl transition-colors bg-surface-container-highest text-primary font-semibold shadow-inner" data-path="packages-and-libraries" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-outline group-hover:text-primary transition-colors">inventory_2</span><span class="font-body-md text-body-md">2. Packages &amp; Libs</span></div><span class="font-label-sm text-label-sm text-outline-variant font-code-inline">COMPOSER</span></a><a class="group flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="modules-and-schema" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-outline group-hover:text-primary transition-colors">dataset</span><span class="font-body-md text-body-md">3. Modules &amp; Schema</span></div><span class="font-label-sm text-label-sm text-outline-variant font-code-inline">MODELS</span></a><a class="group flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="build-and-export" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-outline group-hover:text-primary transition-colors">terminal</span><span class="font-body-md text-body-md">4. Build &amp; Export</span></div><span class="font-label-sm text-label-sm text-outline-variant font-code-inline">CLI/ZIP</span></a></nav></div><div class="p-space-md m-space-sm rounded-xl bg-surface-container-lowest/80"><div class="flex items-center justify-between pb-space-xs"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-code-block tracking-wider">Target Matrix</span></div><span class="font-label-sm text-label-sm text-tertiary font-code-inline">STABLE</span></div><div class="flex flex-col gap-0.5 pt-space-xs font-code-block text-code-block text-on-surface-variant"><div class="flex justify-between"><span class="text-outline">Engine</span><span class="text-on-surface">PHP 8.4.x</span></div><div class="flex justify-between"><span class="text-outline">Core</span><span class="text-on-surface">Laravel 11.x</span></div><div class="flex justify-between"><span class="text-outline">Database</span><span class="text-on-surface">MySQL 8.4</span></div><div class="flex justify-between"><span class="text-outline">Toolkit</span><span class="text-on-surface">Bootstrap 5.3.3</span></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-surface-container-high"><span class="material-symbols-outlined text-secondary text-[18px]">folder_zip</span><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">E-Commerce Admin Core</span><span class="px-1.5 py-0.5 rounded bg-surface-container text-tertiary font-label-sm text-label-sm font-code-inline">v1.0.0-dev</span><span class="material-symbols-outlined text-outline text-[16px] cursor-pointer hover:text-on-surface transition-colors">unfold_more</span></div><div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 rounded bg-surface-container-low text-outline font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px]">keyboard_command_key</span><span class="">Quick Palette</span><kbd class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface font-code-inline">Ctrl+K</kbd></div></div><div class="flex items-center gap-space-md"><a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-sm text-body-sm flex items-center gap-1" data-path="documentation" href="#"><span class="material-symbols-outlined text-[16px]">menu_book</span>Docs</a><button aria-label="Theme Mode" class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">dark_mode</span></button><button class="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-primary-container hover:bg-inverse-primary text-on-primary font-body-sm text-body-sm font-medium transition-all shadow-[0_0_12px_rgba(255,85,66,0.2)]" type="button"><span class="material-symbols-outlined text-[16px]">sync_alt</span><span class="">GitHub Sync</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<div class="relative overflow-hidden bg-surface-container-low px-space-lg py-space-xl">
+<div class="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-primary-container/10 blur-3xl pointer-events-none"></div>
+<div class="absolute left-1/3 -bottom-20 w-80 h-80 rounded-full bg-secondary-container/15 blur-2xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col gap-space-lg max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-xs">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-high text-primary font-label-sm text-label-sm uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+              Pipeline Step 02 / 04
+            </span>
+<span class="text-outline font-code-inline text-label-sm">|</span>
+<span class="text-secondary font-code-inline text-label-sm">composer.json Architect</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Packages &amp; Engine Dependencies</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+            Configure audited, native PHP 8.4 packages fine-tuned for Bootstrap 5.3 enterprise administration and high-throughput workflows.
+          </p>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm bg-surface-container p-space-sm rounded-xl shadow-lg">
+<div class="flex flex-col px-space-sm py-1">
+<span class="font-label-sm text-label-sm text-outline uppercase">Active Set</span>
+<span class="font-headline-sm text-headline-sm text-primary font-code-block" id="selected-counter">18 Packages</span>
+</div>
+<div class="w-px h-8 bg-surface-container-highest"></div>
+<div class="flex flex-col px-space-sm py-1">
+<span class="font-label-sm text-label-sm text-outline uppercase">Estimated Build</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-code-block">~45s</span>
+</div>
+<div class="w-px h-8 bg-surface-container-highest"></div>
+<div class="flex items-center gap-1.5 px-space-sm py-1">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary shadow-[0_0_8px_rgba(78,222,163,0.5)]"></span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-tertiary uppercase font-code-inline">PHP 8.4 Ready</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">100% Validated</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col lg:flex-row gap-space-md items-stretch lg:items-center justify-between">
+<div class="relative flex-1 max-w-xl">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+<input class="w-full h-11 pl-10 pr-24 rounded-lg bg-surface-container text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-high transition-colors shadow-inner" id="pkg-search" placeholder="Search packages: breeze, spatie, datatables, pest, dompdf..." type="text">
+<div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container-highest text-outline font-label-sm text-label-sm">⌘K</kbd>
+</div>
+</div>
+<div class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0" id="filter-container">
+<button class="filter-pill active px-3 py-1.5 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md transition-all shadow-sm" data-filter="all">
+            All (24)
+          </button>
+<button class="filter-pill px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" data-filter="auth">
+            Auth &amp; Security (5)
+          </button>
+<button class="filter-pill px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" data-filter="ui">
+            UI &amp; Admin (6)
+          </button>
+<button class="filter-pill px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" data-filter="data">
+            Data &amp; Reports (4)
+          </button>
+<button class="filter-pill px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" data-filter="devtools">DevTools (4)</button>
+<button class="filter-pill px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" data-filter="queue">
+            Queue &amp; Media (4)
+          </button>
+</div>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-space-lg py-space-lg w-full flex flex-col xl:flex-row gap-space-lg items-start">
+<div class="flex-1 w-full flex flex-col gap-space-xl">
+<section class="flex flex-col gap-space-md" data-category-group="auth">
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Authentication &amp; Security Shield</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Guards, roles, and token orchestration</span>
+</div>
+</div>
+<span class="font-code-inline text-label-sm text-outline uppercase tracking-wider">4 Selected</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md" data-name="laravel/breeze" data-version="^2.0">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">key</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Laravel Breeze</span>
+<span class="font-label-sm text-label-sm text-secondary font-code-inline">Blade + Bootstrap 5.3</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer pkg-checkbox" data-target="laravel/breeze" type="checkbox">
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">ระบบ Authentication พื้นฐานพร้อม UI Bootstrap 5.3 รองรับ Login, Register, Profile และ Reset Password</p>
+<div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm">
+<span class="text-outline">composer require laravel/breeze --dev</span>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">14.8k</span>
+</div>
+</div>
+</div>
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md" data-name="spatie/laravel-permission" data-version="^6.0">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Spatie Permission</span>
+<span class="font-label-sm text-label-sm text-tertiary font-code-inline">RBAC Matrix</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer pkg-checkbox" data-target="spatie/laravel-permission" type="checkbox">
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">จัดการสิทธิ์และบทบาทผู้ใช้ (Roles &amp; Permissions) รองรับคำสั่ง Blade (@can, @hasrole) และ Middleware</p>
+<div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm">
+<span class="text-outline">composer require spatie/laravel-permission</span>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">13.5k</span>
+</div>
+</div>
+</div>
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md md:col-span-2" data-name="laravel/sanctum" data-version="^4.0">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">token</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Laravel Sanctum</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-secondary font-label-sm text-label-sm uppercase">Mobile &amp; SPA Ready</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline font-code-inline">Token + Cookie Auth</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer pkg-checkbox" data-target="laravel/sanctum" type="checkbox">
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">ระบบออก Token และ Cookie Authentication น้ำหนักเบาสำหรับ SPA, Mobile Apps และ REST API</p>
+<div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm">
+<span class="text-outline">composer require laravel/sanctum</span>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">6.2k</span>
+</div>
+</div>
+</div>
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md md:col-span-2" data-name="vinkla/hashids" data-version="^11.0"><div class="flex items-start justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[20px]">tag</span></div><div class="flex flex-col"><div class="flex items-center gap-2"><span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Hashids for Laravel</span><span class="px-2 py-0.5 rounded bg-surface-container-highest text-tertiary font-label-sm text-label-sm uppercase">ID Obfuscation</span></div><span class="font-label-sm text-label-sm text-outline font-code-inline">vinkla/hashids</span></div></div><label class="relative inline-flex items-center cursor-pointer"><input checked="" class="sr-only peer pkg-checkbox" data-target="vinkla/hashids" type="checkbox"><div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label></div><p class="font-body-sm text-body-sm text-on-surface-variant">แปลงเลขอินเด็กซ์ฐานข้อมูลเป็นแฮชสั้นสุ่ม เพื่อความปลอดภัยและซ่อน ID จริงใน URL/API</p><div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm"><span class="text-outline">composer require vinkla/hashids</span><div class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span><span class="">3.9k</span></div></div></div></div>
+</section>
+<section class="flex flex-col gap-space-md" data-category-group="ui">
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[18px]">web</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">UI &amp; Frontend Systems (Bootstrap 5.3)</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Vite pipeline, responsive tables, and dialog notifications</span>
+</div>
+</div>
+<span class="font-code-inline text-label-sm text-outline uppercase tracking-wider">5 Selected</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="pkg-card relative p-space-md rounded-xl bg-surface-container-low flex flex-col justify-between gap-space-md shadow-md" data-name="twbs/bootstrap" data-version="5.3.3">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-secondary-container/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">Bootstrap 5.3.3 + Vite</span>
+<span class="font-label-sm text-label-sm text-primary font-code-inline">System Core (Locked)</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[20px]" title="Required Core Module">lock</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">แกนหลัก UI พร้อม SCSS, Vite 5 HMR, Popper.js และรองรับ Dark Mode เต็มรูปแบบ</p>
+<div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm">
+<span class="text-outline">npm i bootstrap@^5.3.3 @popperjs/core</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-tertiary">CORE_BASE</span>
+</div>
+</div>
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md" data-name="yajra/laravel-datatables" data-version="^11.0">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">table_chart</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Yajra DataTables</span>
+<span class="font-label-sm text-label-sm text-outline font-code-inline">Server-side Data Grid</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer pkg-checkbox" data-target="yajra/laravel-datatables" type="checkbox">
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">แสดงผลตารางข้อมูลขนาดใหญ่แบบ Server-side รองรับค้นหา จัดเรียง แบ่งหน้า และ Export Excel/PDF</p>
+<div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm">
+<span class="text-outline">composer require yajra/laravel-datatables-oracle</span>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">5.1k</span>
+</div>
+</div>
+</div>
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md" data-name="sweetalert2/toastr" data-version="^11.10">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">notifications_active</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">SweetAlert2 &amp; Toastr</span>
+<span class="font-label-sm text-label-sm text-outline font-code-inline">Feedback UI</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer pkg-checkbox" data-target="sweetalert2/toastr" type="checkbox">
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">กล่องแจ้งเตือนสวยงาม ยืนยันการลบแบบโต้ตอบ และ Flash Notification อัตโนมัติ</p>
+<div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm">
+<span class="text-outline">npm i sweetalert2 toastr</span>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">16.3k</span>
+</div>
+</div>
+</div>
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md" data-name="blade-ui-kit/blade-icons" data-version="^1.6">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">category</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Blade UI Kit + Tabler Icons</span>
+<span class="font-label-sm text-label-sm text-outline font-code-inline">SVG Engine</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer pkg-checkbox" data-target="blade-ui-kit/blade-icons" type="checkbox">
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">ชุดคอมโพเนนต์ Blade และไอคอน SVG คมชัดกว่า 1,400+ ไอคอน ใช้งานง่ายผ่านแท็ก x-</p>
+<div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm">
+<span class="text-outline">composer require ryangjchandler/blade-tabler-icons</span>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">2.4k</span>
+</div>
+</div>
+</div><div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md md:col-span-2" data-name="autonumeric" data-version="^4.6.0"><div class="flex items-start justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary"><span class="material-symbols-outlined text-[20px]">payments</span></div><div class="flex flex-col"><div class="flex items-center gap-2"><span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">AutoNumeric</span><span class="px-2 py-0.5 rounded bg-surface-container-highest text-secondary font-label-sm text-label-sm uppercase">Input Mask &amp; Currency</span></div><span class="font-label-sm text-label-sm text-outline font-code-inline">AutoNumeric.js</span></div></div><label class="relative inline-flex items-center cursor-pointer"><input checked="" class="sr-only peer pkg-checkbox" data-target="autonumeric" type="checkbox"><div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label></div><p class="font-body-sm text-body-sm text-on-surface-variant">ปรับแต่งรูปแบบตัวเลข ทศนิยม และสกุลเงินอัตโนมัติ (ใส่คอมม่าเรียลไทม์) ขณะพิมพ์ในฟอร์ม Bootstrap</p><div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm"><span class="text-outline">npm i autonumeric</span><div class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span><span class="">3.8k</span></div></div></div>
+</div>
+</section>
+<section class="flex flex-col gap-space-md" data-category-group="data">
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">query_stats</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Data Processing &amp; Media Pipelines</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Spreadsheet transformations, PDF compiling, and CDN assets</span>
+</div>
+</div>
+<span class="font-code-inline text-label-sm text-outline uppercase tracking-wider">6 Selected / 1 Optional</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md" data-name="maatwebsite/excel" data-version="^3.1">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">file_save</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Laravel Excel</span>
+<span class="font-label-sm text-label-sm text-outline font-code-inline">XLSX / CSV</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer pkg-checkbox" data-target="maatwebsite/excel" type="checkbox">
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">นำเข้าและส่งออกไฟล์ Excel/CSV ความเร็วสูง รองรับการแบ่ง Chunk และคิวประมวลผลขนาดใหญ่</p>
+<div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm">
+<span class="text-outline">maatwebsite/excel</span>
+<span class="text-tertiary">11.4k ★</span>
+</div>
+</div>
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md" data-name="barryvdh/laravel-dompdf" data-version="^3.0">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Laravel DomPDF</span>
+<span class="font-label-sm text-label-sm text-outline font-code-inline">Barryvdh Engine</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer pkg-checkbox" data-target="barryvdh/laravel-dompdf" type="checkbox">
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">สร้างไฟล์ PDF สวยงาม แปลงตรงจาก Blade View และ HTML/CSS สำหรับใบเสร็จและรายงาน</p>
+<div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm">
+<span class="text-outline">barryvdh/laravel-dompdf</span>
+<span class="text-tertiary">6.1k ★</span>
+</div>
+</div>
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md opacity-75 hover:opacity-100" data-name="spatie/laravel-medialibrary" data-version="^11.0">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-outline">
+<span class="material-symbols-outlined text-[18px]">photo_library</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Spatie MediaLibrary</span>
+<span class="font-label-sm text-label-sm text-outline font-code-inline">Asset Bucket</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer pkg-checkbox" data-target="spatie/laravel-medialibrary" type="checkbox">
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">จัดการไฟล์ อัปโหลดรูปภาพ ปรับขนาดอัตโนมัติ เชื่อมโยงกับ Model และรองรับ S3/Cloudflare R2</p>
+<div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm">
+<span class="text-outline">spatie/laravel-medialibrary</span>
+<span class="text-outline">5.9k ★</span>
+</div>
+</div>
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md" data-name="mpdf/mpdf" data-version="^8.2"><div class="flex items-start justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-tertiary"><span class="material-symbols-outlined text-[18px]">description</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">mPDF</span><span class="font-label-sm text-label-sm text-outline font-code-inline">UTF-8 &amp; CJK/Thai PDF</span></div></div><label class="relative inline-flex items-center cursor-pointer"><input checked="" class="sr-only peer pkg-checkbox" data-target="mpdf/mpdf" type="checkbox"><div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label></div><p class="font-body-sm text-body-sm text-on-surface-variant">สร้างไฟล์ PDF คุณภาพสูง รองรับภาษาไทย (UTF-8) สมบูรณ์แบบ พร้อมระบบ Barcode และลายน้ำ</p><div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm"><span class="text-outline">mpdf/mpdf</span><span class="text-tertiary">4.8k ★</span></div></div><div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md" data-name="phpoffice/phpspreadsheet" data-version="^2.3"><div class="flex items-start justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-tertiary"><span class="material-symbols-outlined text-[18px]">table_view</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">PhpSpreadsheet</span><span class="font-label-sm text-label-sm text-outline font-code-inline">XLSX / CSV / ODS</span></div></div><label class="relative inline-flex items-center cursor-pointer"><input checked="" class="sr-only peer pkg-checkbox" data-target="phpoffice/phpspreadsheet" type="checkbox"><div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label></div><p class="font-body-sm text-body-sm text-on-surface-variant">ไลบรารีมาตรฐานสำหรับอ่าน-เขียนไฟล์สเปรดชีต (XLSX, CSV, ODS) พร้อมจัดสไตล์เซลล์ขั้นสูง</p><div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm"><span class="text-outline">phpoffice/phpspreadsheet</span><span class="text-tertiary">14.2k ★</span></div></div><div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md" data-name="phpoffice/phpword" data-version="^1.2"><div class="flex items-start justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-tertiary"><span class="material-symbols-outlined text-[18px]">article</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">PHPWord</span><span class="font-label-sm text-label-sm text-outline font-code-inline">DOCX &amp; Word Templates</span></div></div><label class="relative inline-flex items-center cursor-pointer"><input checked="" class="sr-only peer pkg-checkbox" data-target="phpoffice/phpword" type="checkbox"><div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label></div><p class="font-body-sm text-body-sm text-on-surface-variant">ไลบรารีสร้างและอ่านไฟล์เอกสาร Word (DOCX) รองรับ Template และจดหมายเวียน</p><div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm"><span class="text-outline">phpoffice/phpword</span><span class="text-tertiary">6.8k ★</span></div></div><div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md md:col-span-3" data-name="yajra/laravel-oci8" data-version="^13.0"><div class="flex items-start justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[20px]">database</span></div><div class="flex flex-col"><div class="flex items-center gap-2"><span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Yajra Laravel-OCI8</span><span class="px-2 py-0.5 rounded bg-surface-container-highest text-secondary font-label-sm text-label-sm uppercase font-code-inline">ORACLE DB DRIVER</span></div><span class="font-label-sm text-label-sm text-outline font-code-inline">yajra/laravel-oci8:^13</span></div></div><label class="relative inline-flex items-center cursor-pointer"><input checked="" class="sr-only peer pkg-checkbox" data-target="yajra/laravel-oci8" type="checkbox"><div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label></div><p class="font-body-sm text-body-sm text-on-surface-variant">ไดรเวอร์เชื่อมต่อ Oracle Database ผ่าน OCI8 / PDO สำหรับ Laravel รองรับ Eloquent, Query Builder, Sequence และ Stored Procedure บน PHP 8.4</p><div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm"><span class="text-outline">composer require yajra/laravel-oci8:^13</span><div class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span><span class="">1.8k</span></div></div></div></div>
+</section>
+<section class="flex flex-col gap-space-md" data-category-group="devtools">
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">DevTools &amp; Rigorous Quality Control</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Zero-config formatters, static analysis, and profiling</span>
+</div>
+</div>
+<span class="font-code-inline text-label-sm text-outline uppercase tracking-wider">4 Selected</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md" data-name="barryvdh/laravel-debugbar" data-version="^3.10">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">bug_report</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Laravel Debugbar</span>
+<span class="font-label-sm text-label-sm text-outline font-code-inline">Runtime Profiling</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer pkg-checkbox" data-target="barryvdh/laravel-debugbar" type="checkbox">
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">แถบดีบักสำหรับนักพัฒนา แสดงเวลาทำงาน, SQL Query, Memory และ Cache แบบเรียลไทม์</p>
+<div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm">
+<span class="text-outline">composer require barryvdh/laravel-debugbar --dev</span>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">15.7k</span>
+</div>
+</div>
+</div>
+
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md" data-name="pestphp/pest" data-version="^5.0"><div class="flex items-start justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[20px]">science</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Pest PHP v5</span><span class="font-label-sm text-label-sm text-outline font-code-inline">Modern Testing Framework v5</span></div></div><label class="relative inline-flex items-center cursor-pointer"><input checked="" class="sr-only peer pkg-checkbox" data-target="pestphp/pest" type="checkbox"><div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label></div><p class="font-body-sm text-body-sm text-on-surface-variant">Pest PHP v5 - Modern Testing Framework with architecture testing, type coverage, mutation testing plugins, and instant snapshot assertions.</p><div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm"><span class="text-outline">composer require pestphp/pest --dev</span><div class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span><span class="">8.3k</span></div></div></div>
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md" data-name="larastan/larastan" data-version="^2.9">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">rule</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">PHPStan / Larastan</span>
+<span class="font-label-sm text-label-sm text-secondary font-code-inline">Static Level 8 Engine</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer pkg-checkbox" data-target="larastan/larastan" type="checkbox">
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">เครื่องมือ Static Code Analysis ตรวจจับบั๊กและข้อผิดพลาดในโค้ดโดยไม่ต้องรัน</p>
+<div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm">
+<span class="text-outline">composer require larastan/larastan --dev</span>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">5.0k</span>
+</div>
+</div>
+</div>
+<div class="pkg-card group relative p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-md shadow-md md:col-span-2" data-name="pestphp/pest-plugin-browser" data-version="^1.0"><div class="flex items-start justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[20px]">devices</span></div><div class="flex flex-col"><div class="flex items-center gap-2"><span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Pest Browser Testing</span><span class="px-2 py-0.5 rounded bg-surface-container-highest text-secondary font-label-sm text-label-sm uppercase">E2E Automation</span></div><span class="font-label-sm text-label-sm text-outline font-code-inline">pestphp/pest-plugin-browser</span></div></div><label class="relative inline-flex items-center cursor-pointer"><input checked="" class="sr-only peer pkg-checkbox" data-target="pestphp/pest-plugin-browser" type="checkbox"><div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label></div><p class="font-body-sm text-body-sm text-on-surface-variant">ระบบทดสอบ E2E อัตโนมัติผ่านเบราว์เซอร์ด้วย Pest CLI ร่วมกับ Playwright / Dusk</p><div class="flex items-center justify-between pt-space-xs font-code-inline text-label-sm"><span class="text-outline">composer require pestphp/pest-plugin-browser --dev</span><div class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span><span class="">1.9k</span></div></div></div></div>
+</section>
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-md pt-space-xl pb-space-lg">
+<a class="w-full sm:w-auto flex items-center justify-center gap-space-xs px-space-lg py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-body-md text-body-md transition-colors shadow-sm" data-path="project-setup" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span class="">Previous: 1. Project Setup</span>
+</a>
+<a class="w-full sm:w-auto flex items-center justify-center gap-space-xs px-space-xl py-2.5 rounded-lg bg-primary-container hover:bg-inverse-primary text-on-primary font-headline-sm text-headline-sm font-medium transition-all shadow-[0_0_20px_rgba(255,85,66,0.3)]" data-path="modules-and-schema" href="#">
+<span class="">Continue: 3. Modules &amp; Schema</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<aside class="w-full xl:w-96 flex flex-col gap-space-md sticky top-20">
+<div class="flex flex-col rounded-xl bg-surface-container-low shadow-xl overflow-hidden">
+<div class="flex items-center justify-between px-space-md py-space-sm bg-surface-container">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]">checklist</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Active Stack</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-tertiary font-code-inline text-label-sm" id="stack-count-badge">18 PKGS</span>
+</div>
+<div class="p-space-md flex flex-col gap-space-xs max-h-72 overflow-y-auto" id="selected-list"><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="twbs/bootstrap"><span class="text-on-surface font-medium truncate max-w-[190px]">twbs/bootstrap</span><span class="text-secondary text-label-sm">5.3.3</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="laravel/breeze"><span class="text-on-surface font-medium truncate max-w-[190px]">laravel/breeze</span><span class="text-outline text-label-sm">^2.0</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="spatie/laravel-permission"><span class="text-on-surface font-medium truncate max-w-[190px]">spatie/laravel-permission</span><span class="text-outline text-label-sm">^6.0</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="laravel/sanctum"><span class="text-on-surface font-medium truncate max-w-[190px]">laravel/sanctum</span><span class="text-outline text-label-sm">^4.0</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="vinkla/hashids"><span class="text-on-surface font-medium truncate max-w-[190px]">vinkla/hashids</span><span class="text-secondary text-label-sm">^11.0</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="yajra/laravel-datatables"><span class="text-on-surface font-medium truncate max-w-[190px]">yajra/laravel-datatables</span><span class="text-outline text-label-sm">^11.0</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="sweetalert2/toastr"><span class="text-on-surface font-medium truncate max-w-[190px]">sweetalert2/toastr</span><span class="text-outline text-label-sm">^11.10</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="blade-ui-kit/blade-icons"><span class="text-on-surface font-medium truncate max-w-[190px]">blade-ui-kit/blade-icons</span><span class="text-outline text-label-sm">^1.6</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="maatwebsite/excel"><span class="text-on-surface font-medium truncate max-w-[190px]">maatwebsite/excel</span><span class="text-outline text-label-sm">^3.1</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="barryvdh/laravel-dompdf"><span class="text-on-surface font-medium truncate max-w-[190px]">barryvdh/laravel-dompdf</span><span class="text-outline text-label-sm">^3.0</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="mpdf/mpdf"><span class="text-on-surface font-medium truncate max-w-[190px]">mpdf/mpdf</span><span class="text-secondary text-label-sm">^8.2</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="phpoffice/phpspreadsheet"><span class="text-on-surface font-medium truncate max-w-[190px]">phpoffice/phpspreadsheet</span><span class="text-secondary text-label-sm">^2.3</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="phpoffice/phpword"><span class="text-on-surface font-medium truncate max-w-[190px]">phpoffice/phpword</span><span class="text-secondary text-label-sm">^1.2</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="barryvdh/laravel-debugbar"><span class="text-on-surface font-medium truncate max-w-[190px]">barryvdh/laravel-debugbar</span><span class="text-outline text-label-sm">^3.10</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="pestphp/pest"><span class="text-on-surface font-medium truncate max-w-[190px]">pestphp/pest</span><span class="text-secondary text-label-sm">^5.0</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="pestphp/pest-plugin-browser"><span class="text-on-surface font-medium truncate max-w-[190px]">pestphp/pest-plugin-browser</span><span class="text-secondary text-label-sm">^1.0</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="larastan/larastan"><span class="text-on-surface font-medium truncate max-w-[190px]">larastan/larastan</span><span class="text-outline text-label-sm">^2.9</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="autonumeric"><span class="text-on-surface font-medium truncate max-w-[190px]">autonumeric</span><span class="text-secondary text-label-sm">^4.6.0</span></div><div class="flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline" data-pkg-id="yajra/laravel-oci8"><span class="text-on-surface font-medium truncate max-w-[190px]">yajra/laravel-oci8</span><span class="text-secondary text-label-sm">^13.0</span></div></div>
+<div class="p-space-md bg-surface-container-high/50 flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline uppercase font-code-block">Compatibility Check</span>
+<span class="font-label-sm text-label-sm text-tertiary font-code-inline">Pass 18/18</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="w-full h-full bg-tertiary"></div>
+</div>
+</div>
+</div>
+<div class="flex flex-col rounded-xl bg-surface-container-lowest shadow-xl overflow-hidden">
+<div class="flex items-center justify-between px-space-md py-space-xs bg-surface-container-high">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-error"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-surface-tint"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<span class="ml-2 font-code-inline text-label-sm text-on-surface">composer.json</span>
+</div>
+<button class="flex items-center gap-1 font-code-inline text-label-sm text-outline hover:text-on-surface transition-colors" id="copy-json-btn" type="button">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span class="">Copy</span>
+</button>
+</div>
+<pre class="p-space-md font-code-block text-code-block text-on-surface overflow-x-auto leading-relaxed"><code id="composer-preview">{
+  <span class="text-secondary">"require"</span>: {
+    <span class="text-primary">"php"</span>: <span class="text-tertiary">"^8.4"</span>,
+    <span class="text-primary">"laravel/framework"</span>: <span class="text-tertiary">"^11.0"</span>,
+    <span class="text-primary">"laravel/sanctum"</span>: <span class="text-tertiary">"^4.0"</span>,
+    <span class="text-primary">"spatie/laravel-permission"</span>: <span class="text-tertiary">"^6.0"</span>,
+    <span class="text-primary">"vinkla/hashids"</span>: <span class="text-tertiary">"^11.0"</span>,
+    <span class="text-primary">"yajra/laravel-datatables-oracle"</span>: <span class="text-tertiary">"^11.0"</span>,
+    <span class="text-primary">"yajra/laravel-oci8"</span>: <span class="text-tertiary">"^13.0"</span>,
+    <span class="text-primary">"maatwebsite/excel"</span>: <span class="text-tertiary">"^3.1"</span>,
+    <span class="text-primary">"phpoffice/phpspreadsheet"</span>: <span class="text-tertiary">"^2.3"</span>,
+    <span class="text-primary">"phpoffice/phpword"</span>: <span class="text-tertiary">"^1.2"</span>,
+    <span class="text-primary">"barryvdh/laravel-dompdf"</span>: <span class="text-tertiary">"^3.0"</span>,
+    <span class="text-primary">"mpdf/mpdf"</span>: <span class="text-tertiary">"^8.2"</span>,
+    <span class="text-primary">"blade-ui-kit/blade-icons"</span>: <span class="text-tertiary">"^1.6"</span>
+  },
+  <span class="text-secondary">"require-dev"</span>: {
+    <span class="text-primary">"laravel/breeze"</span>: <span class="text-tertiary">"^2.0"</span>,
+    <span class="text-primary">"barryvdh/laravel-debugbar"</span>: <span class="text-tertiary">"^3.10"</span>,
+    <span class="text-primary">"pestphp/pest"</span>: <span class="text-tertiary">"^5.0"</span>,
+    <span class="text-primary">"pestphp/pest-plugin-browser"</span>: <span class="text-tertiary">"^1.0"</span>,
+    <span class="text-primary">"larastan/larastan"</span>: <span class="text-tertiary">"^2.9"</span>
+  },
+  <span class="text-secondary">"frontend-deps"</span>: {
+    <span class="text-primary">"autonumeric"</span>: <span class="text-tertiary">"^4.6.0"</span>
+  }
+}</code></pre>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container-low flex items-start gap-space-sm shadow-md">
+<span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">info</span>
+<div class="flex flex-col gap-1">
+<span class="font-headline-sm text-headline-sm text-on-surface">Auto-Resolved Providers</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Laravel 11 automatically binds modern service providers from <code class="text-primary font-code-inline">bootstrap/providers.php</code> without editing configuration manifests.
+          </p>
+</div>
+</div>
+</aside>
+</div>
+<script>
+    (function () {
+      const checkboxes = document.querySelectorAll('.pkg-checkbox');
+      const counterEl = document.getElementById('selected-counter');
+      const stackBadge = document.getElementById('stack-count-badge');
+      const listEl = document.getElementById('selected-list');
+      const searchInput = document.getElementById('pkg-search');
+      const filterPills = document.querySelectorAll('.filter-pill');
+      const pkgCards = document.querySelectorAll('.pkg-card');
+      const copyBtn = document.getElementById('copy-json-btn');
+
+      function updateStats() {
+        const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+        const total = checkedBoxes.length + 1; // plus core bootstrap
+        counterEl.textContent = total + ' Packages';
+        stackBadge.textContent = total + ' PKGS';
+      }
+
+      checkboxes.forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          const target = e.target.getAttribute('data-target');
+          const card = e.target.closest('.pkg-card');
+          const version = card.getAttribute('data-version') || '^1.0';
+
+          if (e.target.checked) {
+            card.classList.remove('opacity-75');
+            const row = document.createElement('div');
+            row.className = 'flex items-center justify-between py-1 px-2 rounded bg-surface-container-lowest font-code-inline text-code-inline';
+            row.setAttribute('data-pkg-id', target);
+            row.innerHTML = '<span class="text-on-surface font-medium truncate max-w-[190px]">' + target + '</span><span class="text-outline text-label-sm">' + version + '</span>';
+            listEl.appendChild(row);
+          } else {
+            card.classList.add('opacity-75');
+            const existing = listEl.querySelector('[data-pkg-id="' + target + '"]');
+            if (existing) existing.remove();
+          }
+          updateStats();
+        });
+      });
+
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        pkgCards.forEach(card => {
+          const text = card.textContent.toLowerCase();
+          if (text.includes(query)) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+      });
+
+      filterPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          filterPills.forEach(p => {
+            p.classList.remove('bg-primary-container', 'text-on-primary');
+            p.classList.add('bg-surface-container', 'text-on-surface-variant');
+          });
+          pill.classList.remove('bg-surface-container', 'text-on-surface-variant');
+          pill.classList.add('bg-primary-container', 'text-on-primary');
+
+          const filter = pill.getAttribute('data-filter');
+          const groups = document.querySelectorAll('[data-category-group]');
+
+          groups.forEach(group => {
+            if (filter === 'all' || group.getAttribute('data-category-group') === filter) {
+              group.classList.remove('hidden');
+            } else {
+              group.classList.add('hidden');
+            }
+          });
+        });
+      });
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          const pre = document.getElementById('composer-preview');
+          navigator.clipboard.writeText(pre.innerText).then(() => {
+            copyBtn.innerHTML = '<span class="material-symbols-outlined text-[14px] text-tertiary">check</span><span class="text-tertiary">Copied</span>';
+            setTimeout(() => {
+              copyBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">content_copy</span><span>Copy</span>';
+            }, 2000);
+          });
+        });
+      }
+    })();
+  </script>
+</div></main></div>
+
+</body></html>

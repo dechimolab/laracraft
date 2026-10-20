@@ -1,0 +1,654 @@
+<!DOCTYPE html><html class="dark" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary-fixed-variant":"#004395","surface-container":"#171f33","on-error-container":"#ffdad6","inverse-on-surface":"#283044","on-surface-variant":"#e8bcb6","on-primary-fixed":"#410000","error-container":"#93000a","surface-tint":"#ffb4a8","on-tertiary-fixed-variant":"#005236","on-background":"#dae2fd","primary":"#ffb4a8","background":"#0b1326","secondary-fixed-dim":"#adc6ff","secondary-fixed":"#d8e2ff","tertiary-fixed-dim":"#4edea3","outline":"#af8781","surface-container-high":"#222a3d","on-secondary-container":"#e6ecff","on-tertiary":"#003824","surface-container-highest":"#2d3449","tertiary-container":"#00a572","surface-bright":"#31394d","on-primary-fixed-variant":"#930001","on-primary-container":"#5c0000","surface":"#0b1326","inverse-primary":"#c00003","on-tertiary-container":"#00311f","surface-container-lowest":"#060e20","on-surface":"#dae2fd","surface-variant":"#2d3449","tertiary-fixed":"#6ffbbe","secondary":"#adc6ff","primary-fixed":"#ffdad5","secondary-container":"#0566d9","on-tertiary-fixed":"#002113","error":"#ffb4ab","outline-variant":"#5e3f3a","tertiary":"#4edea3","surface-dim":"#0b1326","on-secondary-fixed":"#001a42","primary-fixed-dim":"#ffb4a8","surface-container-low":"#131b2e","on-error":"#690005","on-secondary":"#002e6a","inverse-surface":"#dae2fd","primary-container":"#ff5542","on-primary":"#690001"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{margin:"1rem",gutter:"1rem","space-md":"1rem","space-xs":"0.25rem","space-sm":"0.5rem","space-lg":"1.5rem","margin-lg":"3rem","space-xl":"2.5rem","margin-md":"2rem","gutter-md":"1.5rem","gutter-lg":"2rem"},fontFamily:{"code-block":["JetBrains Mono"],"body-lg":["Inter"],"body-sm":["Inter"],"code-inline":["JetBrains Mono"],"headline-md":["Inter"],"label-sm":["JetBrains Mono"],"headline-sm":["Inter"],"display-hero":["Inter"],"headline-lg":["Inter"],"label-md":["JetBrains Mono"],"headline-lg-mobile":["Inter"],"body-md":["Inter"],"display-hero-mobile":["Inter"]},fontSize:{"code-block":["12px",{lineHeight:"20px",letterSpacing:"0em",fontWeight:"400"}],"body-lg":["16px",{lineHeight:"26px",letterSpacing:"-0.005em",fontWeight:"400"}],"body-sm":["12px",{lineHeight:"18px",letterSpacing:"0.005em",fontWeight:"400"}],"code-inline":["13px",{lineHeight:"20px",letterSpacing:"-0.01em",fontWeight:"400"}],"headline-md":["20px",{lineHeight:"28px",letterSpacing:"-0.015em",fontWeight:"600"}],"label-sm":["10px",{lineHeight:"14px",letterSpacing:"0.05em",fontWeight:"600"}],"headline-sm":["16px",{lineHeight:"24px",letterSpacing:"-0.01em",fontWeight:"600"}],"display-hero":["40px",{lineHeight:"48px",letterSpacing:"-0.025em",fontWeight:"700"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.02em",fontWeight:"600"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"500"}],"headline-lg-mobile":["22px",{lineHeight:"30px",letterSpacing:"-0.015em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"22px",letterSpacing:"0em",fontWeight:"400"}],"display-hero-mobile":["30px",{lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"700"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-md pt-space-lg pb-space-md"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center shadow-[0_0_16px_rgba(255,85,66,0.35)]"><span class="material-symbols-outlined text-on-primary-container text-[20px]">deployed_code</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-none">ArtisanCraft</span><div class="flex items-center gap-space-xs mt-1"><span class="inline-block px-1 py-0.2 rounded bg-surface-container-high text-primary font-label-sm text-label-sm uppercase tracking-wider">PHP 8.4</span><span class="inline-block px-1 py-0.2 rounded bg-surface-container-high text-secondary font-label-sm text-label-sm uppercase tracking-wider">BS 5.3</span></div></div></div></div><div class="px-space-md pt-space-md pb-space-xs"><span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Scaffold Pipeline</span></div><nav class="flex flex-col gap-1 px-space-sm" data-active-classes="bg-surface-container-highest text-primary font-semibold shadow-inner"><a class="group flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="project-setup" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-outline group-hover:text-primary transition-colors">tune</span><span class="font-body-md text-body-md">1. Project Setup</span></div><span class="font-label-sm text-label-sm text-outline-variant font-code-inline">CONFIG</span></a><a class="group flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="packages-and-libraries" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-outline group-hover:text-primary transition-colors">inventory_2</span><span class="font-body-md text-body-md">2. Packages &amp; Libs</span></div><span class="font-label-sm text-label-sm text-outline-variant font-code-inline">COMPOSER</span></a><a class="group flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="modules-and-schema" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-outline group-hover:text-primary transition-colors">dataset</span><span class="font-body-md text-body-md">3. Modules &amp; Schema</span></div><span class="font-label-sm text-label-sm text-outline-variant font-code-inline">MODELS</span></a><a aria-current="page" class="group flex items-center justify-between px-space-md py-space-sm rounded-xl transition-colors bg-surface-container-highest text-primary font-semibold shadow-inner" data-path="build-and-export" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-outline group-hover:text-primary transition-colors">terminal</span><span class="font-body-md text-body-md">4. Build &amp; Export</span></div><span class="font-label-sm text-label-sm text-outline-variant font-code-inline">CLI/ZIP</span></a></nav></div><div class="p-space-md m-space-sm rounded-xl bg-surface-container-lowest/80"><div class="flex items-center justify-between pb-space-xs"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-code-block tracking-wider">Target Matrix</span></div><span class="font-label-sm text-label-sm text-tertiary font-code-inline">STABLE</span></div><div class="flex flex-col gap-0.5 pt-space-xs font-code-block text-code-block text-on-surface-variant"><div class="flex justify-between"><span class="text-outline">Engine</span><span class="text-on-surface">PHP 8.4.x</span></div><div class="flex justify-between"><span class="text-outline">Core</span><span class="text-on-surface">Laravel 11.x</span></div><div class="flex justify-between"><span class="text-outline">Database</span><span class="text-on-surface">MySQL 8.4</span></div><div class="flex justify-between"><span class="text-outline">Toolkit</span><span class="text-on-surface">Bootstrap 5.3.3</span></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-surface-container-high"><span class="material-symbols-outlined text-secondary text-[18px]">folder_zip</span><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">E-Commerce Admin Core</span><span class="px-1.5 py-0.5 rounded bg-surface-container text-tertiary font-label-sm text-label-sm font-code-inline">v1.0.0-dev</span><span class="material-symbols-outlined text-outline text-[16px] cursor-pointer hover:text-on-surface transition-colors">unfold_more</span></div><div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 rounded bg-surface-container-low text-outline font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px]">keyboard_command_key</span><span>Quick Palette</span><kbd class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface font-code-inline">Ctrl+K</kbd></div></div><div class="flex items-center gap-space-md"><a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-sm text-body-sm flex items-center gap-1" data-path="documentation" href="#"><span class="material-symbols-outlined text-[16px]">menu_book</span>Docs</a><button aria-label="Theme Mode" class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">dark_mode</span></button><button class="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-primary-container hover:bg-inverse-primary text-on-primary font-body-sm text-body-sm font-medium transition-all shadow-[0_0_12px_rgba(255,85,66,0.2)]" type="button"><span class="material-symbols-outlined text-[16px]">sync_alt</span><span>GitHub Sync</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Pipeline Status Strip -->
+<div class="w-full bg-surface-container-low px-space-lg py-space-sm flex flex-wrap items-center justify-between gap-space-md shadow-sm">
+<div class="flex flex-wrap items-center gap-space-sm">
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container-highest">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+<span class="font-label-md text-label-md text-on-surface">Step 4 / 4</span>
+</div>
+<span class="text-outline text-body-sm font-body-sm">|</span>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold tracking-tight">artisan-pos-system</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-primary font-code-inline">PHP 8.4</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-secondary font-code-inline">Laravel 11.x</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-tertiary font-code-inline">MySQL 8.4</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-on-surface-variant font-code-inline">BS 5.3.3</span>
+</div>
+<div class="hidden 2xl:flex items-center gap-2 font-label-sm text-label-sm text-outline">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface">6 Models</span>
+<span>•</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface">14 Migrations</span>
+<span>•</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface">12 Packages</span>
+</div>
+</div>
+<!-- Primary Actions Group -->
+<div class="flex items-center gap-space-sm flex-wrap">
+<div class="flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-tertiary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span>Ready for Export • 100% Passed</span>
+</div>
+<button class="flex items-center gap-1.5 px-space-md py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm transition-all shadow-sm" id="copy-script-btn" type="button">
+<span class="material-symbols-outlined text-[16px] text-outline">terminal</span>
+<span>Copy One-Liner</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-md py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-secondary font-body-sm text-body-sm transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">cloud_upload</span>
+<span>Forge Deploy</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-md py-1.5 rounded-lg bg-surface-container-highest hover:bg-surface-bright text-on-surface font-body-sm text-body-sm transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">fork_right</span>
+<span>Push GitHub</span>
+</button>
+<button class="flex items-center gap-2 px-space-lg py-1.5 rounded-lg bg-primary-container hover:bg-inverse-primary text-on-primary font-headline-sm text-headline-sm transition-all shadow-md" id="download-zip-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Export .ZIP</span>
+</button>
+</div>
+</div>
+<!-- Main Multi-Pane DevTools Workspace -->
+<div class="w-full grid grid-cols-12 gap-0 min-h-[calc(100vh-10.5rem)]">
+<!-- Left Column: File Tree Explorer (30% approx / 4 cols desktop) -->
+<aside class="col-span-12 lg:col-span-4 xl:col-span-3 bg-surface-container-lowest flex flex-col p-space-md gap-space-md select-none">
+<div class="flex items-center justify-between px-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-outline text-[18px]">account_tree</span>
+<span class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold">Workspace Explorer</span>
+</div>
+<div class="flex items-center gap-1 text-outline">
+<button class="hover:text-on-surface p-1" title="Collapse all"><span class="material-symbols-outlined text-[16px]">unfold_less</span></button>
+<button class="hover:text-on-surface p-1" title="Refresh tree"><span class="material-symbols-outlined text-[16px]">refresh</span></button>
+</div>
+</div>
+<!-- Search tree filter -->
+<div class="flex items-center gap-2 px-space-sm py-1.5 rounded-lg bg-surface-container text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-outline">search</span>
+<input class="bg-transparent border-0 outline-none w-full text-on-surface placeholder:text-outline text-body-sm font-body-sm" placeholder="Filter files (/app, Blade, migration)..." type="text">
+</div>
+<!-- File Tree Node List -->
+<div class="flex flex-col gap-0.5 font-code-inline text-code-inline text-on-surface-variant overflow-y-auto max-h-[calc(100vh-22rem)]">
+<!-- app/ -->
+<div class="group flex items-center justify-between px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-outline text-yellow-400">folder_open</span>
+<span>app</span>
+</div>
+<span class="text-[10px] text-outline opacity-60">Directory</span>
+</div>
+<!-- app/Http/Controllers -->
+<div class="ml-4 flex flex-col gap-0.5">
+<div class="flex items-center gap-1.5 px-2 py-1 rounded text-on-surface hover:bg-surface-container cursor-pointer">
+<span class="material-symbols-outlined text-[15px] text-yellow-500">folder_open</span>
+<span>Http / Controllers</span>
+</div>
+<div class="ml-4 flex flex-col gap-0.5">
+<div class="file-node flex items-center justify-between px-2 py-1 rounded bg-surface-container-high text-primary font-medium cursor-pointer shadow-sm" data-file="ProductController">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary">php</span>
+<span>ProductController.php</span>
+</div>
+<span class="px-1 rounded bg-primary-container text-on-primary text-[9px] font-label-sm">ACTIVE</span>
+</div>
+<div class="file-node flex items-center justify-between px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant" data-file="UserController">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-outline">php</span>
+<span>UserController.php</span>
+</div>
+</div>
+<div class="file-node flex items-center justify-between px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant" data-file="SettingController">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-outline">php</span>
+<span>SettingController.php</span>
+</div>
+</div>
+</div>
+</div>
+<!-- app/Models -->
+<div class="ml-4 flex flex-col gap-0.5">
+<div class="flex items-center gap-1.5 px-2 py-1 rounded text-on-surface hover:bg-surface-container cursor-pointer">
+<span class="material-symbols-outlined text-[15px] text-yellow-500">folder</span>
+<span>Models</span>
+</div>
+<div class="ml-4 flex flex-col gap-0.5">
+<div class="file-node flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-outline">data_object</span>
+<span>Product.php</span>
+</div>
+<div class="file-node flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-outline">data_object</span>
+<span>Category.php</span>
+</div>
+<div class="file-node flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-outline">data_object</span>
+<span>User.php</span>
+</div>
+</div>
+</div>
+<!-- database/ -->
+<div class="flex flex-col gap-0.5 pt-1">
+<div class="flex items-center gap-1.5 px-2 py-1 rounded text-on-surface hover:bg-surface-container cursor-pointer">
+<span class="material-symbols-outlined text-[16px] text-yellow-500">folder</span>
+<span>database</span>
+</div>
+<div class="ml-4 flex flex-col gap-0.5">
+<div class="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-tertiary">storage</span>
+<span>2025_01_01_create_products.php</span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-tertiary">storage</span>
+<span>2025_01_02_create_orders.php</span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-outline">audio_file</span>
+<span>DatabaseSeeder.php</span>
+</div>
+</div>
+</div>
+<!-- resources/views -->
+<div class="flex flex-col gap-0.5 pt-1">
+<div class="flex items-center gap-1.5 px-2 py-1 rounded text-on-surface hover:bg-surface-container cursor-pointer">
+<span class="material-symbols-outlined text-[16px] text-yellow-500">folder_open</span>
+<span>resources / views</span>
+</div>
+<div class="ml-4 flex flex-col gap-0.5">
+<div class="file-node flex items-center justify-between px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant" data-file="ProductBlade">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-secondary">html</span>
+<span>products/index.blade.php</span>
+</div>
+<span class="font-label-sm text-[9px] text-secondary">VIEW</span>
+</div>
+<div class="file-node flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-secondary">html</span>
+<span>products/create.blade.php</span>
+</div>
+<div class="file-node flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-outline">layers</span>
+<span>layouts/app.blade.php</span>
+</div>
+</div>
+</div>
+<!-- Root Files -->
+<div class="flex flex-col gap-0.5 pt-2">
+<div class="file-node flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-primary">data_array</span>
+<span>composer.json</span>
+</div>
+<div class="file-node flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-outline">tune</span>
+<span>.env.example</span>
+</div>
+<div class="file-node flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-tertiary">bolt</span>
+<span>vite.config.js</span>
+</div>
+</div>
+</div>
+<!-- Quick Repo Stats Card -->
+<div class="mt-auto p-space-sm rounded-xl bg-surface-container flex flex-col gap-2 shadow-inner">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline uppercase">Generated Bundle</span>
+<span class="font-label-sm text-label-sm text-tertiary font-code-inline">2.4 MB</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full w-[84%]"></div>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span>74 files generated</span>
+<span class="font-code-inline text-tertiary">0 warnings</span>
+</div>
+</div>
+</aside>
+<!-- Right Column: Code Viewer & Live Preview (70% approx / 8-9 cols desktop) -->
+<main class="col-span-12 lg:col-span-8 xl:col-span-9 bg-surface flex flex-col">
+<!-- Workspace Navigation Tabs -->
+<div class="w-full bg-surface-container-low px-space-md pt-2 flex items-center justify-between">
+<div class="flex items-center gap-1">
+<button class="tab-button flex items-center gap-2 px-space-md py-2 rounded-t-lg bg-surface text-primary font-headline-sm text-headline-sm font-medium shadow-sm" id="tab-code-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">code</span>
+<span>Code Viewer</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm">PHP 8.4</span>
+</button>
+<button class="tab-button flex items-center gap-2 px-space-md py-2 rounded-t-lg hover:bg-surface-container text-on-surface-variant font-headline-sm text-headline-sm font-normal" id="tab-preview-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">preview</span>
+<span>Live Blade UI Preview</span>
+<span class="px-1.5 py-0.2 rounded bg-secondary-container text-on-secondary font-label-sm text-label-sm">BS 5.3</span>
+</button>
+<button class="tab-button flex items-center gap-2 px-space-md py-2 rounded-t-lg hover:bg-surface-container text-on-surface-variant font-headline-sm text-headline-sm font-normal" id="tab-cli-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+<span>Artisan CLI Terminal</span>
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+</button>
+</div>
+<div class="flex items-center gap-2 pb-2">
+<button class="flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface text-body-sm font-body-sm transition-colors" id="copy-code-btn" title="Copy Current File" type="button">
+<span class="material-symbols-outlined text-[15px]">content_copy</span>
+<span>Copy File</span>
+</button>
+<button class="p-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Full Screen" type="button">
+<span class="material-symbols-outlined text-[16px]">fullscreen</span>
+</button>
+</div>
+</div>
+<!-- Tab Content Area -->
+<div class="relative flex-1 bg-surface-container-lowest overflow-hidden flex flex-col">
+<!-- 1. Code Viewer Tab Panel -->
+<section class="tab-pane flex flex-col flex-1 h-full overflow-hidden" id="pane-code">
+<!-- Virtual Path Bar -->
+<div class="w-full bg-surface-container px-space-md py-1.5 flex items-center justify-between text-code-inline font-code-inline text-body-sm shadow-sm">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-outline text-[16px]">folder</span>
+<span>app</span>
+<span class="text-outline">/</span>
+<span>Http</span>
+<span class="text-outline">/</span>
+<span>Controllers</span>
+<span class="text-outline">/</span>
+<span class="text-primary font-semibold" id="active-filename">ProductController.php</span>
+</div>
+<div class="flex items-center gap-3 text-outline text-label-sm font-label-sm">
+<span>Lines: 78</span>
+<span>Encoding: UTF-8</span>
+<span class="text-tertiary">Strict Types Enabled</span>
+</div>
+</div>
+<!-- Code Content Pane with Line Numbers -->
+<div class="flex-1 overflow-auto bg-surface-container-lowest font-code-block text-code-block p-space-md flex">
+<!-- Line numbers -->
+<div class="select-none text-outline-variant text-right pr-space-md opacity-50 flex flex-col gap-0 leading-5">
+<span>01</span><span>02</span><span>03</span><span>04</span><span>05</span>
+<span>06</span><span>07</span><span>08</span><span>09</span><span>10</span>
+<span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
+<span>16</span><span>17</span><span>18</span><span>19</span><span>20</span>
+<span>21</span><span>22</span><span>23</span><span>24</span><span>25</span>
+<span>26</span><span>27</span><span>28</span><span>29</span><span>30</span>
+<span>31</span><span>32</span>
+</div>
+<!-- Syntax Highlighted Code -->
+<div class="flex-1 overflow-x-auto text-on-surface leading-5 pl-space-xs font-code-block">
+<span class="text-outline">&lt;?php</span><br>
+<br>
+<span class="text-primary font-semibold">declare</span>(strict_types=1);<br>
+<br>
+<span class="text-primary font-semibold">namespace</span> App\Http\Controllers;<br>
+<br>
+<span class="text-primary font-semibold">use</span> App\Models\Product;<br>
+<span class="text-primary font-semibold">use</span> App\Http\Requests\StoreProductRequest;<br>
+<span class="text-primary font-semibold">use</span> Illuminate\Http\RedirectResponse;<br>
+<span class="text-primary font-semibold">use</span> Illuminate\View\View;<br>
+<br>
+<span class="text-outline italic">/**</span><br>
+<span class="text-outline italic">&nbsp;* Class ProductController</span><br>
+<span class="text-outline italic">&nbsp;* Generated automatically via ArtisanCraft Pipeline</span><br>
+<span class="text-outline italic">&nbsp;*/</span><br>
+<span class="text-primary font-semibold">final readonly class</span> <span class="text-secondary font-semibold">ProductController</span><br>
+              {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-primary font-semibold">public function</span> <span class="text-secondary-fixed">index</span>(): View<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$products = Product::<span class="text-tertiary">query</span>()<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;<span class="text-tertiary">with</span>([<span class="text-tertiary-fixed-dim">'category'</span>, <span class="text-tertiary-fixed-dim">'supplier'</span>])<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;<span class="text-tertiary">latest</span>()<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;<span class="text-tertiary">paginate</span>(15);<br>
+<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-primary font-semibold">return</span> <span class="text-tertiary">view</span>(<span class="text-tertiary-fixed-dim">'products.index'</span>, <span class="text-secondary">compact</span>(<span class="text-tertiary-fixed-dim">'products'</span>));<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-primary font-semibold">public function</span> <span class="text-secondary-fixed">store</span>(StoreProductRequest $request): RedirectResponse<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-outline italic">// Modern PHP 8.4 match validation logic</span><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$status = <span class="text-primary font-semibold">match</span> ($request-&gt;<span class="text-tertiary">validated</span>(<span class="text-tertiary-fixed-dim">'stock_level'</span>) &gt; 0) {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-primary">true</span>&nbsp;&nbsp;=&gt; <span class="text-tertiary-fixed-dim">'in_stock'</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-primary">false</span> =&gt; <span class="text-tertiary-fixed-dim">'backorder'</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$product = Product::<span class="text-tertiary">create</span>([...$request-&gt;<span class="text-tertiary">validated</span>(), <span class="text-tertiary-fixed-dim">'status'</span> =&gt; $status]);<br>
+<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-primary font-semibold">return</span> <span class="text-tertiary">redirect</span>()<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;<span class="text-tertiary">route</span>(<span class="text-tertiary-fixed-dim">'products.show'</span>, $product)<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;<span class="text-tertiary">with</span>(<span class="text-tertiary-fixed-dim">'success'</span>, <span class="text-tertiary-fixed-dim">'Item created successfully.'</span>);<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+              }
+            </div>
+</div>
+</section>
+<!-- 2. Live Blade UI Preview Tab Panel -->
+<section class="tab-pane hidden flex flex-col flex-1 h-full bg-surface-container-high p-space-md overflow-y-auto" id="pane-preview">
+<!-- Mock Browser Container -->
+<div class="w-full bg-surface-container-lowest rounded-xl overflow-hidden shadow-2xl flex flex-col">
+<!-- Simulated Browser Address Header -->
+<div class="bg-surface-container-low px-space-md py-2.5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-error-container"></span>
+<span class="w-3 h-3 rounded-full bg-yellow-600"></span>
+<span class="w-3 h-3 rounded-full bg-tertiary-container"></span>
+<span class="ml-2 font-code-inline text-label-sm text-outline">Bootstrap 5.3 Live Emulation</span>
+</div>
+<div class="px-space-md py-1 rounded-full bg-surface-container-highest text-outline text-label-sm font-code-inline flex items-center gap-2 w-1/2 justify-center">
+<span class="material-symbols-outlined text-[13px] text-tertiary">lock</span>
+<span class="text-on-surface">http://pos-app.local:8000/products</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">devices</span>
+<span class="material-symbols-outlined text-[16px] text-outline">open_in_new</span>
+</div>
+</div>
+<!-- Simulated Bootstrap Page View -->
+<div class="p-space-lg flex flex-col gap-space-md bg-surface text-on-surface">
+<!-- Top Breadcrumb & Heading Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-md">
+<div>
+<nav class="flex items-center gap-1 font-body-sm text-body-sm text-outline mb-1">
+<span>Admin</span>
+<span>/</span>
+<span>Inventory</span>
+<span>/</span>
+<span class="text-on-surface font-medium">Products</span>
+</nav>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">Product Catalog</h2>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface text-body-sm font-body-sm hover:bg-surface-bright flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+<span>Export CSV</span>
+</button>
+<button class="px-3 py-1.5 rounded-lg bg-primary-container text-on-primary text-body-sm font-body-sm hover:bg-inverse-primary flex items-center gap-1.5 transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Create Product</span>
+</button>
+</div>
+</div>
+<!-- Filter Toolbar (Bootstrap Form Emulation) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-space-sm p-space-sm rounded-lg bg-surface-container">
+<div class="relative md:col-span-2">
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-[18px] text-outline">search</span>
+<input class="w-full bg-surface-container-lowest text-on-surface text-body-sm font-body-sm pl-9 pr-3 py-1.5 rounded outline-none placeholder:text-outline" placeholder="Search SKU, name, or barcode..." type="text">
+</div>
+<div>
+<select class="w-full bg-surface-container-lowest text-on-surface text-body-sm font-body-sm px-3 py-1.5 rounded outline-none">
+<option>All Categories</option>
+<option>Coffee &amp; Beverages</option>
+<option>Pastries &amp; Bakery</option>
+<option>Retail Merch</option>
+</select>
+</div>
+<div>
+<select class="w-full bg-surface-container-lowest text-on-surface text-body-sm font-body-sm px-3 py-1.5 rounded outline-none">
+<option>Stock Status: All</option>
+<option>In Stock (&gt;10)</option>
+<option>Low Stock (&lt;5)</option>
+<option>Out of Stock</option>
+</select>
+</div>
+</div>
+<!-- Data Table Container (BS 5.3 Styled) -->
+<div class="overflow-x-auto rounded-lg bg-surface-container-low shadow-sm">
+<table class="w-full text-left font-body-sm text-body-sm border-collapse">
+<thead>
+<tr class="bg-surface-container-highest text-on-surface-variant font-semibold uppercase font-label-sm text-label-sm tracking-wider">
+<th class="p-3">SKU</th>
+<th class="p-3">Product Name</th>
+<th class="p-3">Category</th>
+<th class="p-3">Unit Price</th>
+<th class="p-3">Stock</th>
+<th class="p-3">Status</th>
+<th class="p-3 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="text-on-surface">
+<tr class="hover:bg-surface-container transition-colors">
+<td class="p-3 font-code-inline text-outline">PRD-8821</td>
+<td class="p-3 font-medium text-on-surface flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-tertiary">local_cafe</span>
+</div>
+<span>Single Origin Ethiopian Roast</span>
+</td>
+<td class="p-3 text-on-surface-variant">Beverages</td>
+<td class="p-3 font-code-inline text-on-surface">$18.50</td>
+<td class="p-3 font-code-inline text-on-surface">142</td>
+<td class="p-3">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container/30 text-tertiary font-label-sm text-label-sm">In Stock</span>
+</td>
+<td class="p-3 text-right">
+<div class="flex items-center justify-end gap-1 text-outline">
+<button class="p-1 hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">visibility</span></button>
+<button class="p-1 hover:text-secondary"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+<button class="p-1 hover:text-error"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="p-3 font-code-inline text-outline">PRD-8822</td>
+<td class="p-3 font-medium text-on-surface flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-secondary">bakery_dining</span>
+</div>
+<span>Almond Croissant Butter Batch</span>
+</td>
+<td class="p-3 text-on-surface-variant">Bakery</td>
+<td class="p-3 font-code-inline text-on-surface">$4.75</td>
+<td class="p-3 font-code-inline text-error">3</td>
+<td class="p-3">
+<span class="px-2 py-0.5 rounded-full bg-error-container/30 text-error font-label-sm text-label-sm">Low Stock</span>
+</td>
+<td class="p-3 text-right">
+<div class="flex items-center justify-end gap-1 text-outline">
+<button class="p-1 hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">visibility</span></button>
+<button class="p-1 hover:text-secondary"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+<button class="p-1 hover:text-error"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="p-3 font-code-inline text-outline">PRD-8823</td>
+<td class="p-3 font-medium text-on-surface flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-primary">shopping_bag</span>
+</div>
+<span>ArtisanCraft Canvas Tote Bag</span>
+</td>
+<td class="p-3 text-on-surface-variant">Merchandise</td>
+<td class="p-3 font-code-inline text-on-surface">$22.00</td>
+<td class="p-3 font-code-inline text-on-surface">58</td>
+<td class="p-3">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container/30 text-tertiary font-label-sm text-label-sm">In Stock</span>
+</td>
+<td class="p-3 text-right">
+<div class="flex items-center justify-end gap-1 text-outline">
+<button class="p-1 hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">visibility</span></button>
+<button class="p-1 hover:text-secondary"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+<button class="p-1 hover:text-error"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Bar -->
+<div class="flex items-center justify-between font-body-sm text-body-sm text-outline pt-2">
+<span>Showing 1 to 3 of 48 entries</span>
+<div class="flex items-center gap-1">
+<button class="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-highest text-on-surface">Prev</button>
+<button class="px-2.5 py-1 rounded bg-primary-container text-on-primary font-bold">1</button>
+<button class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-highest text-on-surface">2</button>
+<button class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-highest text-on-surface">3</button>
+<button class="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-highest text-on-surface">Next</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. Artisan CLI Terminal Tab Panel -->
+<section class="tab-pane hidden flex flex-col flex-1 h-full bg-surface-container-lowest p-space-md font-code-block text-code-block overflow-y-auto" id="pane-cli">
+<div class="flex items-center justify-between pb-3 text-outline">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-tertiary">terminal</span>
+<span class="text-on-surface font-semibold">Artisan Pipeline Daemon v4.12.0</span>
+</div>
+<div class="flex items-center gap-2 font-label-sm text-label-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-ping"></span>
+<span class="text-tertiary">SESSION ACTIVE</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 text-on-surface leading-relaxed">
+<div class="text-outline">$ php artisan make:generator-scaffold --target=all --preset=bootstrap53</div>
+<div class="text-tertiary flex items-center gap-2">
+<span>✔</span><span>Target environment validation: PHP 8.4.1 runtime verified.</span>
+</div>
+<div class="text-tertiary flex items-center gap-2">
+<span>✔</span><span>Synthesized 6 Eloquent Models with typed attributes &amp; casting.</span>
+</div>
+<div class="text-tertiary flex items-center gap-2">
+<span>✔</span><span>Scaffolded 14 database migrations (MySQL 8.4 engine configuration applied).</span>
+</div>
+<div class="text-tertiary flex items-center gap-2">
+<span>✔</span><span>Installed &amp; configured spatie/laravel-permission + live roles seeders.</span>
+</div>
+<div class="text-tertiary flex items-center gap-2">
+<span>✔</span><span>Compiled Bootstrap 5.3.3 Sass modules &amp; configured Vite assets pipeline.</span>
+</div>
+<div class="text-tertiary flex items-center gap-2">
+<span>✔</span><span>Pest v3 / PHPUnit test cases compiled: 42 assertions passing (100%).</span>
+</div>
+<div class="text-on-surface font-semibold pt-2">
+              Scaffolding summary:
+            </div>
+<div class="text-secondary pl-4">
+              • Controllers: ProductController, CategoryController, OrderController, UserController<br>
+              • Requests: StoreProductRequest, UpdateProductRequest, AuthTokenRequest<br>
+              • Views: 18 Blade views with Bootstrap 5.3 theme tokens and layout components<br>
+              • Bundling archive: artisan-pos-system-v1.0.0.zip (Ready)
+            </div>
+<div class="text-primary font-bold pt-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span>Project built successfully in 3.42s! Ready for distribution.</span>
+</div>
+<div class="pt-2 flex items-center gap-2 text-outline">
+<span class="text-tertiary">artisan@generator:~$</span>
+<span class="w-2 h-4 bg-primary animate-pulse inline-block"></span>
+</div>
+</div>
+</section>
+</div>
+<!-- Quick Command Execution Box (Bottom Bar) -->
+<footer class="w-full bg-surface-container-low p-space-md flex flex-col md:flex-row items-start md:items-center justify-between gap-space-sm shadow-md">
+<div class="flex items-center gap-space-sm flex-1 min-w-0 w-full">
+<div class="flex items-center gap-1.5 px-2 py-1 rounded bg-surface-container font-label-sm text-label-sm text-outline flex-shrink-0">
+<span class="material-symbols-outlined text-[14px] text-tertiary">bolt</span>
+<span>CLI Quickstart</span>
+</div>
+<div class="relative flex-1 min-w-0 bg-surface-container-lowest rounded-lg px-space-md py-2 overflow-x-auto">
+<code class="font-code-block text-code-block text-on-surface whitespace-nowrap block" id="one-liner-code">git clone https://github.com/org/artisan-pos.git &amp;&amp; cd artisan-pos &amp;&amp; composer install &amp;&amp; cp .env.example .env &amp;&amp; php artisan key:generate &amp;&amp; php artisan migrate --seed</code>
+</div>
+</div>
+<button class="flex-shrink-0 flex items-center gap-1.5 px-space-md py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-headline-sm text-headline-sm transition-colors shadow-sm" id="footer-copy-btn" type="button">
+<span class="material-symbols-outlined text-[16px] text-primary">content_copy</span>
+<span id="footer-copy-text">Copy Command</span>
+</button>
+</footer>
+</main>
+</div>
+</div>
+<script>
+  // Simple tab switcher logic
+  const tabCodeBtn = document.getElementById('tab-code-btn');
+  const tabPreviewBtn = document.getElementById('tab-preview-btn');
+  const tabCliBtn = document.getElementById('tab-cli-btn');
+
+  const paneCode = document.getElementById('pane-code');
+  const panePreview = document.getElementById('pane-preview');
+  const paneCli = document.getElementById('pane-cli');
+
+  function resetTabs() {
+    [tabCodeBtn, tabPreviewBtn, tabCliBtn].forEach(btn => {
+      btn.className = "tab-button flex items-center gap-2 px-space-md py-2 rounded-t-lg hover:bg-surface-container text-on-surface-variant font-headline-sm text-headline-sm font-normal transition-colors";
+    });
+    paneCode.classList.add('hidden');
+    panePreview.classList.add('hidden');
+    paneCli.classList.add('hidden');
+  }
+
+  tabCodeBtn.addEventListener('click', () => {
+    resetTabs();
+    tabCodeBtn.className = "tab-button flex items-center gap-2 px-space-md py-2 rounded-t-lg bg-surface text-primary font-headline-sm text-headline-sm font-medium shadow-sm";
+    paneCode.classList.remove('hidden');
+  });
+
+  tabPreviewBtn.addEventListener('click', () => {
+    resetTabs();
+    tabPreviewBtn.className = "tab-button flex items-center gap-2 px-space-md py-2 rounded-t-lg bg-surface text-primary font-headline-sm text-headline-sm font-medium shadow-sm";
+    panePreview.classList.remove('hidden');
+  });
+
+  tabCliBtn.addEventListener('click', () => {
+    resetTabs();
+    tabCliBtn.className = "tab-button flex items-center gap-2 px-space-md py-2 rounded-t-lg bg-surface text-primary font-headline-sm text-headline-sm font-medium shadow-sm";
+    paneCli.classList.remove('hidden');
+  });
+
+  // Copy scripts
+  const oneLiner = document.getElementById('one-liner-code').innerText;
+  const footerCopyBtn = document.getElementById('footer-copy-btn');
+  const footerCopyText = document.getElementById('footer-copy-text');
+  const copyScriptBtn = document.getElementById('copy-script-btn');
+
+  function triggerCopyNotice(button, textElement) {
+    navigator.clipboard.writeText(oneLiner).then(() => {
+      const original = textElement.textContent;
+      textElement.textContent = "Copied!";
+      setTimeout(() => {
+        textElement.textContent = original;
+      }, 2000);
+    });
+  }
+
+  if (footerCopyBtn) {
+    footerCopyBtn.addEventListener('click', () => triggerCopyNotice(footerCopyBtn, footerCopyText));
+  }
+  if (copyScriptBtn) {
+    copyScriptBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(oneLiner);
+      alert('One-liner setup command copied to clipboard!');
+    });
+  }
+
+  // File explorer selection simulation
+  const fileNodes = document.querySelectorAll('.file-node');
+  const activeFileName = document.getElementById('active-filename');
+
+  fileNodes.forEach(node => {
+    node.addEventListener('click', () => {
+      fileNodes.forEach(f => {
+        f.classList.remove('bg-surface-container-high', 'text-primary', 'font-medium', 'shadow-sm');
+        f.classList.add('text-on-surface-variant');
+      });
+      node.classList.add('bg-surface-container-high', 'text-primary', 'font-medium', 'shadow-sm');
+      node.classList.remove('text-on-surface-variant');
+      
+      const file = node.getAttribute('data-file');
+      if (file === 'ProductBlade') {
+        tabPreviewBtn.click();
+        if (activeFileName) activeFileName.textContent = 'products/index.blade.php';
+      } else {
+        tabCodeBtn.click();
+        if (activeFileName) activeFileName.textContent = (file ? file + '.php' : 'ProductController.php');
+      }
+    });
+  });
+
+  // ZIP download visual feedback
+  const zipBtn = document.getElementById('download-zip-btn');
+  if (zipBtn) {
+    zipBtn.addEventListener('click', () => {
+      zipBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Packaging ZIP...</span>';
+      setTimeout(() => {
+        zipBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span><span>Downloaded!</span>';
+        setTimeout(() => {
+          zipBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">download</span><span>Export .ZIP</span>';
+        }, 2500);
+      }, 1200);
+    });
+  }
+</script></main></div></body></html>

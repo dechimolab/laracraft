@@ -1,0 +1,17 @@
+---
+description: >-
+  HTTPS responses send HSTS for one year with includeSubDomains and a
+  Content-Security-Policy locked to the origins the app actually uses. Use
+  when adding HSTS, CSP, or security header middleware.
+alwaysApply: false
+---
+
+# HSTS และ CSP
+
+- ส่ง HSTS เฉพาะเมื่อคำขอเป็น HTTPS หรือพร็อกซีบอกว่าเป็น HTTPS หรือ `APP_URL` เป็น `https://`
+- ค่า HSTS คือ `max-age=31536000; includeSubDomains` ห้ามใส่ตอนตอบ HTTP
+- CSP ต้องมี `default-src 'self'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`
+- `'unsafe-inline'` หรือ `'unsafe-eval'` มีได้เฉพาะเมื่อหน้าปัจจุบันพังถ้าไม่มี และห้ามเพิ่ม origin สคริปต์เผื่อ
+- ถ้าสคริปต์ในหน้าเยอะ ให้ใช้ Report-Only ก่อน แล้วค่อยบังคับ
+
+ขั้นตอนเต็มอยู่ในสกิล `sec-hsts-and-csp`

@@ -1,0 +1,17 @@
+---
+description: >-
+  Vendored jQuery UI must be 1.14.1 or newer, and local datepicker patches such
+  as Buddhist year must be kept. Use when editing jquery-ui.js or datepicker assets.
+alwaysApply: false
+---
+
+# jQuery UI ไม่ต่ำกว่า 1.14.1
+
+- ทุกไฟล์ `jquery-ui.js` ที่หน้าเว็บโหลดต้องเป็น 1.14.1 หรือใหม่กว่า
+- แพตช์ปีพุทธศักราชและการกัน datepicker พังเมื่อไม่มี instance ต้องอยู่ครบหลังอัปเกรด
+- ห้ามเหลือสำเนาเก่าในโฟลเดอร์ที่ layout ยังอ้าง
+- อย่าทับไฟล์ใหม่ด้วยสำเนาทั้งก้อนจากโปรเจกต์เดิม
+
+เปิดปฏิทินแล้วปีต้องตรงกับที่ผู้ใช้เคยเห็น
+
+ขั้นตอนเต็มอยู่ในสกิล `sec-jquery-ui-upgrade`
