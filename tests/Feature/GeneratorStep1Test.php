@@ -425,5 +425,43 @@ class GeneratorStep1Test extends TestCase
         $this->assertEquals('1', session('project.modules.ums_buu'));
         $this->assertArrayNotHasKey('buu_ldap', session('project.modules', []));
     }
+
+    public function test_generator_step1_displays_ums_connection_test_button(): void
+    {
+        $response = $this->get('/generator/step1');
+
+        $response->assertStatus(200);
+        $response->assertSee('test-ums-connection-btn', false);
+        $response->assertSee('Test UMS &amp; Kong Connection', false);
+        $response->assertSee('testUmsConnection', false);
+        $response->assertSee('ums-connection-result', false);
+    }
+
+    public function test_generator_test_ums_connection_requires_parameters(): void
+    {
+        $response = $this->postJson(route('generator.testUms'), []);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => false,
+            'ums_status' => 'missing_params',
+        ]);
+    }
+
+    public function test_generator_test_ums_connection_endpoint(): void
+    {
+        $response = $this->postJson(route('generator.testUms'), [
+            'ums_system_id' => '149',
+            'ums_service_key' => '42963d28e7e0996c39d4a1658f8bd763',
+            'ums_service_url' => 'https://ums.buu.ac.th/index.php',
+            'kong_domain_prod' => 'https://api-gw.buu.ac.th',
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertArrayHasKey('success', $response->json());
+        $this->assertArrayHasKey('message', $response->json());
+        $this->assertArrayHasKey('latency_ms', $response->json());
+        $this->assertArrayHasKey('ums_status', $response->json());
+    }
 }
 

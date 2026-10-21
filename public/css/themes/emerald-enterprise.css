@@ -1,0 +1,72 @@
+/**
+ * ArtisanCraft Emerald Enterprise Design Tokens
+ * Source: design/theme/emerald_enterprise/emerald_enterprise/DESIGN.md
+ * Movement: Modern Corporate Precision (Swiss Structural Discipline)
+ */
+
+:root,
+[data-bs-theme="light"],
+[data-theme="emerald-enterprise"] {
+    --sys-mode: light;
+    --sys-surface: #f7f9fb;
+    --sys-surface-dim: #d8dadc;
+    --sys-surface-bright: #f7f9fb;
+    --sys-surface-container-lowest: #ffffff;
+    --sys-surface-container-low: #f2f4f6;
+    --sys-surface-container: #eceef0;
+    --sys-surface-container-high: #e6e8ea;
+    --sys-surface-container-highest: #e0e3e5;
+    --sys-on-surface: #191c1e;
+    --sys-on-surface-variant: #3e4943;
+    --sys-inverse-surface: #2d3133;
+    --sys-inverse-on-surface: #eff1f3;
+    --sys-outline: #6e7a73;
+    --sys-outline-variant: #bdc9c1;
+    --sys-surface-tint: #006c4e;
+
+    /* Primary Emerald Deep */
+    --sys-primary: #047857;
+    --sys-primary-container: #005d42;
+    --sys-on-primary: #ffffff;
+    --sys-on-primary-container: #9ffdd3;
+    --sys-inverse-primary: #7bd8b1;
+    --sys-primary-rgb: 4, 120, 87;
+
+    /* Secondary Emerald Bright */
+    --sys-secondary: #006c49;
+    --sys-secondary-container: #ecfdf5;
+    --sys-on-secondary: #ffffff;
+    --sys-on-secondary-container: #047857;
+    --sys-secondary-rgb: 0, 108, 73;
+
+    /* Tertiary Deep Slate */
+    --sys-tertiary: #495167;
+    --sys-tertiary-container: #616980;
+    --sys-on-tertiary: #ffffff;
+    --sys-on-tertiary-container: #e4e9ff;
+
+    /* Error / Semantic */
+    --sys-error: #ba1a1a;
+    --sys-error-container: #ffdad6;
+    --sys-on-error: #ffffff;
+    --sys-on-error-container: #93000a;
+
+    /* Base Surfaces */
+    --sys-bg: #F0FDF4;
+    --sys-card: #ffffff;
+    --sys-text: #191c1e;
+    --sys-subtext: #3e4943;
+
+    /* Bootstrap 5.3 Overrides */
+    --bs-primary: #047857;
+    --bs-primary-rgb: 4, 120, 87;
+    --bs-secondary: #006c49;
+    --bs-secondary-rgb: 0, 108, 73;
+    --bs-body-bg: #F0FDF4;
+    --bs-body-color: #191c1e;
+    --bs-card-bg: #ffffff;
+    --bs-card-color: #191c1e;
+    --bs-border-color: rgba(209, 250, 229, 0.8);
+    --bs-link-color: #047857;
+    --bs-link-hover-color: #005d42;
+}

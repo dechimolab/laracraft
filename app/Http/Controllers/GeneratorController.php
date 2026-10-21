@@ -297,6 +297,80 @@ class GeneratorController extends Controller
         ]);
     }
 
+    public function testUmsConnection(Request $request)
+    {
+        $systemId = trim((string) $request->input('ums_system_id', ''));
+        $serviceKey = trim((string) $request->input('ums_service_key', ''));
+        $serviceUrl = trim((string) $request->input('ums_service_url', 'https://ums.buu.ac.th/index.php'));
+        $kongDomain = trim((string) $request->input('kong_domain_prod', 'https://api-gw.buu.ac.th'));
+
+        if (empty($systemId) || empty($serviceKey)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กรุณาระบุ UMS System ID และ UMS Service Key ให้ครบถ้วน',
+                'ums_status' => 'missing_params',
+            ], 200);
+        }
+
+        $startTime = microtime(true);
+        $umsService = new \App\Services\Auth\UmsBuuAuthService($systemId, $serviceKey, $serviceUrl);
+        $umsResult = $umsService->get_group_in_system();
+        $latencyMs = round((microtime(true) - $startTime) * 1000, 1);
+
+        // Probe Kong Gateway
+        $kongStatus = 'unchecked';
+        $kongMessage = '';
+        if (!empty($kongDomain)) {
+            $parsedKong = parse_url($kongDomain);
+            $kongHost = $parsedKong['host'] ?? $kongDomain;
+            $kongPort = $parsedKong['port'] ?? (($parsedKong['scheme'] ?? 'https') === 'https' ? 443 : 80);
+            $errno = 0;
+            $errstr = '';
+            $socket = @fsockopen(($kongPort === 443 ? 'ssl://' : '') . $kongHost, $kongPort, $errno, $errstr, 2.0);
+            if ($socket) {
+                fclose($socket);
+                $kongStatus = 'reachable';
+                $kongMessage = "Kong API Gateway พร้อมให้บริการที่ {$kongHost}:{$kongPort}";
+            } else {
+                $kongStatus = 'unreachable';
+                $kongMessage = "ไม่สามารถเชื่อมต่อไปยัง Kong Gateway ที่ {$kongHost}:{$kongPort}";
+            }
+        }
+
+        $isSuccess = !empty($umsResult->Error) && is_array($umsResult->aData ?? null);
+        if ($isSuccess) {
+            $groups = [];
+            foreach ($umsResult->aData as $grp) {
+                $th = $grp->GPNAMET ?? $grp->gpnamet ?? '';
+                $en = $grp->GPNAMEE ?? $grp->gpnamee ?? '';
+                $groups[] = $th ?: $en;
+            }
+            $groupsCount = count($groups);
+            return response()->json([
+                'success' => true,
+                'message' => "เชื่อมต่อ UMS Gateway สำเร็จ • พบ {$groupsCount} กลุ่มสิทธิ์ในระบบ {$systemId} ({$latencyMs}ms)",
+                'latency_ms' => $latencyMs,
+                'ums_status' => 'connected',
+                'ums_message' => "UMS Central Gateway ตอบกลับปกติ (SystemID: {$systemId})",
+                'groups_count' => $groupsCount,
+                'groups' => array_slice($groups, 0, 5),
+                'kong_status' => $kongStatus,
+                'kong_message' => $kongMessage,
+            ]);
+        }
+
+        $errMsg = $umsResult->Message ?? 'ไม่สามารถเชื่อมต่อ UMS Gateway ได้';
+        return response()->json([
+            'success' => false,
+            'message' => 'การเชื่อมต่อ UMS ล้มเหลว: ' . $errMsg,
+            'latency_ms' => $latencyMs,
+            'ums_status' => 'error',
+            'ums_message' => $errMsg,
+            'kong_status' => $kongStatus,
+            'kong_message' => $kongMessage,
+        ], 200);
+    }
+
     public function saveStep1(Request $request)
     {
         $validated = $request->validate([
@@ -672,10 +746,28 @@ class GeneratorController extends Controller
     {
         $projectConfig = $this->getProjectConfig();
         $view = (string) $request->query('view', 'dashboard');
+        [$themeKey, $activeTheme] = $zipExportService->getActiveThemeData($projectConfig);
+
+        // Dedicated modular theme package preview if explicitly requested
+        if ($themeKey === 'emerald-enterprise' && $view === 'theme-package') {
+            return response()->view('themes.emerald-enterprise.demo.index', [
+                'projectConfig' => $projectConfig,
+                'themeKey' => $themeKey,
+                'activeTheme' => $activeTheme,
+                'view' => $view,
+            ]);
+        }
+
+        $themeTokensCss = $zipExportService->buildThemeTokensCss($themeKey, $activeTheme);
+        $themeCoreCss = $zipExportService->buildThemeCoreCss();
 
         return view('generator.preview', [
             'projectConfig' => $projectConfig,
             'view' => $view,
+            'activeTheme' => $activeTheme,
+            'themeKey' => $themeKey,
+            'themeTokensCss' => $themeTokensCss,
+            'themeCoreCss' => $themeCoreCss,
         ]);
     }
 

@@ -69,6 +69,13 @@ class ZipExportService
         $files['public/index.php'] = $this->buildPublicIndex();
         $files['public/.htaccess'] = $this->buildPublicHtaccess();
         $files['public/robots.txt'] = "User-agent: *\nDisallow:\n";
+
+        // Theme Modular Architecture (Tier 2: Individual Themes & Core Engine)
+        $allThemes = config('themes.themes', []);
+        foreach ($allThemes as $tKey => $tData) {
+            $files["public/css/themes/{$tKey}.css"] = $this->buildThemeTokensCss($tKey, $tData);
+        }
+        $files['public/css/theme-core.css'] = $this->buildThemeCoreCss();
         $files['public/css/theme.css'] = $this->buildThemeCss($projectConfig);
         $files['public/js/theme.js'] = $this->buildThemeJs($projectConfig);
         $files['public/css/style.css'] = $this->buildExportStyleCss();
@@ -85,6 +92,7 @@ class ZipExportService
         $files['config/queue.php'] = $this->buildConfigQueue();
         $files['config/session.php'] = $this->buildConfigSession();
         $files['config/constants.php'] = $this->buildConfigConstants($projectConfig);
+        $files['config/theme.php'] = $this->buildConfigTheme($projectConfig);
 
         // 5. app/ core
         $files['app/Http/Controllers/Controller.php'] = $this->buildBaseController($projectConfig);
@@ -155,6 +163,7 @@ class ZipExportService
             $files['app/Http/Controllers/Auth/LoginUmsController.php'] = $this->buildLoginUmsController();
             $files['resources/views/auth/login.blade.php'] = $this->buildLoginUmsBlade($projectConfig);
             $files['resources/views/auth/switch_group.blade.php'] = $this->buildUmsSwitchGroupBlade($projectConfig);
+            $files['resources/views/demo/ums.blade.php'] = $this->buildDemoUmsBlade($projectConfig);
         }
 
         // Shared Authentication & Biometrics (Passkey & WebAuthn) for LDAP & UMS
@@ -426,6 +435,8 @@ KONG_PK_UMS_DUSERGROUP={$pkDUserGroup}
 UMS;
         }
 
+        [$themeKey] = $this->getActiveThemeData($config);
+
         return <<<ENV
 APP_NAME="{$name}"
 APP_ENV={$env}
@@ -433,6 +444,7 @@ APP_KEY={$key}
 APP_DEBUG=true
 APP_TIMEZONE="Asia/Bangkok"
 APP_URL={$url}
+APP_THEME={$themeKey}
 
 APP_LOCALE=en
 APP_FALLBACK_LOCALE=en
@@ -567,6 +579,10 @@ ENV;
 
         if (!empty($config['modules']['buu_ldap'])) {
             $require['directorytree/ldaprecord-laravel'] = '^4.0';
+        }
+
+        // Biometrics (WebAuthn / Passkey) requires CBOR parser
+        if (!empty($config['modules']['buu_ldap']) || !empty($config['modules']['ums_buu']) || !empty($config['use_ums_buu'])) {
             $require['spomky-labs/cbor-php'] = '^3.4.2';
         }
 
@@ -2068,6 +2084,14 @@ PHP;
 
     protected function buildAppLayout(array $config): string
     {
+        [$themeKey, $theme] = $this->getActiveThemeData($config);
+        $themeLayoutPath = resource_path("views/themes/{$themeKey}/layouts/app.blade.php");
+        if (file_exists($themeLayoutPath)) {
+            $content = file_get_contents($themeLayoutPath);
+            $appName = htmlspecialchars($config['name'] ?? 'Artisan App');
+            return str_replace(['Artisan POS & Inventory Hub', 'Artisan POS &amp; Inventory Hub'], $appName, $content);
+        }
+
         $appName = htmlspecialchars($config['name'] ?? 'Artisan App');
         $hasBuuLdap = !empty($config['modules']['buu_ldap']);
         $hasUmsBuu = !empty($config['modules']['ums_buu']) || !empty($config['use_ums_buu']);
@@ -2201,7 +2225,9 @@ BLADE;
     <!-- Vendor Plugins (public/plugins) -->
 {$cssLinksHtml}
 
-    <!-- Theme Design System Assets (public/css/theme.css) -->
+    <!-- Theme Design System Assets (Modular Theme Tokens, Core Engine & Custom Style) -->
+    <link rel="stylesheet" href="{{ secure_asset('css/themes/' . config('theme.active', '{$themeKey}') . '.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/theme-core.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/theme.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/style.css') }}">
 </head>
@@ -2238,7 +2264,7 @@ BLADE;
 HTML;
     }
 
-    protected function getActiveThemeData(array $config): array
+    public function getActiveThemeData(array $config): array
     {
         $themeKey = $config['theme_key'] ?? $config['project']['theme_key'] ?? config('themes.default_theme', 'nordic-clean');
         $allThemes = config('themes.themes', []);
@@ -2257,7 +2283,7 @@ HTML;
         return [$themeKey, $theme];
     }
 
-    protected function hexToRgb(string $hex): string
+    public function hexToRgb(string $hex): string
     {
         $hex = ltrim($hex, '#');
         if (strlen($hex) === 3) {
@@ -2269,22 +2295,31 @@ HTML;
         return "{$r}, {$g}, {$b}";
     }
 
-    protected function buildThemeCss(array $config): string
+    public function buildThemeTokensCss(string $themeKey, array $theme): string
     {
-        [$themeKey, $theme] = $this->getActiveThemeData($config);
+        $customThemeCssPath = public_path("css/themes/{$themeKey}.css");
+        if (file_exists($customThemeCssPath)) {
+            return file_get_contents($customThemeCssPath);
+        }
+
         $primaryRgb = $this->hexToRgb($theme['primary'] ?? '#0F172A');
         $secondaryRgb = $this->hexToRgb($theme['secondary'] ?? '#3B82F6');
         $mode = $theme['mode'] ?? 'light';
+        $name = $theme['name'] ?? $themeKey;
+        $wcag = $theme['wcag'] ?? 'AAA';
 
         return <<<CSS
 /**
- * ArtisanCraft Theme Design Tokens
- * Selected Theme: {$theme['name']} ({$mode})
+ * ArtisanCraft Modular Theme Tokens: {$name} ({$mode})
+ * Theme Key: {$themeKey}
+ * WCAG 2.1 Conformance: {$wcag}
  */
 
 :root,
-[data-bs-theme="{$mode}"] {
+[data-bs-theme="{$mode}"],
+[data-theme="{$themeKey}"] {
     /* Theme Tokens */
+    --sys-mode: {$mode};
     --sys-primary: {$theme['primary']};
     --sys-secondary: {$theme['secondary']};
     --sys-accent: {$theme['accent']};
@@ -2307,6 +2342,16 @@ HTML;
     --bs-link-color: {$theme['primary']};
     --bs-link-hover-color: {$theme['secondary']};
 }
+CSS;
+    }
+
+    public function buildThemeCoreCss(): string
+    {
+        return <<<'CSS'
+/**
+ * ArtisanCraft Theme Core Stylesheet (Global Component Tokens)
+ * Maps CSS variables (--sys-*) directly into Bootstrap 5.3 Component Architecture
+ */
 
 /* Base Body & Surfaces */
 body {
@@ -2776,6 +2821,36 @@ label.form-label,
     font-family: 'JetBrains Mono', monospace;
 }
 CSS;
+    }
+
+    public function buildThemeCss(array $config): string
+    {
+        [$themeKey, $theme] = $this->getActiveThemeData($config);
+        $tokens = $this->buildThemeTokensCss($themeKey, $theme);
+        $core = $this->buildThemeCoreCss();
+
+        return $tokens . "\n\n" . $core;
+    }
+
+    public function buildConfigTheme(array $config): string
+    {
+        [$themeKey, $theme] = $this->getActiveThemeData($config);
+        $mode = $theme['mode'] ?? 'light';
+
+        return <<<PHP
+<?php
+
+return [
+    /*
+    |--------------------------------------------------------------------------
+    | Active Application Theme
+    |--------------------------------------------------------------------------
+    | Sourced from .env (APP_THEME) with default fallback to selected theme
+    */
+    'active' => env('APP_THEME', '{$themeKey}'),
+    'default_mode' => '{$mode}',
+];
+PHP;
     }
 
     protected function buildThemeJs(array $config): string
@@ -3576,6 +3651,7 @@ MD;
         }
         if ($hasUmsBuu) {
             $demoProtectedRoutes[] = "    Route::get('/demo/ums', [DemoController::class, 'umsDemo'])->name('demo.ums');";
+            $demoProtectedRoutes[] = "    Route::post('/demo/ums/test-connection', [DemoController::class, 'testUmsConnection'])->name('demo.ums.test');";
         }
         if ($hasUserRole) {
             $demoProtectedRoutes[] = "    Route::get('/demo/roles', [DemoController::class, 'rolesDemo'])->name('demo.roles');";
@@ -5387,11 +5463,11 @@ class UmsBuuAuthService
     protected string $serviceKey;
     protected string $serviceUrl;
 
-    public function __construct()
+    public function __construct(?string $systemId = null, ?string $serviceKey = null, ?string $serviceUrl = null)
     {
-        $this->systemId = (string) (config('constants.configUms.SystemID') ?? config('ums.system_id', env('UMS_SYSTEM_ID', '')));
-        $this->serviceKey = (string) (config('constants.configUms.ServiceKey') ?? config('ums.service_key', env('UMS_SERVICE_KEY', '')));
-        $this->serviceUrl = rtrim((string) (config('constants.configUms.ServiceUrl') ?? config('ums.service_url', env('UMS_SERVICE_URL', 'https://ums.buu.ac.th/index.php'))), '/');
+        $this->systemId = (string) ($systemId ?? config('constants.configUms.SystemID') ?? config('ums.system_id', env('UMS_SYSTEM_ID', '')));
+        $this->serviceKey = (string) ($serviceKey ?? config('constants.configUms.ServiceKey') ?? config('ums.service_key', env('UMS_SERVICE_KEY', '')));
+        $this->serviceUrl = rtrim((string) ($serviceUrl ?? config('constants.configUms.ServiceUrl') ?? config('ums.service_url', env('UMS_SERVICE_URL', 'https://ums.buu.ac.th/index.php'))), '/');
     }
 
     /**
@@ -6117,6 +6193,14 @@ PHP;
 
     protected function buildLoginUmsBlade(array $config): string
     {
+        [$themeKey, $theme] = $this->getActiveThemeData($config);
+        $themeLoginPath = resource_path("views/themes/{$themeKey}/auth/login.blade.php");
+        if (file_exists($themeLoginPath)) {
+            $content = file_get_contents($themeLoginPath);
+            $appName = htmlspecialchars($config['name'] ?? 'Artisan POS & Inventory Hub');
+            return str_replace(['Artisan POS & Inventory Hub', 'Artisan POS &amp; Inventory Hub'], $appName, $content);
+        }
+
         $appName = htmlspecialchars($config['name'] ?? 'Laravel Application');
 
         $template = <<<'HTML'
@@ -6935,6 +7019,14 @@ PHP;
 
     protected function buildLoginBlade(array $config): string
     {
+        [$themeKey, $theme] = $this->getActiveThemeData($config);
+        $themeLoginPath = resource_path("views/themes/{$themeKey}/auth/login.blade.php");
+        if (file_exists($themeLoginPath)) {
+            $content = file_get_contents($themeLoginPath);
+            $appName = htmlspecialchars($config['name'] ?? 'Artisan POS & Inventory Hub');
+            return str_replace(['Artisan POS & Inventory Hub', 'Artisan POS &amp; Inventory Hub'], $appName, $content);
+        }
+
         $appName = htmlspecialchars($config['name'] ?? 'Laravel Application');
         $hasUmsBuu = !empty($config['modules']['ums_buu']);
         $umsButtonHtml = '';
@@ -7428,10 +7520,69 @@ class DemoController extends Controller
      */
     public function umsDemo()
     {
-        if (\Illuminate\Support\Facades\Auth::check()) {
-            return redirect()->route('switch.group');
+        return view('demo.ums');
+    }
+
+    /**
+     * Test live connection to UMS Central Gateway and Kong Gateway.
+     */
+    public function testUmsConnection(Request $request)
+    {
+        $systemId = (string) (config('constants.configUms.SystemID') ?? config('ums.system_id', ''));
+        $serviceKey = (string) (config('constants.configUms.ServiceKey') ?? config('ums.service_key', ''));
+        $serviceUrl = (string) (config('constants.configUms.ServiceUrl') ?? config('ums.service_url', 'https://ums.buu.ac.th/index.php'));
+        $kongDomain = (string) (config('constants.kong.domain_prod') ?? 'https://api-gw.buu.ac.th');
+
+        $startTime = microtime(true);
+        $umsService = new \App\Services\Auth\UmsBuuAuthService($systemId, $serviceKey, $serviceUrl);
+        $umsResult = $umsService->get_group_in_system();
+        $latencyMs = round((microtime(true) - $startTime) * 1000, 1);
+
+        $kongStatus = 'unchecked';
+        $kongMessage = '';
+        if (!empty($kongDomain)) {
+            $parsedKong = parse_url($kongDomain);
+            $kongHost = $parsedKong['host'] ?? $kongDomain;
+            $kongPort = $parsedKong['port'] ?? (($parsedKong['scheme'] ?? 'https') === 'https' ? 443 : 80);
+            $errno = 0;
+            $errstr = '';
+            $socket = @fsockopen(($kongPort === 443 ? 'ssl://' : '') . $kongHost, $kongPort, $errno, $errstr, 2.0);
+            if ($socket) {
+                fclose($socket);
+                $kongStatus = 'reachable';
+                $kongMessage = "Kong API Gateway พร้อมให้บริการที่ {$kongHost}:{$kongPort}";
+            } else {
+                $kongStatus = 'unreachable';
+                $kongMessage = "ไม่สามารถเชื่อมต่อไปยัง Kong Gateway ที่ {$kongHost}:{$kongPort}";
+            }
         }
-        return redirect()->route('login');
+
+        $isSuccess = !empty($umsResult->Error) && is_array($umsResult->aData ?? null);
+        if ($isSuccess) {
+            $groups = [];
+            foreach ($umsResult->aData as $grp) {
+                $th = $grp->GPNAMET ?? $grp->gpnamet ?? '';
+                $en = $grp->GPNAMEE ?? $grp->gpnamee ?? '';
+                $groups[] = $th ?: $en;
+            }
+            return response()->json([
+                'success' => true,
+                'message' => "เชื่อมต่อ UMS Central Gateway สำเร็จ • พบ " . count($groups) . " กลุ่มสิทธิ์ในระบบ {$systemId} ({$latencyMs}ms)",
+                'latency_ms' => $latencyMs,
+                'groups_count' => count($groups),
+                'groups' => array_slice($groups, 0, 5),
+                'kong_status' => $kongStatus,
+                'kong_message' => $kongMessage,
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'การเชื่อมต่อ UMS ล้มเหลว: ' . ($umsResult->Message ?? 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้'),
+            'latency_ms' => $latencyMs,
+            'kong_status' => $kongStatus,
+            'kong_message' => $kongMessage,
+        ], 200);
     }
 
     /**
@@ -7487,6 +7638,14 @@ PHP;
 
     protected function buildDemoIndexBlade(array $config): string
     {
+        [$themeKey, $theme] = $this->getActiveThemeData($config);
+        $themeDemoPath = resource_path("views/themes/{$themeKey}/demo/index.blade.php");
+        if (file_exists($themeDemoPath)) {
+            $content = file_get_contents($themeDemoPath);
+            $appName = htmlspecialchars($config['name'] ?? 'Artisan POS & Inventory Hub');
+            return str_replace(['Artisan POS & Inventory Hub', 'Artisan POS &amp; Inventory Hub'], $appName, $content);
+        }
+
         $appName = htmlspecialchars($config['name'] ?? 'Laravel Application');
         $hasBuuLdap = !empty($config['modules']['buu_ldap']);
         $hasUmsBuu = !empty($config['modules']['ums_buu']) || !empty($config['use_ums_buu']);
@@ -8311,8 +8470,9 @@ JS;
                             <button type="button" class="btn btn-theme-primary"><i class="bi bi-check2-circle me-1"></i> Primary Action</button>
                             <button type="button" class="btn btn-theme-secondary"><i class="bi bi-shield-check me-1"></i> Secondary Action</button>
                             <button type="button" class="btn btn-success"><i class="bi bi-check-lg me-1"></i> Success (Emerald)</button>
-                            <button type="button" class="btn btn-secondary">Muted Neutral</button>
+                            <button type="button" class="btn btn-danger"><i class="bi bi-exclamation-octagon me-1"></i> Danger</button>
                             <button type="button" class="btn btn-warning text-dark"><i class="bi bi-exclamation-triangle me-1"></i> Warning</button>
+                            <button type="button" class="btn btn-secondary">Muted Neutral</button>
                         </div>
                     </div>
 
@@ -8323,6 +8483,7 @@ JS;
                             <button type="button" class="btn btn-outline-theme-primary btn-sm"><i class="bi bi-bookmark me-1"></i> Small Outline</button>
                             <button type="button" class="btn btn-outline-theme-primary"><i class="bi bi-download me-1"></i> Regular Outline</button>
                             <button type="button" class="btn btn-outline-theme-primary btn-lg"><i class="bi bi-plus-lg me-1"></i> Large Outline</button>
+                            <button type="button" class="btn btn-outline-danger"><i class="bi bi-trash3 me-1"></i> Danger Outline</button>
                         </div>
                     </div>
 
@@ -9187,6 +9348,212 @@ HTML;
             doDelete();
         }
     }
+</script>
+@endsection
+HTML;
+    }
+
+    protected function buildDemoUmsBlade(array $config): string
+    {
+        return <<<'HTML'
+@extends('layouts.app')
+
+@section('content')
+<div class="container py-2">
+    <!-- Breadcrumb & Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 small">
+                    <li class="breadcrumb-item"><a href="{{ route('demo.index') }}" class="text-primary text-decoration-none"><i class="bi bi-house-door me-1"></i>Demo Hub</a></li>
+                    <li class="breadcrumb-item active text-secondary" aria-current="page">UMS BUU &amp; Kong Gateway</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold text-body mb-0"><i class="bi bi-hub text-primary me-2"></i> UMS BUU &amp; Kong API Gateway</h2>
+            <p class="text-secondary small mb-0">ระบบเชื่อมโยงผู้ใช้งานและตรวจสอบสิทธิ์กลาง มหาวิทยาลัยบูรพา (Single Sign-On &amp; Kong API Gateway)</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ route('demo.index') }}" class="btn btn-outline-theme-primary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> กลับหน้าหลัก Demo
+            </a>
+            <a href="{{ route('switch.group') }}" class="btn btn-theme-primary btn-sm">
+                <i class="bi bi-arrow-repeat me-1"></i> สลับกลุ่มงาน (Switch Group)
+            </a>
+        </div>
+    </div>
+
+    <!-- Live Connection Diagnostic & Status -->
+    <div class="row g-4 mb-4">
+        <!-- UMS & Kong Connection Card -->
+        <div class="col-12 col-lg-7">
+            <div class="card border border-theme bg-theme-card shadow-sm h-100">
+                <div class="card-header border-bottom border-theme py-3 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-broadcast text-theme-primary"></i>
+                        <span class="fw-semibold text-body">การเชื่อมต่อ UMS Central Gateway &amp; Kong API</span>
+                    </div>
+                    <span class="badge bg-theme-primary font-monospace" id="ums-status-badge">READY TO TEST</span>
+                </div>
+                <div class="card-body p-4 d-flex flex-column gap-3">
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-2 small">
+                        <li class="d-flex justify-content-between border-bottom pb-2">
+                            <span class="text-secondary">UMS System ID (SystemID):</span>
+                            <span class="fw-semibold font-monospace text-theme-primary">{{ config('constants.configUms.SystemID', config('ums.system_id', env('UMS_SYSTEM_ID', '-'))) }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom pb-2">
+                            <span class="text-secondary">UMS Service URL:</span>
+                            <span class="fw-semibold font-monospace text-body">{{ config('constants.configUms.ServiceUrl', config('ums.service_url', 'https://ums.buu.ac.th/index.php')) }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom pb-2">
+                            <span class="text-secondary">Kong Domain (domain_prod):</span>
+                            <span class="fw-semibold font-monospace text-body">{{ config('constants.kong.domain_prod', 'https://api-gw.buu.ac.th') }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom pb-2">
+                            <span class="text-secondary">Active Service Key:</span>
+                            <span class="badge bg-secondary-subtle text-secondary font-monospace">{{ substr(config('constants.configUms.ServiceKey', config('ums.service_key', '42963d28e7e0996c39d4a1658f8bd763')), 0, 8) }}••••••••••••••••</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span class="text-secondary">Authentication Standard:</span>
+                            <span class="text-theme-subtext small"><i class="bi bi-shield-check me-1"></i>Active Directory + Central HR Personnel DB</span>
+                        </li>
+                    </ul>
+
+                    <div class="pt-2">
+                        <button type="button" class="btn btn-theme-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2" id="btn-test-ums" onclick="runUmsConnectionTest()">
+                            <i class="bi bi-hdd-network"></i>
+                            <span id="btn-test-ums-text">ทดสอบการเชื่อมต่อ UMS &amp; Kong Gateway เดี๋ยวนี้</span>
+                        </button>
+                    </div>
+
+                    <!-- Live Test Output Container -->
+                    <div id="ums-test-result" class="d-none alert alert-light border border-theme bg-theme-card mt-2 mb-0 p-3 small">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="fw-bold" id="result-title"></span>
+                            <span class="badge bg-secondary font-monospace" id="result-latency"></span>
+                        </div>
+                        <div id="result-body" class="text-secondary"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current User UMS Context Card -->
+        <div class="col-12 col-lg-5">
+            <div class="card border border-theme bg-theme-card shadow-sm h-100">
+                <div class="card-header border-bottom border-theme py-3 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-person-badge text-success"></i>
+                        <span class="fw-semibold text-body">สิทธิ์และข้อมูลบัญชี UMS ปัจจุบัน</span>
+                    </div>
+                    <span class="badge bg-success bg-opacity-25 text-success">ACTIVE SESSION</span>
+                </div>
+                <div class="card-body p-4">
+                    @php
+                        $user = auth()->user();
+                        $activePermit = session('userPermitName', session('authLogin.permitName', 'ผู้ใช้งานทั่วไป'));
+                        $activePermitId = session('userPermitId', session('authLogin.permitId', '-'));
+                    @endphp
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="avatar-lg bg-theme-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 50px; height: 50px;">
+                            {{ strtoupper(substr($user->username ?? 'U', 0, 1)) }}
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-body mb-0">{{ $user->name ?? $user->username ?? 'UMS User' }}</h5>
+                            <span class="text-secondary small font-monospace">{{ $user->username ?? '-' }} (PSN: {{ $user->psn_id ?? '-' }})</span>
+                        </div>
+                    </div>
+
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-2 small">
+                        <li class="d-flex justify-content-between border-bottom pb-2">
+                            <span class="text-secondary">บทบาทที่กำลังใช้งาน:</span>
+                            <span class="badge bg-theme-primary">{{ $activePermit }} (ID: {{ $activePermitId }})</span>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom pb-2">
+                            <span class="text-secondary">ตำแหน่งงาน:</span>
+                            <span class="fw-semibold text-body">{{ $user->position ?? '-' }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom pb-2">
+                            <span class="text-secondary">หน่วยงาน / ส่วนงาน:</span>
+                            <span class="fw-semibold text-body">{{ $user->fac_name ?? $user->dep_name ?? '-' }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span class="text-secondary">Biometric Passkey:</span>
+                            <span class="text-success"><i class="bi bi-fingerprint me-1"></i>WebAuthn Ready</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function runUmsConnectionTest() {
+    const btn = document.getElementById('btn-test-ums');
+    const btnText = document.getElementById('btn-test-ums-text');
+    const resultBox = document.getElementById('ums-test-result');
+    const resultTitle = document.getElementById('result-title');
+    const resultLatency = document.getElementById('result-latency');
+    const resultBody = document.getElementById('result-body');
+    const badge = document.getElementById('ums-status-badge');
+
+    btn.disabled = true;
+    btnText.textContent = 'กำลังทดสอบการเชื่อมต่อ UMS & Kong...';
+    resultBox.classList.remove('d-none');
+    resultTitle.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังส่งคำขอไปยัง UMS Central Gateway...';
+    resultLatency.textContent = 'PROBING...';
+    resultBody.innerHTML = '';
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+    try {
+        const resp = await fetch('{{ route("demo.ums.test") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            }
+        });
+        const data = await resp.json();
+
+        btn.disabled = false;
+        btnText.textContent = 'ทดสอบการเชื่อมต่อ UMS & Kong Gateway อีกครั้ง';
+
+        if (data.success) {
+            badge.className = 'badge bg-success bg-opacity-25 text-success font-monospace';
+            badge.textContent = 'ONLINE (CONNECTED)';
+            resultTitle.className = 'fw-bold text-success';
+            resultTitle.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> ' + (data.message || 'เชื่อมต่อสำเร็จ');
+            resultLatency.textContent = data.latency_ms + ' ms';
+            let groupsHtml = (data.groups || []).map(g => '<span class="badge bg-secondary-subtle text-secondary me-1">' + g + '</span>').join('');
+            resultBody.innerHTML = '<div class="mb-1"><b>Kong Status:</b> ' + (data.kong_message || 'พร้อมให้บริการ') + '</div>' +
+                                   '<div><b>กลุ่มสิทธิ์ที่ตรวจพบ:</b> ' + (data.groups_count || 0) + ' กลุ่ม ' + groupsHtml + '</div>';
+            if (window.artisanNotify) {
+                window.artisanNotify.success('เชื่อมต่อสำเร็จ', data.message);
+            }
+        } else {
+            badge.className = 'badge bg-danger bg-opacity-25 text-danger font-monospace';
+            badge.textContent = 'FAILED';
+            resultTitle.className = 'fw-bold text-danger';
+            resultTitle.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i> การเชื่อมต่อล้มเหลว';
+            resultLatency.textContent = (data.latency_ms || 0) + ' ms';
+            resultBody.innerHTML = '<div class="text-danger mb-1">' + (data.message || 'ไม่สามารถเชื่อมต่อได้') + '</div>' +
+                                   '<div><b>Kong Status:</b> ' + (data.kong_message || 'ไม่ได้เชื่อมต่อ') + '</div>';
+            if (window.artisanNotify) {
+                window.artisanNotify.error('เชื่อมต่อไม่สำเร็จ', data.message);
+            }
+        }
+    } catch (err) {
+        btn.disabled = false;
+        btnText.textContent = 'ทดสอบการเชื่อมต่อ UMS & Kong Gateway อีกครั้ง';
+        badge.className = 'badge bg-danger bg-opacity-25 text-danger font-monospace';
+        badge.textContent = 'NETWORK ERROR';
+        resultTitle.className = 'fw-bold text-danger';
+        resultTitle.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i> Network Error';
+        resultLatency.textContent = 'OFFLINE';
+        resultBody.innerHTML = '<div class="text-danger">' + err.message + '</div>';
+    }
+}
 </script>
 @endsection
 HTML;

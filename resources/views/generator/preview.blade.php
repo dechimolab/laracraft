@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th" data-bs-theme="dark">
+<html lang="th" data-bs-theme="{{ $activeTheme['mode'] ?? 'light' }}" data-theme="{{ $themeKey ?? 'nordic-clean' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,42 +9,69 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <style>
+        {!! $themeTokensCss !!}
+        {!! $themeCoreCss !!}
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #0b1326;
-            color: #e2e8f0;
+            font-family: 'Sarabun', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--sys-bg) !important;
+            color: var(--sys-text) !important;
             min-height: 100vh;
         }
         code, pre, .font-monospace {
             font-family: 'JetBrains Mono', monospace;
         }
         .navbar-custom {
-            background-color: #070d1a !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: var(--sys-primary) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff !important;
         }
         .card-custom {
-            background-color: #131b2e;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background-color: var(--sys-card) !important;
+            color: var(--sys-text) !important;
+            border: 1px solid rgba(148, 163, 184, 0.25) !important;
             border-radius: 12px;
         }
         .table-custom {
             --bs-table-bg: transparent;
-            --bs-table-hover-bg: rgba(255, 255, 255, 0.04);
-            color: #cbd5e1;
+            --bs-table-hover-bg: rgba(var(--bs-primary-rgb), 0.05);
+            color: var(--sys-text) !important;
         }
         .btn-primary-custom {
-            background-color: #ff5542;
-            border-color: #ff5542;
-            color: #ffffff;
+            background-color: var(--sys-primary) !important;
+            border-color: var(--sys-primary) !important;
+            color: #ffffff !important;
             font-weight: 500;
         }
         .btn-primary-custom:hover {
-            background-color: #e04432;
-            border-color: #e04432;
-            color: #ffffff;
+            opacity: 0.9;
+            color: #ffffff !important;
+        }
+
+        /* Auto contrast overrides for light theme in preview */
+        [data-bs-theme="light"] .card-custom .text-white,
+        [data-bs-theme="light"] h1.text-white,
+        [data-bs-theme="light"] h2.text-white,
+        [data-bs-theme="light"] h3.text-white,
+        [data-bs-theme="light"] h4.text-white,
+        [data-bs-theme="light"] h5.text-white,
+        [data-bs-theme="light"] h6.text-white {
+            color: var(--sys-text) !important;
+        }
+        [data-bs-theme="light"] .card-custom .text-secondary,
+        [data-bs-theme="light"] .card-custom .text-white-50 {
+            color: var(--sys-subtext) !important;
+        }
+        [data-bs-theme="light"] thead.table-dark {
+            background-color: rgba(var(--bs-primary-rgb), 0.08) !important;
+            color: var(--sys-primary) !important;
+        }
+        [data-bs-theme="light"] thead.table-dark th {
+            background-color: transparent !important;
+            color: var(--sys-primary) !important;
         }
     </style>
 </head>
@@ -54,7 +81,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top py-2.5">
         <div class="container-fluid px-3 px-lg-4">
             <a class="navbar-brand d-flex items-center gap-2 text-white fw-bold" href="?view=dashboard">
-                <span class="badge bg-danger rounded-pill px-2 py-1"><i class="bi bi-cpu-fill"></i></span>
+                <span class="badge rounded-pill px-2.5 py-1 text-white" style="background-color: rgba(255,255,255,0.2);"><i class="bi bi-palette me-1"></i>{{ $activeTheme['name'] ?? 'Theme' }}</span>
                 <span>{{ $projectConfig['name'] ?? 'Artisan App' }}</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">

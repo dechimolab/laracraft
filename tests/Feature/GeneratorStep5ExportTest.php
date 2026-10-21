@@ -89,6 +89,8 @@ class GeneratorStep5ExportTest extends TestCase
             'project.step_completed' => 4,
             'project.slug' => 'test-ui-app',
             'project.name' => 'Test UI App',
+            'project.theme_key' => 'emerald-enterprise',
+            'project.theme_mode' => 'light',
             'project.modules' => [
                 'buu_ldap' => 1,
                 'user_role' => 1,
@@ -98,6 +100,11 @@ class GeneratorStep5ExportTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('5 Mandatory Audit Stamps');
         $response->assertSee('Test UI App');
+        $response->assertSee('data-bs-theme="light"', false);
+        $response->assertSee('data-theme="emerald-enterprise"', false);
+        $response->assertSee('Emerald Enterprise', false);
+        $response->assertSee('#047857', false);
+        $response->assertSee('#F0FDF4', false);
     }
 
     public function test_generator_preview_file_returns_json_content(): void
@@ -166,6 +173,26 @@ class GeneratorStep5ExportTest extends TestCase
         $this->assertStringContainsString('Emerald Matrix', $appBlade);
         $this->assertStringNotContainsString('themeToggleBtn', $appBlade);
         $this->assertStringNotContainsString('applyThemeMode', $appBlade);
+
+        // Verify Modular Theme Architecture (Tier 2 & 3)
+        $this->assertNotFalse($zip->locateName('public/css/themes/emerald-matrix.css'));
+        $this->assertNotFalse($zip->locateName('public/css/themes/emerald-enterprise.css'));
+        $this->assertNotFalse($zip->locateName('public/css/themes/deep-oceanic.css'));
+        $this->assertNotFalse($zip->locateName('public/css/theme-core.css'));
+        $this->assertNotFalse($zip->locateName('config/theme.php'));
+
+        $themeMatrixCss = $zip->getFromName('public/css/themes/emerald-matrix.css');
+        $this->assertStringContainsString('--sys-primary', $themeMatrixCss);
+        $this->assertStringContainsString('emerald-matrix', $themeMatrixCss);
+
+        $themeCoreCss = $zip->getFromName('public/css/theme-core.css');
+        $this->assertStringContainsString('ArtisanCraft Theme Core Stylesheet', $themeCoreCss);
+
+        $configTheme = $zip->getFromName('config/theme.php');
+        $this->assertStringContainsString("env('APP_THEME', 'emerald-matrix')", $configTheme);
+
+        $envFile = $zip->getFromName('.env');
+        $this->assertStringContainsString('APP_THEME=emerald-matrix', $envFile);
 
         // Verify public/css/theme.css
         $this->assertNotFalse($zip->locateName('public/css/theme.css'));
@@ -424,6 +451,22 @@ class GeneratorStep5ExportTest extends TestCase
         // 13. Verify UmsBuuAuthService filters users_roles to only default roles
         $this->assertStringContainsString('is_default', $serviceContent);
         $this->assertStringContainsString('is_default_person', $serviceContent);
+
+        // 14. Verify composer.json contains spomky-labs/cbor-php for WebAuthn
+        $this->assertNotFalse($zip->locateName('composer.json'));
+        $composerJsonContent = $zip->getFromName('composer.json');
+        $this->assertStringContainsString('spomky-labs/cbor-php', $composerJsonContent);
+
+        // 15. Verify demo/index.blade.php contains Danger buttons
+        $this->assertStringContainsString('btn-danger', $demoBladeContent);
+        $this->assertStringContainsString('btn-outline-danger', $demoBladeContent);
+
+        // 16. Verify demo/ums.blade.php exists and contains live test connection engine
+        $this->assertNotFalse($zip->locateName('resources/views/demo/ums.blade.php'));
+        $demoUmsContent = $zip->getFromName('resources/views/demo/ums.blade.php');
+        $this->assertStringContainsString('runUmsConnectionTest', $demoUmsContent);
+        $this->assertStringContainsString('demo.ums.test', $demoUmsContent);
+        $this->assertStringContainsString('demo.ums.test', $routesContent);
 
         $zip->close();
         if (file_exists($zipPath)) {

@@ -28,6 +28,7 @@ Route::middleware([NoCacheAuthenticated::class])->group(function () {
         Route::post('/active-preset', [GeneratorController::class, 'setActivePreset'])->name('activePreset');
         Route::post('/clear-preset', [GeneratorController::class, 'clearActivePreset'])->name('clearPreset');
         Route::post('/test-db', [GeneratorController::class, 'testDbConnection'])->name('testDb');
+        Route::post('/test-ums', [GeneratorController::class, 'testUmsConnection'])->name('testUms');
         Route::get('/step2', [GeneratorController::class, 'step2'])->name('step2');
         Route::post('/step2', [GeneratorController::class, 'saveStep2'])->name('step2.save');
         Route::get('/step3', [GeneratorController::class, 'step3'])->name('step3');

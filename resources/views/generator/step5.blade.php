@@ -292,6 +292,9 @@
                             <span class="material-symbols-outlined text-[16px] text-tertiary">web</span>
                             <select id="preview-screen-select" onchange="changePreviewScreen(this.value)" class="w-full bg-surface-container-highest text-on-surface text-label-sm font-code-inline px-3 py-1.5 rounded-lg border border-surface-container-highest/60 outline-none cursor-pointer">
                                 <option value="dashboard">Dashboard (Welcome Screen)</option>
+                                @if(($projectConfig['theme_key'] ?? '') === 'emerald-enterprise' || session('project.theme_key') === 'emerald-enterprise')
+                                <option value="theme-package">✨ Emerald Enterprise Modular Hub (Pixel-Perfect)</option>
+                                @endif
                                 @if($hasBuuLdap)
                                 <option value="login">Login Screen (BUU LDAP &amp; Passkey)</option>
                                 @endif

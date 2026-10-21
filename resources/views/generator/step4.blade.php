@@ -484,6 +484,29 @@
         document.getElementById('hex-card').style.color = theme.text;
     }
 
+    const THEME_PAIRS = {
+        'emerald-enterprise': 'emerald-matrix',
+        'emerald-matrix': 'emerald-enterprise',
+        'nordic-clean': 'monolith-obsidian',
+        'monolith-obsidian': 'nordic-clean',
+        'horizon-sky': 'deep-oceanic',
+        'deep-oceanic': 'horizon-sky',
+        'sunset-horizon': 'crimson-voltage',
+        'crimson-voltage': 'sunset-horizon',
+        'rose-quartz': 'royal-amethyst',
+        'royal-amethyst': 'rose-quartz',
+        'forest-moss': 'slate-executive',
+        'slate-executive': 'forest-moss',
+        'solar-amber': 'solar-eclipse',
+        'solar-eclipse': 'solar-amber',
+        'lavande-provence': 'vapor-synthwave',
+        'vapor-synthwave': 'lavande-provence',
+        'swiss-monolith': 'midnight-cyberpunk',
+        'midnight-cyberpunk': 'swiss-monolith',
+        'sand-terracotta': 'nord-twilight',
+        'nord-twilight': 'sand-terracotta'
+    };
+
     function switchThemeMode(mode) {
         currentThemeMode = mode;
         const btnLight = document.getElementById('btn-mode-light');
@@ -499,9 +522,10 @@
             secDark.classList.add('hidden');
             secDark.classList.remove('block');
 
-            // If current theme is dark, auto-switch to default light theme
+            // If current theme is dark, switch to corresponding light theme pair or fallback
             if (THEME_DATABASE[currentThemeKey]?.mode !== 'light') {
-                selectAndPreviewTheme('nordic-clean');
+                const targetLight = THEME_PAIRS[currentThemeKey] || 'nordic-clean';
+                selectAndPreviewTheme(targetLight);
             }
         } else {
             btnDark.className = 'px-3 py-1.5 rounded-lg font-label-md text-label-md flex items-center gap-1.5 transition-all bg-indigo-500/20 text-indigo-300 font-bold shadow-sm border border-indigo-500/30';
@@ -511,9 +535,10 @@
             secLight.classList.add('hidden');
             secLight.classList.remove('block');
 
-            // If current theme is light, auto-switch to default dark theme
+            // If current theme is light, switch to corresponding dark theme pair or fallback
             if (THEME_DATABASE[currentThemeKey]?.mode !== 'dark') {
-                selectAndPreviewTheme('midnight-cyberpunk');
+                const targetDark = THEME_PAIRS[currentThemeKey] || 'midnight-cyberpunk';
+                selectAndPreviewTheme(targetDark);
             }
         }
     }

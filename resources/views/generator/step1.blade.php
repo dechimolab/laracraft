@@ -510,6 +510,11 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
+                                <button class="items-center gap-1.5 px-3 py-1 rounded-lg bg-surface-container-highest hover:bg-surface-bright text-on-surface font-label-md text-label-md transition-colors border border-surface-container-highest shadow-sm cursor-pointer {{ $useUmsBuuVal ? 'flex' : 'hidden' }}"
+                                        id="test-ums-connection-btn" onclick="testUmsConnection()" type="button">
+                                    <span class="w-2 h-2 rounded-full bg-tertiary" id="test-ums-pulse"></span>
+                                    <span id="test-ums-text">Test UMS &amp; Kong Connection</span>
+                                </button>
                                 <span class="px-2 py-0.5 rounded {{ $useUmsBuuVal ? 'bg-tertiary-container/30 text-tertiary border-tertiary/40' : 'bg-surface-container text-outline border-surface-container-highest' }} font-code-inline text-label-sm font-semibold border" id="badge-ums-step1">
                                     {{ $useUmsBuuVal ? 'ENABLED' : 'OFF' }}
                                 </span>
@@ -683,6 +688,19 @@
                                                placeholder="KONG_PK_UMS_DUSERGROUP" oninput="updateEnvPreview()">
                                     </div>
                                     <span class="font-body-sm text-body-sm text-outline">Provision Key สำหรับลบผู้ใช้งานออกจากกลุ่ม (/service-api/ums.DUserGroup)</span>
+                                </div>
+                            </div>
+
+                            <!-- UMS & Kong Live Connection Test Result -->
+                            <div id="ums-connection-result" class="hidden p-space-sm rounded-lg bg-surface-container flex flex-col gap-2 border border-tertiary/30 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2 font-medium" id="ums-result-title">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-tertiary" id="ums-result-dot"></span>
+                                        <span id="ums-result-msg" class="text-on-surface font-body-sm text-body-sm">สถานะการเชื่อมต่อ UMS &amp; Kong</span>
+                                    </div>
+                                    <span class="font-label-sm text-label-sm text-tertiary font-code-inline" id="ums-result-latency"></span>
+                                </div>
+                                <div class="text-xs text-outline flex flex-col gap-1 pl-4 border-l border-surface-container-highest/60" id="ums-result-details">
                                 </div>
                             </div>
                         </div>
@@ -1053,9 +1071,11 @@
         const fields = document.getElementById('ums-buu-fields');
         const badge = document.getElementById('badge-ums-step1');
         const card = document.getElementById('ums-spec-card');
+        const testBtn = document.getElementById('test-ums-connection-btn');
 
         if (checkbox.checked) {
             if (fields) { fields.classList.remove('hidden'); fields.classList.add('flex'); }
+            if (testBtn) { testBtn.classList.remove('hidden'); testBtn.classList.add('flex'); }
             if (badge) {
                 badge.textContent = 'ENABLED';
                 badge.className = 'px-2 py-0.5 rounded bg-tertiary-container/30 text-tertiary font-code-inline text-label-sm font-semibold border border-tertiary/40';
@@ -1066,6 +1086,7 @@
             }
         } else {
             if (fields) { fields.classList.add('hidden'); fields.classList.remove('flex'); }
+            if (testBtn) { testBtn.classList.add('hidden'); testBtn.classList.remove('flex'); }
             if (badge) {
                 badge.textContent = 'OFF';
                 badge.className = 'px-2 py-0.5 rounded bg-surface-container text-outline font-code-inline text-label-sm font-semibold border border-surface-container-highest';
@@ -1238,6 +1259,155 @@
                 resultLatency.innerText = 'ERR';
                 resultLatency.className = 'font-label-sm text-label-sm text-error font-code-inline flex-shrink-0';
             }
+        }
+    }
+
+    async function testUmsConnection() {
+        const pulse = document.getElementById('test-ums-pulse');
+        const text = document.getElementById('test-ums-text');
+        const resultBox = document.getElementById('ums-connection-result');
+        const resultDot = document.getElementById('ums-result-dot');
+        const resultMsg = document.getElementById('ums-result-msg');
+        const resultLatency = document.getElementById('ums-result-latency');
+        const resultDetails = document.getElementById('ums-result-details');
+        const btn = document.getElementById('test-ums-connection-btn');
+
+        const systemId = (document.getElementById('ums-system-id')?.value || '').trim();
+        const serviceKey = (document.getElementById('ums-service-key')?.value || '').trim();
+        const serviceUrl = (document.getElementById('ums-service-url')?.value || '').trim();
+        const kongDomain = (document.getElementById('kong-domain-prod')?.value || '').trim();
+
+        if (!systemId || !serviceKey) {
+            if (window.ArtisanSwal) {
+                ArtisanSwal.fire({
+                    icon: 'warning',
+                    title: 'กรุณาระบุข้อมูลให้ครบถ้วน',
+                    text: 'จำเป็นต้องระบุ UMS System ID และ UMS Service Key เพื่อทดสอบการเชื่อมต่อ'
+                });
+            } else {
+                alert('กรุณาระบุ UMS System ID และ UMS Service Key');
+            }
+            return;
+        }
+
+        // Set Loading State
+        btn.disabled = true;
+        btn.classList.add('opacity-75');
+        text.innerText = 'Connecting UMS & Kong...';
+        pulse.className = 'w-2 h-2 rounded-full bg-primary animate-ping';
+        if (resultBox) {
+            resultBox.classList.remove('hidden');
+            resultBox.className = 'p-space-sm rounded-lg bg-surface-container flex flex-col gap-2 border border-primary/30 transition-colors';
+        }
+        if (resultDot) resultDot.className = 'w-2.5 h-2.5 rounded-full bg-primary animate-pulse flex-shrink-0';
+        if (resultMsg) resultMsg.innerText = `กำลังทดสอบการเชื่อมต่อไปยัง UMS Gateway (${serviceUrl}) และ Kong Gateway (${kongDomain}) ...`;
+        if (resultLatency) {
+            resultLatency.innerText = 'PROBING...';
+            resultLatency.className = 'font-label-sm text-label-sm text-primary font-code-inline flex-shrink-0';
+        }
+        if (resultDetails) resultDetails.innerHTML = '';
+
+        const csrfToken = document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}';
+
+        try {
+            const resp = await fetch('{{ route('generator.testUms') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({
+                    ums_system_id: systemId,
+                    ums_service_key: serviceKey,
+                    ums_service_url: serviceUrl,
+                    kong_domain_prod: kongDomain
+                })
+            });
+
+            const data = await resp.json();
+
+            btn.disabled = false;
+            btn.classList.remove('opacity-75');
+
+            if (data.success) {
+                // Success State
+                pulse.className = 'w-2 h-2 rounded-full bg-tertiary';
+                text.innerText = 'UMS & Kong Verified';
+                if (resultDot) resultDot.className = 'w-2.5 h-2.5 rounded-full bg-tertiary shadow-[0_0_8px_rgba(78,222,163,0.8)] flex-shrink-0';
+                if (resultBox) resultBox.className = 'p-space-sm rounded-lg bg-surface-container flex flex-col gap-2 border border-tertiary/30 transition-colors';
+                if (resultMsg) resultMsg.innerText = data.message;
+                if (resultLatency) {
+                    resultLatency.innerText = `LATENCY ${data.latency_ms}ms`;
+                    resultLatency.className = 'font-label-sm text-label-sm text-tertiary font-code-inline flex-shrink-0';
+                }
+                if (resultDetails) {
+                    let groupList = (data.groups || []).map(g => `<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant">${escapeHtml(g)}</span>`).join(' ');
+                    resultDetails.innerHTML = `
+                        <div>✔ <b>UMS Gateway:</b> ${escapeHtml(data.ums_message)}</div>
+                        <div>✔ <b>Kong API Gateway:</b> ${escapeHtml(data.kong_message)}</div>
+                        ${groupList ? `<div class="mt-1"><b>ตัวอย่างกลุ่มสิทธิ์:</b> ${groupList}</div>` : ''}
+                    `;
+                }
+
+                if (window.ArtisanSwal) {
+                    ArtisanSwal.fire({
+                        icon: 'success',
+                        title: 'เชื่อมต่อ UMS & Kong สำเร็จ!',
+                        html: `
+                            <div class="text-left font-body-sm leading-relaxed">
+                                <div class="mb-2 text-on-surface font-semibold text-tertiary">✔ UMS Central Gateway &amp; Kong ตอบกลับปกติ</div>
+                                <div class="text-xs text-outline mb-1"><b>ระบบ SystemID:</b> ${escapeHtml(systemId)} (${data.groups_count || 0} กลุ่มสิทธิ์)</div>
+                                <div class="text-xs text-outline mb-1"><b>Kong Gateway:</b> ${escapeHtml(data.kong_message || 'พร้อมให้บริการ')}</div>
+                                <div class="text-xs text-outline"><b>ความเร็ว Latency:</b> ${data.latency_ms} ms</div>
+                            </div>
+                        `,
+                        confirmButtonText: 'ตกลง',
+                        timer: 4000
+                    });
+                }
+            } else {
+                // Failed State
+                pulse.className = 'w-2 h-2 rounded-full bg-error';
+                text.innerText = 'Connection Failed';
+                if (resultDot) resultDot.className = 'w-2.5 h-2.5 rounded-full bg-error shadow-[0_0_8px_rgba(255,85,66,0.8)] flex-shrink-0';
+                if (resultBox) resultBox.className = 'p-space-sm rounded-lg bg-surface-container flex flex-col gap-2 border border-error/40 transition-colors';
+                if (resultMsg) resultMsg.innerText = `ล้มเหลว: ${data.message}`;
+                if (resultLatency) {
+                    resultLatency.innerText = `ERR ${data.latency_ms || 0}ms`;
+                    resultLatency.className = 'font-label-sm text-label-sm text-error font-code-inline flex-shrink-0';
+                }
+                if (resultDetails) {
+                    resultDetails.innerHTML = `
+                        <div class="text-error">✖ <b>UMS Gateway:</b> ${escapeHtml(data.ums_message || data.message)}</div>
+                        ${data.kong_message ? `<div>${data.kong_status === 'reachable' ? '✔' : '✖'} <b>Kong Gateway:</b> ${escapeHtml(data.kong_message)}</div>` : ''}
+                    `;
+                }
+
+                if (window.ArtisanSwal) {
+                    ArtisanSwal.fire({
+                        icon: 'error',
+                        title: 'การเชื่อมต่อ UMS BUU ล้มเหลว',
+                        html: `
+                            <div class="text-left font-body-sm leading-relaxed">
+                                <div class="mb-2 text-error font-semibold">${escapeHtml(data.message)}</div>
+                                <div class="text-xs text-outline mb-1"><b>เซิร์ฟเวอร์เป้าหมาย:</b> ${escapeHtml(serviceUrl)} (SystemID: ${escapeHtml(systemId)})</div>
+                                <div class="text-xs text-outline mb-1"><b>Kong Gateway:</b> ${escapeHtml(data.kong_message || 'ไม่ได้เชื่อมต่อ')}</div>
+                                <div class="text-xs text-outline">กรุณาตรวจสอบว่าอยู่ในเครือข่ายภายใน ม.บูรพา (BUU Network / VPN) หรือ Service Key ถูกต้อง</div>
+                            </div>
+                        `,
+                        confirmButtonText: 'ปิด'
+                    });
+                }
+            }
+        } catch (err) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-75');
+            pulse.className = 'w-2 h-2 rounded-full bg-error';
+            text.innerText = 'Network Error';
+            if (resultDot) resultDot.className = 'w-2.5 h-2.5 rounded-full bg-error flex-shrink-0';
+            if (resultMsg) resultMsg.innerText = `ข้อผิดพลาดเครือข่าย: ${err.message}`;
+            if (resultLatency) resultLatency.innerText = 'OFFLINE';
         }
     }
 
