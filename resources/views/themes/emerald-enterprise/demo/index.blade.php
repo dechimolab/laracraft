@@ -4,17 +4,17 @@
 <div class="d-flex flex-column gap-4">
 
     <!-- Section 1: Enterprise Welcome Hero Banner -->
-    <section class="card-surface p-4 shadow-sm position-relative overflow-hidden">
+    <section class="card-surface p-4 shadow-sm position-relative overflow-hidden border-0" style="background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 60%, #ecfdf5 100%); border-radius: 16px;">
         <div class="chart-hero-glow"></div>
         <div class="position-relative z-1 row align-items-center g-3">
             <div class="col-lg-8">
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                    <span class="badge rounded-pill bg-emerald-subtle-mint text-uppercase px-2 py-1">
-                        <i class="bi bi-circle-fill me-1" style="font-size: 6px;"></i>ArtisanCraft Engine
+                    <span class="badge rounded-pill bg-emerald-subtle-mint text-uppercase px-2.5 py-1 fw-semibold">
+                        <i class="bi bi-circle-fill me-1 text-emerald-primary" style="font-size: 6px;"></i>ArtisanCraft Engine
                     </span>
-                    <span class="badge bg-light text-secondary border">Laravel 13.x</span>
-                    <span class="badge bg-light text-secondary border">PHP 8.4 JIT</span>
-                    <span class="badge bg-light text-secondary border">Bootstrap 5.3</span>
+                    <span class="badge bg-white text-secondary border shadow-xs">Laravel 13.x</span>
+                    <span class="badge bg-white text-secondary border shadow-xs">PHP 8.4 JIT</span>
+                    <span class="badge bg-white text-secondary border shadow-xs">Bootstrap 5.3</span>
                 </div>
                 <h1 class="h3 fw-bold text-dark mt-2 mb-1">
                     ยินดีต้อนรับสู่ <span class="text-emerald-primary">{{ config('app.name', 'Artisan POS & Inventory Hub') }}</span>
@@ -24,7 +24,7 @@
                 </p>
             </div>
             <div class="col-lg-4 d-flex flex-wrap justify-content-lg-end gap-2">
-                <button class="btn btn-emerald-primary d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold shadow-sm" type="button" id="btn-passkey-register">
+                <button class="btn btn-emerald-primary d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold shadow-sm rounded-3" type="button" id="btn-passkey-register">
                     <span class="material-symbols-outlined fs-5">fingerprint</span>
                     <span>บันทึกลายนิ้วมือใหม่ (Passkey)</span>
                 </button>
@@ -71,12 +71,23 @@
                 'btn_link' => '#',
             ];
         }
-        if (!empty($selectedModules['roles_management'])) {
-            $activeModulesList['roles_management'] = [
-                'name' => 'Role & Permission (RBAC)',
-                'tag' => 'roles_rbac',
+        if (!empty($selectedModules['audit_trail'])) {
+            $activeModulesList['audit_trail'] = [
+                'name' => 'Audit Trail & Activity Log',
+                'tag' => 'audit_trail',
                 'status' => 'Active',
-                'desc' => 'ระบบจัดการบทบาท สิทธิ์การเข้าถึง และการแบ่งแยกหน้าที่ตามมาตรฐานความปลอดภัย',
+                'desc' => 'บันทึกประวัติการเปลี่ยนแปลงข้อมูลของ Eloquent Model ทุกตัวอัตโนมัติ พร้อมเก็บบันทึก IP, User-Agent และ JSON Diff',
+                'btn_text' => 'ตรวจสอบ Audit Trail',
+                'btn_icon' => 'history_edu',
+                'btn_link' => Route::has('demo.audit') ? route('demo.audit') : '#',
+            ];
+        }
+        if (!empty($selectedModules['user_role']) || !empty($selectedModules['roles_management'])) {
+            $activeModulesList['user_role'] = [
+                'name' => 'Role & Permission (RBAC)',
+                'tag' => 'user_role',
+                'status' => 'Active',
+                'desc' => 'ระบบจัดการบทบาท สิทธิ์การเข้าถึง และการแบ่งแยกหน้าที่ตามมาตรฐานความปลอดภัย (Role-Based Access Control)',
                 'btn_text' => 'จัดการสิทธิ์บทบาท',
                 'btn_icon' => 'admin_panel_settings',
                 'btn_link' => Route::has('switch.group') ? route('switch.group') : '#',

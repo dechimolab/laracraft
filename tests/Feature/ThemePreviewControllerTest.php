@@ -34,8 +34,10 @@ class ThemePreviewControllerTest extends TestCase
         $response->assertSee('EMERALD ENTERPRISE');
         $response->assertSee('text-emerald-primary');
         $response->assertDontSee('Artisan Artisan');
-        $response->assertSee('favicon-emerald.svg');
-        $response->assertSee('favicon-emerald.ico');
+        $response->assertSee('image/favicon-emerald.svg');
+        $response->assertSee('image/favicon-emerald.ico');
+        $response->assertSee('user-executive-capsule');
+        $response->assertSee('btn-capsule-logout');
         $response->assertSee('artisanCraftPreviewBar');
         $this->assertSame(1, substr_count($response->getContent(), 'id="artisanCraftPreviewBar"'));
     }
@@ -55,8 +57,10 @@ class ThemePreviewControllerTest extends TestCase
         $demoResponse->assertStatus(200);
         $demoResponse->assertSee('Nordic Clean');
         $demoResponse->assertDontSee('Artisan Artisan');
-        $demoResponse->assertSee('favicon-nordic.svg');
-        $demoResponse->assertSee('favicon-nordic.ico');
+        $demoResponse->assertSee('image/favicon-nordic.svg');
+        $demoResponse->assertSee('image/favicon-nordic.ico');
+        $demoResponse->assertSee('user-executive-capsule');
+        $demoResponse->assertSee('user-profile-dropdown');
     }
 
     /**
@@ -66,8 +70,8 @@ class ThemePreviewControllerTest extends TestCase
     {
         $response = $this->get('/');
         $response->assertStatus(200);
-        $response->assertSee('favicon.svg');
-        $response->assertSee('favicon.ico');
+        $response->assertSee('image/favicon.svg');
+        $response->assertSee('image/favicon.ico');
     }
 
     /**

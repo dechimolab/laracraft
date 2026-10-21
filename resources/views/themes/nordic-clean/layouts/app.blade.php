@@ -7,8 +7,8 @@
     <title>{{ config('app.name', 'Artisan POS & Inventory Hub') }} - Nordic Clean</title>
 
     <!-- Theme Favicon (Nordic Clean) -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon-nordic.svg') }}">
-    <link rel="alternate icon" href="{{ asset('favicon-nordic.ico') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('image/favicon-nordic.svg') }}">
+    <link rel="alternate icon" href="{{ asset('image/favicon-nordic.ico') }}">
 
     <!-- Google Fonts: Inter & Material Symbols -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -75,39 +75,93 @@
                 </div>
             </div>
 
-            <!-- Right User Identity Badge -->
-            <div class="d-flex align-items-center gap-2 gap-md-3">
+            <!-- Right User Identity & Logout Unified Split Capsule with Dropdown (Nordic Clean) -->
+            <div class="dropdown">
                 @auth
-                <div class="d-none d-md-flex align-items-center gap-2.5 bg-white px-3 py-1.5 rounded-3 border">
-                    <div class="text-end lh-sm" data-permit="{{ session('userPermitName') ?? '' }}" data-group="{{ is_array(session('userGroup')) ? implode(',', session('userGroup')) : session('userGroup') }}">
-                        <div class="small fw-semibold text-dark">{{ session('userFullNameTH') ?? (Auth::user()->name ?? Auth::user()->username) }}</div>
+                <div class="user-executive-capsule d-inline-flex align-items-center bg-white rounded-pill shadow-sm border border-primary-subtle"
+                     role="button"
+                     data-bs-toggle="dropdown"
+                     data-bs-auto-close="true"
+                     aria-expanded="false"
+                     title="คลิกเพื่อเปิดเมนูผู้ใช้งาน">
+                    <div class="d-none d-md-flex align-items-center gap-2 pe-1" data-permit="{{ session('userPermitName') ?? '' }}" data-group="{{ is_array(session('userGroup')) ? implode(',', session('userGroup')) : session('userGroup') }}">
+                        <span class="user-display-name small fw-semibold text-dark">
+                            {{ session('userFullNameTH') ?? (Auth::user()->name ?? Auth::user()->username) }}
+                        </span>
                     </div>
-                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width: 32px; height: 32px; background-color: var(--nordic-blue, #3B82F6); font-size: 0.875rem;">
+                    <div class="user-avatar-circle rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs flex-shrink-0" style="width: 32px; height: 32px; background-color: var(--nordic-blue, #3B82F6); font-size: 0.85rem;">
                         {{ strtoupper(substr(Auth::user()->username ?? (session('userFullNameTH') ?? 'P'), 0, 1)) }}
                     </div>
+                    <div class="capsule-divider vr mx-1 text-secondary opacity-25 d-none d-md-block" style="height: 18px;"></div>
+                    <form method="POST" action="{{ Route::has('logout') ? route('logout') : '#' }}" class="m-0 p-0 d-none d-md-inline-flex pe-1">
+                        @csrf
+                        <button type="submit" class="btn-capsule-logout btn btn-link p-0 text-danger d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 28px; height: 28px; text-decoration: none;" title="ออกจากระบบ" onclick="event.stopPropagation();">
+                            <span class="material-symbols-outlined fs-6 align-middle">logout</span>
+                        </button>
+                    </form>
                 </div>
 
-                <form method="POST" action="{{ Route::has('logout') ? route('logout') : '#' }}" class="m-0 p-0 d-inline-flex">
-                    @csrf
-                    <button type="submit" class="btn btn-sm btn-outline-danger p-1 px-2 rounded-2 d-inline-flex align-items-center" title="ออกจากระบบ">
-                        <span class="material-symbols-outlined fs-6 align-middle">logout</span>
-                    </button>
-                </form>
+                <!-- Dropdown Menu for Mobile & Desktop -->
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2 p-1 user-profile-dropdown" style="min-width: 170px;">
+                    <li>
+                        <form method="POST" action="{{ Route::has('logout') ? route('logout') : '#' }}" class="m-0 p-0">
+                            @csrf
+                            <button type="submit" class="dropdown-item d-flex align-items-center gap-2 py-2 px-3 text-danger fw-semibold rounded-2">
+                                <span class="material-symbols-outlined fs-5">logout</span>
+                                <span>ออกจากระบบ (Logout)</span>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
                 @else
-                <div class="d-none d-md-flex align-items-center gap-2.5 bg-white px-3 py-1.5 rounded-3 border">
-                    <div class="text-end lh-sm" data-permit="{{ session('userPermitName') ?? '' }}" data-group="{{ is_array(session('userGroup')) ? implode(',', session('userGroup')) : session('userGroup') }}">
-                        <div class="small fw-semibold text-dark">{{ session('userFullNameTH') ?? 'นายพันธกานต์ มั่นจันทร์ (ผู้ดูแลตำแหน่ง)' }}</div>
+                <div class="user-executive-capsule d-inline-flex align-items-center bg-white rounded-pill shadow-sm border border-primary-subtle"
+                     role="button"
+                     data-bs-toggle="dropdown"
+                     data-bs-auto-close="true"
+                     aria-expanded="false"
+                     title="คลิกเพื่อเปิดเมนูผู้ใช้งาน">
+                    <div class="d-none d-md-flex align-items-center gap-2 pe-1" data-permit="{{ session('userPermitName') ?? '' }}" data-group="{{ is_array(session('userGroup')) ? implode(',', session('userGroup')) : session('userGroup') }}">
+                        <span class="user-display-name small fw-semibold text-dark">
+                            {{ session('userFullNameTH') ?? 'นายพันธกานต์ มั่นจันทร์ (ผู้ดูแลตำแหน่ง)' }}
+                        </span>
                     </div>
-                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width: 32px; height: 32px; background-color: var(--nordic-blue, #3B82F6); font-size: 0.875rem;">
+                    <div class="user-avatar-circle rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs flex-shrink-0" style="width: 32px; height: 32px; background-color: var(--nordic-blue, #3B82F6); font-size: 0.85rem;">
                         P
                     </div>
+                    <div class="capsule-divider vr mx-1 text-secondary opacity-25 d-none d-md-block" style="height: 18px;"></div>
+                    @if(Route::has('logout'))
+                    <form method="POST" action="{{ route('logout') }}" class="m-0 p-0 d-none d-md-inline-flex pe-1">
+                        @csrf
+                        <button type="submit" class="btn-capsule-logout btn btn-link p-0 text-danger d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 28px; height: 28px; text-decoration: none;" title="ออกจากระบบ" onclick="event.stopPropagation();">
+                            <span class="material-symbols-outlined fs-6 align-middle">logout</span>
+                        </button>
+                    </form>
+                    @else
+                    <a href="{{ Route::has('login') ? route('login') : '#' }}" class="btn-capsule-logout btn btn-link p-0 text-danger d-none d-md-inline-flex align-items-center justify-content-center rounded-circle pe-1" style="width: 28px; height: 28px; text-decoration: none;" title="ออกจากระบบ" onclick="event.stopPropagation();">
+                        <span class="material-symbols-outlined fs-6 align-middle">logout</span>
+                    </a>
+                    @endif
                 </div>
-                @if(Route::has('login'))
-                <a href="{{ route('login') }}" class="btn btn-sm btn-nordic-primary d-inline-flex align-items-center gap-1 shadow-sm">
-                    <span class="material-symbols-outlined fs-6">login</span>
-                    <span>เข้าสู่ระบบ</span>
-                </a>
-                @endif
+
+                <!-- Dropdown Menu for Mobile & Desktop -->
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2 p-1 user-profile-dropdown" style="min-width: 170px;">
+                    <li>
+                        @if(Route::has('logout'))
+                        <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
+                            @csrf
+                            <button type="submit" class="dropdown-item d-flex align-items-center gap-2 py-2 px-3 text-danger fw-semibold rounded-2">
+                                <span class="material-symbols-outlined fs-5">logout</span>
+                                <span>ออกจากระบบ (Logout)</span>
+                            </button>
+                        </form>
+                        @else
+                        <a href="{{ Route::has('login') ? route('login') : '#' }}" class="dropdown-item d-flex align-items-center gap-2 py-2 px-3 text-danger fw-semibold rounded-2">
+                            <span class="material-symbols-outlined fs-5">logout</span>
+                            <span>ออกจากระบบ (Logout)</span>
+                        </a>
+                        @endif
+                    </li>
+                </ul>
                 @endauth
             </div>
         </div>

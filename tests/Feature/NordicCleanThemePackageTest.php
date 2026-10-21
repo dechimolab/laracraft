@@ -44,10 +44,23 @@ class NordicCleanThemePackageTest extends TestCase
         $this->assertStringContainsString('data-bs-theme="light"', $layoutApp);
         $this->assertStringContainsString('data-theme="nordic-clean"', $layoutApp);
         $this->assertStringContainsString('css/themes/nordic-clean.css', $layoutApp);
+        $this->assertStringContainsString('image/favicon-nordic.svg', $layoutApp);
+        $this->assertStringContainsString('user-executive-capsule', $layoutApp);
+        $this->assertStringContainsString('user-profile-dropdown', $layoutApp);
         $this->assertStringContainsString('userFullNameTH', $layoutApp);
         $this->assertStringContainsString('userPermitName', $layoutApp);
         $this->assertStringContainsString('userGroup', $layoutApp);
         $this->assertStringContainsString('switch.group', $layoutApp);
+
+        // 2.1 Theme-Adaptive Favicons (public/image/ and public/)
+        $this->assertNotFalse($zip->locateName('public/image/favicon.svg'));
+        $this->assertNotFalse($zip->locateName('public/image/favicon.ico'));
+        $this->assertNotFalse($zip->locateName('public/image/favicon-nordic.svg'));
+        $this->assertNotFalse($zip->locateName('public/favicon.svg'));
+        $this->assertNotFalse($zip->locateName('public/favicon.ico'));
+        $this->assertNotFalse($zip->locateName('public/favicon-nordic.svg'));
+        $exportedFaviconSvg = $zip->getFromName('public/image/favicon.svg');
+        $this->assertStringContainsString('#3B82F6', $exportedFaviconSvg);
 
         // 3. Demo Index Showcase
         $this->assertNotFalse($zip->locateName('resources/views/demo/index.blade.php'));

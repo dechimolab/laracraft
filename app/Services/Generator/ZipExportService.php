@@ -70,31 +70,52 @@ class ZipExportService
         $files['public/.htaccess'] = $this->buildPublicHtaccess();
         $files['public/robots.txt'] = "User-agent: *\nDisallow:\n";
 
-        // Theme-Adaptive Favicons
+        // Theme-Adaptive Favicons (From public/image/)
         $themeKey = $projectConfig['theme_key'] ?? 'nordic-clean';
         $shortTheme = str_replace(['-clean', '-enterprise'], '', $themeKey);
 
-        $themeSvgPath = file_exists(public_path("favicon-{$themeKey}.svg")) 
-            ? public_path("favicon-{$themeKey}.svg") 
-            : (file_exists(public_path("favicon-{$shortTheme}.svg")) ? public_path("favicon-{$shortTheme}.svg") : public_path('favicon.svg'));
+        $resolveFavicon = function(string $filename) {
+            if (file_exists(public_path("image/{$filename}"))) {
+                return public_path("image/{$filename}");
+            }
+            if (file_exists(public_path($filename))) {
+                return public_path($filename);
+            }
+            return null;
+        };
 
-        $themeIcoPath = file_exists(public_path("favicon-{$themeKey}.ico")) 
-            ? public_path("favicon-{$themeKey}.ico") 
-            : (file_exists(public_path("favicon-{$shortTheme}.ico")) ? public_path("favicon-{$shortTheme}.ico") : public_path('favicon.ico'));
+        $themeSvgPath = $resolveFavicon("favicon-{$themeKey}.svg") 
+            ?? $resolveFavicon("favicon-{$shortTheme}.svg") 
+            ?? $resolveFavicon("favicon.svg");
 
-        if (file_exists($themeSvgPath)) {
-            $files['public/favicon.svg'] = file_get_contents($themeSvgPath);
+        $themeIcoPath = $resolveFavicon("favicon-{$themeKey}.ico") 
+            ?? $resolveFavicon("favicon-{$shortTheme}.ico") 
+            ?? $resolveFavicon("favicon.ico");
+
+        if ($themeSvgPath && file_exists($themeSvgPath)) {
+            $svgContent = file_get_contents($themeSvgPath);
+            $files['public/image/favicon.svg'] = $svgContent;
+            $files['public/favicon.svg'] = $svgContent;
         }
-        if (file_exists($themeIcoPath)) {
-            $files['public/favicon.ico'] = file_get_contents($themeIcoPath);
+        if ($themeIcoPath && file_exists($themeIcoPath)) {
+            $icoContent = file_get_contents($themeIcoPath);
+            $files['public/image/favicon.ico'] = $icoContent;
+            $files['public/favicon.ico'] = $icoContent;
         }
+
         $allVariants = ['nordic', 'nordic-clean', 'emerald', 'emerald-enterprise'];
         foreach ($allVariants as $var) {
-            if (file_exists(public_path("favicon-{$var}.svg"))) {
-                $files["public/favicon-{$var}.svg"] = file_get_contents(public_path("favicon-{$var}.svg"));
+            $vSvg = $resolveFavicon("favicon-{$var}.svg");
+            if ($vSvg && file_exists($vSvg)) {
+                $c = file_get_contents($vSvg);
+                $files["public/image/favicon-{$var}.svg"] = $c;
+                $files["public/favicon-{$var}.svg"] = $c;
             }
-            if (file_exists(public_path("favicon-{$var}.ico"))) {
-                $files["public/favicon-{$var}.ico"] = file_get_contents(public_path("favicon-{$var}.ico"));
+            $vIco = $resolveFavicon("favicon-{$var}.ico");
+            if ($vIco && file_exists($vIco)) {
+                $c = file_get_contents($vIco);
+                $files["public/image/favicon-{$var}.ico"] = $c;
+                $files["public/favicon-{$var}.ico"] = $c;
             }
         }
 
@@ -2246,8 +2267,8 @@ BLADE;
     <title>{$appName}</title>
 
     <!-- Theme Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
-    <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('image/favicon.svg') }}">
+    <link rel="alternate icon" href="{{ asset('image/favicon.ico') }}">
 
     <!-- Google Font: Sarabun -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -3764,31 +3785,51 @@ MD;
         $zip->addFromString('public/.htaccess', $this->buildPublicHtaccess());
         $zip->addFromString('public/robots.txt', "User-agent: *\nDisallow:\n");
 
-        // Theme-Adaptive Favicons
+        // Theme-Adaptive Favicons (From public/image/)
         $themeKey = $projectConfig['theme_key'] ?? 'nordic-clean';
         $shortTheme = str_replace(['-clean', '-enterprise'], '', $themeKey);
 
-        $themeSvgPath = file_exists(public_path("favicon-{$themeKey}.svg")) 
-            ? public_path("favicon-{$themeKey}.svg") 
-            : (file_exists(public_path("favicon-{$shortTheme}.svg")) ? public_path("favicon-{$shortTheme}.svg") : public_path('favicon.svg'));
+        $resolveFavicon = function(string $filename) {
+            if (file_exists(public_path("image/{$filename}"))) {
+                return public_path("image/{$filename}");
+            }
+            if (file_exists(public_path($filename))) {
+                return public_path($filename);
+            }
+            return null;
+        };
 
-        $themeIcoPath = file_exists(public_path("favicon-{$themeKey}.ico")) 
-            ? public_path("favicon-{$themeKey}.ico") 
-            : (file_exists(public_path("favicon-{$shortTheme}.ico")) ? public_path("favicon-{$shortTheme}.ico") : public_path('favicon.ico'));
+        $themeSvgPath = $resolveFavicon("favicon-{$themeKey}.svg") 
+            ?? $resolveFavicon("favicon-{$shortTheme}.svg") 
+            ?? $resolveFavicon("favicon.svg");
 
-        if (file_exists($themeSvgPath)) {
-            $zip->addFromString('public/favicon.svg', file_get_contents($themeSvgPath));
+        $themeIcoPath = $resolveFavicon("favicon-{$themeKey}.ico") 
+            ?? $resolveFavicon("favicon-{$shortTheme}.ico") 
+            ?? $resolveFavicon("favicon.ico");
+
+        if ($themeSvgPath && file_exists($themeSvgPath)) {
+            $svgContent = file_get_contents($themeSvgPath);
+            $zip->addFromString('public/image/favicon.svg', $svgContent);
+            $zip->addFromString('public/favicon.svg', $svgContent);
         }
-        if (file_exists($themeIcoPath)) {
-            $zip->addFromString('public/favicon.ico', file_get_contents($themeIcoPath));
+        if ($themeIcoPath && file_exists($themeIcoPath)) {
+            $icoContent = file_get_contents($themeIcoPath);
+            $zip->addFromString('public/image/favicon.ico', $icoContent);
+            $zip->addFromString('public/favicon.ico', $icoContent);
         }
         $allVariants = ['nordic', 'nordic-clean', 'emerald', 'emerald-enterprise'];
         foreach ($allVariants as $var) {
-            if (file_exists(public_path("favicon-{$var}.svg"))) {
-                $zip->addFromString("public/favicon-{$var}.svg", file_get_contents(public_path("favicon-{$var}.svg")));
+            $vSvg = $resolveFavicon("favicon-{$var}.svg");
+            if ($vSvg && file_exists($vSvg)) {
+                $c = file_get_contents($vSvg);
+                $zip->addFromString("public/image/favicon-{$var}.svg", $c);
+                $zip->addFromString("public/favicon-{$var}.svg", $c);
             }
-            if (file_exists(public_path("favicon-{$var}.ico"))) {
-                $zip->addFromString("public/favicon-{$var}.ico", file_get_contents(public_path("favicon-{$var}.ico")));
+            $vIco = $resolveFavicon("favicon-{$var}.ico");
+            if ($vIco && file_exists($vIco)) {
+                $c = file_get_contents($vIco);
+                $zip->addFromString("public/image/favicon-{$var}.ico", $c);
+                $zip->addFromString("public/favicon-{$var}.ico", $c);
             }
         }
 

@@ -386,3 +386,79 @@
     background-color: var(--primary-emerald, #047857) !important;
     border-color: var(--primary-emerald, #047857) !important;
 }
+
+/* Executive Split Capsule (Profile & Logout Unified Component - Option 1 Enhanced) */
+.user-executive-capsule {
+    background-color: #ffffff;
+    border: 1.5px solid #a7f3d0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(4, 120, 87, 0.04);
+    min-height: 44px;
+    padding: 5px 8px 5px 18px;
+    gap: 8px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 100%;
+    cursor: pointer;
+    user-select: none;
+}
+.user-executive-capsule:hover {
+    border-color: #6ee7b7;
+    background-color: #fbfdfc;
+    box-shadow: 0 4px 8px -1px rgba(4, 120, 87, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+}
+.user-executive-capsule .user-display-name {
+    color: #1e293b;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    padding-left: 0.25rem;
+}
+.user-executive-capsule .capsule-divider {
+    background-color: #cbd5e1;
+    opacity: 0.35;
+}
+.btn-capsule-logout {
+    color: #ef4444 !important;
+    background-color: transparent;
+    transition: all 0.15s ease-in-out;
+}
+.btn-capsule-logout:hover {
+    background-color: #fee2e2 !important;
+    color: #dc2626 !important;
+    transform: scale(1.05);
+}
+.btn-capsule-logout:active {
+    transform: scale(0.95);
+}
+.user-avatar-circle {
+    background-color: var(--primary-emerald, #047857);
+    color: #ffffff;
+    transition: transform 0.15s ease;
+}
+.user-executive-capsule:hover .user-avatar-circle {
+    transform: scale(1.04);
+}
+.user-profile-dropdown {
+    animation: dropdownFadeIn 0.15s ease-out;
+    border: 1px solid rgba(4, 120, 87, 0.15) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    z-index: 1060;
+}
+.user-profile-dropdown .dropdown-item:hover {
+    background-color: #fee2e2 !important;
+    color: #dc2626 !important;
+}
+@keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 767.98px) {
+    .user-executive-capsule {
+        padding: 4px !important;
+        min-height: 40px !important;
+        border-radius: 50rem !important;
+        gap: 0 !important;
+    }
+    .user-executive-capsule .user-avatar-circle {
+        width: 32px !important;
+        height: 32px !important;
+    }
+}

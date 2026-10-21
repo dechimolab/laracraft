@@ -75,12 +75,23 @@
                 'btn_link' => '#',
             ];
         }
-        if (!empty($selectedModules['roles_management'])) {
-            $activeModulesList['roles_management'] = [
-                'name' => 'Role & Permission (RBAC)',
-                'tag' => 'roles_rbac',
+        if (!empty($selectedModules['audit_trail'])) {
+            $activeModulesList['audit_trail'] = [
+                'name' => 'Audit Trail & Activity Log',
+                'tag' => 'audit_trail',
                 'status' => 'Active',
-                'desc' => 'ระบบจัดการบทบาท สิทธิ์การเข้าถึง และการแบ่งแยกหน้าที่ตามมาตรฐานความปลอดภัย',
+                'desc' => 'บันทึกประวัติการเปลี่ยนแปลงข้อมูลของ Eloquent Model ทุกตัวอัตโนมัติ พร้อมเก็บบันทึก IP, User-Agent และ JSON Diff',
+                'btn_text' => 'ตรวจสอบ Audit Trail',
+                'btn_icon' => 'history_edu',
+                'btn_link' => Route::has('demo.audit') ? route('demo.audit') : '#',
+            ];
+        }
+        if (!empty($selectedModules['user_role']) || !empty($selectedModules['roles_management'])) {
+            $activeModulesList['user_role'] = [
+                'name' => 'Role & Permission (RBAC)',
+                'tag' => 'user_role',
+                'status' => 'Active',
+                'desc' => 'ระบบจัดการบทบาท สิทธิ์การเข้าถึง และการแบ่งแยกหน้าที่ตามมาตรฐานความปลอดภัย (Role-Based Access Control)',
                 'btn_text' => 'จัดการสิทธิ์บทบาท',
                 'btn_icon' => 'admin_panel_settings',
                 'btn_link' => Route::has('switch.group') ? route('switch.group') : '#',
