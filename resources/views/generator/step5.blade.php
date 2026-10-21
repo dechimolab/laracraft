@@ -121,7 +121,7 @@
             <span class="px-2 py-0.5 rounded bg-surface-container text-secondary">Laravel {{ session('project.laravel_version', config('generator.default_laravel', '13.x')) }}</span>
             <span class="px-2 py-0.5 rounded bg-surface-container text-tertiary">{{ strtoupper(session('project.db_connection', 'mysql')) }}</span>
             <span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant">BS 5.3.3</span>
-            <span class="px-2 py-0.5 rounded bg-surface-container text-emerald-400"><i class="bi bi-palette me-1"></i>{{ ucfirst(session('project.theme_mode', 'light')) }}: {{ session('project.theme_key', 'nordic-clean') }}</span>
+            <span class="px-2 py-0.5 rounded bg-surface-container text-emerald-400"><i class="bi bi-palette me-1"></i>{{ ucfirst(session('project.theme_mode', 'light')) }}: {{ config('themes.themes.' . session('project.theme_key', 'nordic-clean') . '.name', 'Nordic Clean') }}</span>
             <span class="text-outline">•</span>
             <span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface">{{ $modelCount }} Models</span>
             <span class="text-outline">•</span>

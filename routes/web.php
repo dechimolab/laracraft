@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\WebauthnController;
 use App\Http\Controllers\GeneratorController;
+use App\Http\Controllers\ThemePreviewController;
 use App\Http\Middleware\NoCacheAuthenticated;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,9 @@ Route::prefix('webauthn')->name('webauthn.')->group(function () {
     Route::post('/login/options', [WebauthnController::class, 'loginOptions'])->name('login.options');
     Route::post('/login/verify', [WebauthnController::class, 'loginVerify'])->name('login.verify');
 });
+
+// Live Modular Theme Preview Routes (Instant Developer Feedback)
+Route::get('/preview-theme/{theme}/{page?}', [ThemePreviewController::class, 'preview'])->name('theme.preview');
 
 // Authenticated Pipeline Routes with NoCacheAuthenticated
 Route::middleware([NoCacheAuthenticated::class])->group(function () {

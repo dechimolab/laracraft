@@ -70,6 +70,34 @@ class ZipExportService
         $files['public/.htaccess'] = $this->buildPublicHtaccess();
         $files['public/robots.txt'] = "User-agent: *\nDisallow:\n";
 
+        // Theme-Adaptive Favicons
+        $themeKey = $projectConfig['theme_key'] ?? 'nordic-clean';
+        $shortTheme = str_replace(['-clean', '-enterprise'], '', $themeKey);
+
+        $themeSvgPath = file_exists(public_path("favicon-{$themeKey}.svg")) 
+            ? public_path("favicon-{$themeKey}.svg") 
+            : (file_exists(public_path("favicon-{$shortTheme}.svg")) ? public_path("favicon-{$shortTheme}.svg") : public_path('favicon.svg'));
+
+        $themeIcoPath = file_exists(public_path("favicon-{$themeKey}.ico")) 
+            ? public_path("favicon-{$themeKey}.ico") 
+            : (file_exists(public_path("favicon-{$shortTheme}.ico")) ? public_path("favicon-{$shortTheme}.ico") : public_path('favicon.ico'));
+
+        if (file_exists($themeSvgPath)) {
+            $files['public/favicon.svg'] = file_get_contents($themeSvgPath);
+        }
+        if (file_exists($themeIcoPath)) {
+            $files['public/favicon.ico'] = file_get_contents($themeIcoPath);
+        }
+        $allVariants = ['nordic', 'nordic-clean', 'emerald', 'emerald-enterprise'];
+        foreach ($allVariants as $var) {
+            if (file_exists(public_path("favicon-{$var}.svg"))) {
+                $files["public/favicon-{$var}.svg"] = file_get_contents(public_path("favicon-{$var}.svg"));
+            }
+            if (file_exists(public_path("favicon-{$var}.ico"))) {
+                $files["public/favicon-{$var}.ico"] = file_get_contents(public_path("favicon-{$var}.ico"));
+            }
+        }
+
         // Theme Modular Architecture (Tier 2: Individual Themes & Core Engine)
         $allThemes = config('themes.themes', []);
         foreach ($allThemes as $tKey => $tData) {
@@ -2217,6 +2245,10 @@ BLADE;
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{$appName}</title>
 
+    <!-- Theme Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
+
     <!-- Google Font: Sarabun -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3731,6 +3763,34 @@ MD;
         $zip->addFromString('public/index.php', $this->buildPublicIndex());
         $zip->addFromString('public/.htaccess', $this->buildPublicHtaccess());
         $zip->addFromString('public/robots.txt', "User-agent: *\nDisallow:\n");
+
+        // Theme-Adaptive Favicons
+        $themeKey = $projectConfig['theme_key'] ?? 'nordic-clean';
+        $shortTheme = str_replace(['-clean', '-enterprise'], '', $themeKey);
+
+        $themeSvgPath = file_exists(public_path("favicon-{$themeKey}.svg")) 
+            ? public_path("favicon-{$themeKey}.svg") 
+            : (file_exists(public_path("favicon-{$shortTheme}.svg")) ? public_path("favicon-{$shortTheme}.svg") : public_path('favicon.svg'));
+
+        $themeIcoPath = file_exists(public_path("favicon-{$themeKey}.ico")) 
+            ? public_path("favicon-{$themeKey}.ico") 
+            : (file_exists(public_path("favicon-{$shortTheme}.ico")) ? public_path("favicon-{$shortTheme}.ico") : public_path('favicon.ico'));
+
+        if (file_exists($themeSvgPath)) {
+            $zip->addFromString('public/favicon.svg', file_get_contents($themeSvgPath));
+        }
+        if (file_exists($themeIcoPath)) {
+            $zip->addFromString('public/favicon.ico', file_get_contents($themeIcoPath));
+        }
+        $allVariants = ['nordic', 'nordic-clean', 'emerald', 'emerald-enterprise'];
+        foreach ($allVariants as $var) {
+            if (file_exists(public_path("favicon-{$var}.svg"))) {
+                $zip->addFromString("public/favicon-{$var}.svg", file_get_contents(public_path("favicon-{$var}.svg")));
+            }
+            if (file_exists(public_path("favicon-{$var}.ico"))) {
+                $zip->addFromString("public/favicon-{$var}.ico", file_get_contents(public_path("favicon-{$var}.ico")));
+            }
+        }
 
         // config/
         $zip->addFromString('config/app.php', $this->buildConfigApp());

@@ -749,8 +749,9 @@ class GeneratorController extends Controller
         [$themeKey, $activeTheme] = $zipExportService->getActiveThemeData($projectConfig);
 
         // Dedicated modular theme package preview if explicitly requested
-        if ($themeKey === 'emerald-enterprise' && $view === 'theme-package') {
-            return response()->view('themes.emerald-enterprise.demo.index', [
+        $themePackageView = "themes.{$themeKey}.demo.index";
+        if ($view === 'theme-package' && view()->exists($themePackageView)) {
+            return response()->view($themePackageView, [
                 'projectConfig' => $projectConfig,
                 'themeKey' => $themeKey,
                 'activeTheme' => $activeTheme,

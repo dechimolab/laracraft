@@ -1,184 +1,211 @@
 @extends(view()->exists('layouts.app') ? 'layouts.app' : 'themes.emerald-enterprise.layouts.app')
 
 @section('no_sidebar', 'true')
+@section('no_header', 'true')
 
 @section('content')
-<div class="flex flex-col w-full items-center justify-center py-6 px-4">
-    <!-- Subtle decorative ambient glows -->
-    <div class="relative w-full max-w-[540px]">
-        <div class="absolute -top-20 -left-20 w-64 h-64 bg-emerald-200/40 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-20 -right-20 w-72 h-72 bg-teal-200/35 rounded-full blur-3xl pointer-events-none"></div>
-
-        <!-- Main Authentication Card -->
-        <div class="relative w-full bg-surface-container-lowest rounded-xl shadow-xl p-6 sm:p-8 flex flex-col gap-space-lg" style="background: #ffffff; border: 1px solid #d1fae5; box-shadow: rgba(4, 120, 87, 0.08) 0px 20px 25px -5px, rgba(4, 120, 87, 0.04) 0px 8px 10px -6px;">
-            <!-- Top Accent Bar -->
-            <div class="absolute top-0 left-6 right-6 h-1.5 rounded-full" style="background: linear-gradient(90deg, #047857 0%, #10b981 100%);"></div>
-
-            <!-- Header & Crest Section -->
-            <div class="flex flex-col items-center text-center pt-2">
-                <!-- Shield Badge with Pulse -->
-                <div class="relative mb-3 flex items-center justify-center">
-                    <div class="absolute -inset-1.5 rounded-2xl bg-emerald-100 opacity-80 blur-sm"></div>
-                    <div class="relative w-14 h-14 rounded-2xl flex items-center justify-center shadow-md" style="background: #047857; color: #ffffff; border: 2px solid #a7f3d0;">
-                        <span class="material-symbols-outlined text-[30px]" style="font-variation-settings: 'FILL' 1;">shield_person</span>
-                    </div>
-                </div>
-
-                <h1 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight mb-2" style="color: #0f172a;">
-                    {{ config('app.name', 'Artisan POS & Inventory Hub') }}
-                </h1>
-
-                <!-- Enterprise Protocol Badges -->
-                <div class="flex flex-wrap items-center justify-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background: #f0fdf4; border: 1px solid #a7f3d0; color: #047857;">
-                        <span class="w-2 h-2 rounded-full" style="background: #10b981;"></span>UMS BUU Protocol
-                    </span>
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold" style="background: #f0fdf4; border: 1px solid #d1fae5; color: #047857;">
-                        <span class="material-symbols-outlined text-[14px]" style="color: #10b981;">account_tree</span>Active Directory
-                    </span>
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold" style="background: #f8fafc; border: 1px solid #e2e8f0; color: #475569;">
-                        <span class="material-symbols-outlined text-[13px]">lock</span>256-Bit TLS
-                    </span>
+<div class="d-flex flex-column justify-content-between min-vh-100" style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #e6f4ea 100%);">
+    <!-- Header -->
+    <header class="w-100 bg-white bg-opacity-75 backdrop-blur border-bottom border-light-subtle shadow-sm py-2">
+        <div class="container-fluid px-4 px-lg-5 d-flex align-items-center justify-content-between" style="max-width: 1320px; height: 3.5rem;">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge rounded-pill d-inline-flex align-items-center gap-2 px-3 py-2 text-white text-uppercase" style="background-color: #047857; font-size: 0.75rem; letter-spacing: 0.05em;">
+                    <span class="badge-pulse"></span>EMERALD ENTERPRISE
+                </span>
+                <div class="vr mx-2 text-secondary opacity-50 d-none d-sm-block"></div>
+                <div class="d-flex align-items-center gap-1">
+                    <span class="fw-semibold text-emerald fs-6">Artisan</span>
+                    <span class="fw-semibold fs-6 text-dark">{{ preg_replace('/^Artisan\s+/i', '', config('app.name', 'POS & Inventory Hub')) }}</span>
                 </div>
             </div>
-
-            <!-- Status Banner -->
-            @if(session('error'))
-            <div class="w-full rounded-lg p-3.5 flex items-start gap-2 bg-red-50 border border-red-200 text-red-800" role="alert">
-                <span class="material-symbols-outlined text-[20px] shrink-0 mt-0.5 text-red-600">error</span>
-                <div class="flex-1 min-w-0 font-body-sm">{{ session('error') }}</div>
+            <div class="d-flex align-items-center gap-2 text-secondary">
+                <i class="bi bi-shield-check text-emerald fs-5"></i>
+                <span class="small d-none d-sm-inline">Secure Enterprise Auth Gateway</span>
             </div>
-            @endif
+        </div>
+    </header>
 
-            @if(session('success'))
-            <div class="w-full rounded-lg p-3.5 flex items-start gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800" role="alert">
-                <span class="material-symbols-outlined text-[20px] shrink-0 mt-0.5 text-emerald-600">check_circle</span>
-                <div class="flex-1 min-w-0 font-body-sm">{{ session('success') }}</div>
-            </div>
-            @endif
+    <!-- Main Content -->
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center p-3 p-md-4">
+        <div class="d-flex flex-column align-items-center justify-content-center w-100 py-3">
+            <!-- Ambient Wrapper -->
+            <div class="position-relative w-100" style="max-width: 520px;">
+                <div class="ambient-glow-1"></div>
+                <div class="ambient-glow-2"></div>
 
-            <!-- Authentication Form -->
-            <form method="POST" action="{{ route('login.post') }}" class="flex flex-col gap-4" id="loginForm">
-                @csrf
-                <!-- Username Field -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="flex items-center justify-between font-label-md text-label-md text-on-surface" for="username">
-                        <span>ชื่อผู้ใช้งาน <span class="text-outline font-normal">(BUU ACCOUNT / USERNAME)</span></span>
-                        <span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider" style="color: #047857;">Required</span>
-                    </label>
-                    <div class="relative flex items-center">
-                        <span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">
-                            person
-                        </span>
-                        <input autocomplete="username" class="w-full h-11 pl-11 pr-4 bg-white rounded font-body-md text-body-md shadow-sm focus:outline-none transition-all" id="username" name="username" placeholder="e.g. s65123456 หรือ pusit" required autofocus style="border: 1.5px solid #cbd5e1; color: #0f172a;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.2)'" onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none'" type="text" value="{{ old('username', 'pantakarn') }}">
+                <!-- Main Authentication Card -->
+                <div class="card position-relative bg-white border border-emerald-subtle rounded-4 shadow-lg p-4 p-sm-5 d-flex flex-column gap-3">
+                    <!-- Top Accent Bar -->
+                    <div class="card-top-accent"></div>
+
+                    <!-- Header & Crest Section -->
+                    <div class="d-flex flex-column align-items-center text-center pt-2">
+                        <!-- Shield Badge with Pulse -->
+                        <div class="position-relative mb-3 d-flex align-items-center justify-content-center">
+                            <div class="crest-shield rounded-4 d-flex align-items-center justify-content-center shadow-sm">
+                                <i class="bi bi-shield-lock-fill fs-2 text-white"></i>
+                            </div>
+                        </div>
+                        <h1 class="fs-4 fw-bold tracking-tight mb-2 text-dark">
+                            {{ config('app.name', 'Artisan POS & Inventory Hub') }}
+                        </h1>
+                        <!-- Enterprise Protocol Badges -->
+                        <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-1">
+                            <span class="badge rounded-pill px-3 py-1 fw-semibold border" style="background-color: #f0fdf4; border-color: #a7f3d0 !important; color: #047857;">
+                                <span class="d-inline-block rounded-circle me-1" style="width: 8px; height: 8px; background-color: #10B981;"></span>
+                                UMS BUU Protocol
+                            </span>
+                            <span class="badge rounded-pill px-2.5 py-1 fw-semibold border" style="background-color: #f0fdf4; border-color: #d1fae5 !important; color: #047857;">
+                                <i class="bi bi-diagram-3 me-1 text-mint"></i>Active Directory
+                            </span>
+                            <span class="badge rounded-pill px-2.5 py-1 fw-semibold border text-secondary" style="background-color: #f8fafc; border-color: #e2e8f0 !important;">
+                                <i class="bi bi-lock me-1"></i>256-Bit TLS
+                            </span>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Password Field -->
-                <div class="flex flex-col gap-1.5">
-                    <div class="flex items-center justify-between">
-                        <label class="font-label-md text-label-md text-on-surface" for="password">
-                            รหัสผ่าน <span class="text-outline font-normal">(BUU PASSWORD)</span>
-                        </label>
-                        <a class="font-label-sm text-label-sm underline underline-offset-2 transition-colors cursor-pointer" href="javascript:void(0)" onclick="alert('กรุณาติดต่อฝ่ายเทคโนโลยีสารสนเทศ UMS หรือรีเซ็ตรหัสผ่านผ่านระบบ BUU Account Portal')" style="color: #047857;">
-                            ลืมรหัสผ่าน?
-                        </a>
+                    <!-- Status Alerts -->
+                    @if(session('error'))
+                    <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-0" role="alert" style="border-radius: 0.5rem; font-size: 0.875rem;">
+                        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                        <div>{{ session('error') }}</div>
                     </div>
-                    <div class="relative flex items-center">
-                        <span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">
-                            key
-                        </span>
-                        <input autocomplete="current-password" class="w-full h-11 pl-11 pr-11 bg-white rounded font-body-md text-body-md shadow-sm focus:outline-none transition-all tracking-wider" id="password" name="password" placeholder="กรอกรหัสผ่านบัญชี BUU" required style="border: 1.5px solid #cbd5e1; color: #0f172a;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.2)'" onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none'" type="password">
-                        <button aria-label="Toggle Password Visibility" class="absolute right-3 text-outline hover:text-on-surface p-1 rounded focus:outline-none" id="togglePasswordBtn" onclick="togglePasswordVisibility()" title="Toggle Password" type="button">
-                            <span class="material-symbols-outlined text-[20px]" id="togglePasswordIcon">visibility</span>
+                    @endif
+
+                    @if(session('success'))
+                    <div class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-0" role="alert" style="border-radius: 0.5rem; font-size: 0.875rem;">
+                        <i class="bi bi-check-circle-fill fs-5"></i>
+                        <div>{{ session('success') }}</div>
+                    </div>
+                    @endif
+
+                    <!-- Authentication Form -->
+                    <form method="POST" action="{{ Route::has('login.post') ? route('login.post') : '#' }}" class="d-flex flex-column gap-3 mt-1" id="loginForm">
+                        @csrf
+                        <!-- Username Field -->
+                        <div class="d-flex flex-column gap-1">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <label class="form-label mb-0 fw-semibold small text-dark" for="username">
+                                    ชื่อผู้ใช้งาน <span class="text-secondary fw-normal">(BUU ACCOUNT / USERNAME)</span>
+                                </label>
+                                <span class="badge bg-transparent text-emerald text-uppercase px-0 fw-bold" style="font-size: 0.75rem;">Required</span>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 text-secondary">
+                                    <i class="bi bi-person fs-5"></i>
+                                </span>
+                                <input autocomplete="username" class="form-control border-start-0 py-2" id="username" name="username" placeholder="e.g. s65123456 or pantakarn" required autofocus type="text" value="{{ old('username', 'pantakarn') }}">
+                            </div>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="d-flex flex-column gap-1">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <label class="form-label mb-0 fw-semibold small text-dark" for="password">
+                                    รหัสผ่าน <span class="text-secondary fw-normal">(BUU PASSWORD)</span>
+                                </label>
+                                <a class="small text-emerald text-decoration-none fw-semibold" href="javascript:void(0)" onclick="alert('กรุณาติดต่อฝ่ายเทคโนโลยีสารสนเทศ UMS หรือรีเซ็ตรหัสผ่านผ่านระบบ BUU Account Portal')">
+                                    ลืมรหัสผ่าน?
+                                </a>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 text-secondary">
+                                    <i class="bi bi-key fs-5"></i>
+                                </span>
+                                <input autocomplete="current-password" class="form-control border-start-0 border-end-0 py-2" id="password" name="password" placeholder="กรอกรหัสผ่านบัญชี BUU" required type="password" value="Demo@Password2025">
+                                <button aria-label="Toggle Password Visibility" class="input-group-text bg-white border-start-0 text-secondary btn-password-toggle" id="togglePasswordBtn" onclick="togglePasswordVisibility()" title="Toggle Password Visibility" type="button">
+                                    <i class="bi bi-eye fs-5" id="togglePasswordIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Remember Me Checkbox -->
+                        <div class="d-flex align-items-center justify-content-between pt-1">
+                            <div class="form-check d-flex align-items-center gap-2 mb-0">
+                                <input class="form-check-input mt-0" id="remember" name="remember" type="checkbox" {{ old('remember', true) ? 'checked' : '' }}>
+                                <label class="form-check-label text-dark small" for="remember">
+                                    จดจำการเข้าสู่ระบบ <span class="text-secondary">(Remember Me)</span>
+                                </label>
+                            </div>
+                            <span class="text-secondary small d-none d-sm-inline">30 วันบนอุปกรณ์นี้</span>
+                        </div>
+
+                        <!-- Primary Action Button: BUU Account Login -->
+                        <button class="btn btn-emerald w-100 py-2 d-flex align-items-center justify-content-center gap-2 mt-2" id="loginBtn" type="submit">
+                            <i class="bi bi-box-arrow-in-right fs-5"></i>
+                            <span class="fw-semibold" id="loginBtnText">เข้าสู่ระบบด้วย BUU Account</span>
+                            <div class="spinner-border spinner-border-sm text-light d-none" id="loginSpinner" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
                         </button>
+
+                        <!-- Divider with label -->
+                        <div class="position-relative text-center my-2">
+                            <hr class="text-secondary opacity-25 m-0"/>
+                            <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-secondary text-uppercase fw-medium" style="font-size: 0.75rem; letter-spacing: 0.05em;">
+                                หรือยืนยันตัวตนแบบไร้รหัสผ่าน
+                            </span>
+                        </div>
+
+                        <!-- Secondary Action Button: Passkey / Biometrics -->
+                        <button class="btn btn-outline-emerald w-100 py-2 d-flex align-items-center justify-content-center gap-2" id="btn-biometric-login" onclick="loginWithBiometrics()" type="button">
+                            <i class="bi bi-fingerprint fs-4 text-emerald"></i>
+                            <span>สแกนลายนิ้วมือ / Passkey <span class="small fw-normal text-secondary d-none d-sm-inline">(Windows Hello / Touch ID)</span></span>
+                        </button>
+                        <div id="biometric-status" class="small text-center text-secondary d-none"></div>
+                    </form>
+
+                    <!-- Enterprise Security Compliance Section -->
+                    <div class="bg-emerald-light border border-emerald-subtle rounded-3 p-3 d-flex flex-column gap-2 mt-1">
+                        <div class="d-flex align-items-center gap-2 fw-semibold small text-emerald">
+                            <i class="bi bi-patch-check-fill text-emerald"></i>
+                            <span>มาตรฐานความปลอดภัย UMS BUU:</span>
+                        </div>
+                        <ul class="list-unstyled mb-0 d-flex flex-column gap-1 ps-1 small text-dark">
+                            <li class="d-flex align-items-start gap-2">
+                                <span class="rounded-circle mt-2 flex-shrink-0" style="width: 6px; height: 6px; background-color: #10B981;"></span>
+                                <span>ยืนยันตัวตนผ่าน Active Directory กลางและดึงกลุ่มสิทธิ์จาก <span class="fw-semibold text-emerald">UMS Central Gateway</span></span>
+                            </li>
+                            <li class="d-flex align-items-start gap-2">
+                                <span class="rounded-circle mt-2 flex-shrink-0" style="width: 6px; height: 6px; background-color: #10B981;"></span>
+                                <span>รองรับการเข้าสู่ระบบแบบชีวมิติตลับกุญแจ <span class="fw-semibold text-emerald">(W3C WebAuthn &amp; FIDO2 Passkey)</span></span>
+                            </li>
+                            <li class="d-flex align-items-start gap-2">
+                                <span class="rounded-circle mt-2 flex-shrink-0 bg-danger" style="width: 6px; height: 6px;"></span>
+                                <span>ไม่มีบทบาท <code class="px-1.5 py-0.5 rounded text-danger bg-danger-subtle fw-bold" style="font-size: 0.8rem;">superadmin</code> ในระบบ UMS ตามข้อกำหนดการแยกหน้าที่ความปลอดภัย</span>
+                            </li>
+                            <li class="d-flex align-items-start gap-2">
+                                <span class="rounded-circle mt-2 flex-shrink-0" style="width: 6px; height: 6px; background-color: #10B981;"></span>
+                                <span>จำกัดความถี่การเข้าสู่ระบบ 5 ครั้ง/นาที เพื่อป้องกันการโจมตีแบบ Brute Force</span>
+                            </li>
+                        </ul>
+                        <div class="mt-1 pt-2 d-flex align-items-center justify-content-between small text-secondary border-top border-emerald-subtle" style="font-size: 0.75rem;">
+                            <span class="d-flex align-items-center gap-1">
+                                <i class="bi bi-shield-shaded text-mint"></i>SESSION_SEED: 0x9F41…E8A3
+                            </span>
+                            <span>GATEWAY: UMS-NODE-04</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Remember Me Checkbox -->
-                <div class="flex items-center justify-between pt-1">
-                    <label class="flex items-center gap-2 cursor-pointer select-none">
-                        <input class="w-4 h-4 rounded text-primary focus:ring-primary focus:ring-offset-0 transition-colors accent-primary cursor-pointer" id="remember" name="remember" type="checkbox" {{ old('remember') ? 'checked' : '' }}>
-                        <span class="font-body-md text-body-md text-on-surface">
-                            จดจำการเข้าสู่ระบบ <span class="text-outline font-body-sm text-body-sm">(Remember Me)</span>
-                        </span>
-                    </label>
-                    <span class="font-label-sm text-label-sm text-outline hidden sm:inline">30 วันบนอุปกรณ์นี้</span>
-                </div>
-
-                <!-- Primary Action Button: BUU Account Login -->
-                <button class="w-full h-11 mt-2 rounded font-label-lg text-label-lg font-semibold flex items-center justify-center gap-2 text-white active:scale-[0.99] transition-all cursor-pointer focus:outline-none shadow-md" id="loginBtn" style="background-color: #047857; box-shadow: rgba(4, 120, 87, 0.35) 0px 4px 14px 0px;" onmouseover="this.style.backgroundColor='#065f46'" onmouseout="this.style.backgroundColor='#047857'" type="submit">
-                    <span class="material-symbols-outlined text-[20px]">login</span>
-                    <span id="loginBtnText">เข้าสู่ระบบด้วย BUU Account</span>
-                    <span class="hidden animate-spin material-symbols-outlined text-[18px]" id="loginSpinner">progress_activity</span>
-                </button>
-
-                <!-- Divider with label -->
-                <div class="relative my-1 flex items-center justify-center">
-                    <div class="w-full h-px bg-slate-200"></div>
-                    <span class="absolute bg-white px-3 font-label-sm text-label-sm text-outline uppercase tracking-wider">
-                        หรือยืนยันตัวตนแบบไร้รหัสผ่าน
+                <!-- Security Gateway Footer Meta -->
+                <div class="mt-3 d-flex flex-wrap align-items-center justify-content-between px-2 text-secondary small" style="font-size: 0.8rem;">
+                    <span class="d-flex align-items-center gap-1">
+                        <span class="rounded-circle d-inline-block" style="width: 8px; height: 8px; background-color: #047857;"></span>
+                        UMS Authentication Cluster Active
                     </span>
-                </div>
-
-                <!-- Secondary Action Button: Passkey / Biometrics -->
-                <button id="btn-biometric-login" class="w-full h-11 rounded font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all group focus:outline-none cursor-pointer" onclick="loginWithBiometrics()" style="background: #ffffff; border: 1.5px solid #10b981; color: #047857;" onmouseover="this.style.background='#f0fdf4'; this.style.borderColor='#047857';" onmouseout="this.style.background='#ffffff'; this.style.borderColor='#10b981';" type="button">
-                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform text-[22px]" style="color: #047857;">fingerprint</span>
-                    <span class="font-medium" style="color: #047857;">สแกนลายนิ้วมือ / Passkey <span class="text-label-sm font-normal hidden sm:inline" style="color: #059669;">(Windows Hello / Touch ID)</span></span>
-                </button>
-                <div id="biometric-status" class="small text-center text-secondary d-none mt-2"></div>
-            </form>
-
-            <!-- Enterprise Security Compliance Section -->
-            <div class="rounded-lg p-4 flex flex-col gap-2.5" style="background: #f0fdf4; border: 1px solid #d1fae5;">
-                <div class="flex items-center gap-1.5 font-label-md text-label-md font-semibold" style="color: #047857;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #047857; font-variation-settings: 'FILL' 1;">verified_user</span>
-                    <span>มาตรฐานความปลอดภัย UMS BUU:</span>
-                </div>
-                <ul class="flex flex-col gap-1.5 pl-1.5 font-body-sm text-body-sm" style="color: #1e293b;">
-                    <li class="flex items-start gap-2">
-                        <span class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style="background: #10b981;"></span>
-                        <span>ยืนยันตัวตนผ่าน Active Directory กลางและดึงกลุ่มสิทธิ์จาก <span class="font-medium" style="color: #047857;">UMS Central Gateway</span></span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style="background: #10b981;"></span>
-                        <span>รองรับการเข้าสู่ระบบแบบชีวมิติตลับกุญแจ <span class="font-medium" style="color: #047857;">(W3C WebAuthn &amp; FIDO2 Passkey)</span></span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style="background: #ef4444;"></span>
-                        <span>ไม่มีบทบาท <code class="px-1.5 py-0.5 rounded font-mono text-label-sm" style="background: #fee2e2; color: #991b1b;">superadmin</code> ในระบบ UMS ตามข้อกำหนดการแยกหน้าที่ความปลอดภัย</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style="background: #10b981;"></span>
-                        <span>จำกัดความถี่การเข้าสู่ระบบ 5 ครั้ง/นาที เพื่อป้องกันการโจมตีแบบ Brute Force</span>
-                    </li>
-                </ul>
-                <div class="mt-1 pt-2 flex items-center justify-between font-label-sm text-label-sm" style="border-top: 1px solid #d1fae5; color: #64748b;">
-                    <span class="flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[14px]" style="color: #10b981;">encrypted</span>SESSION_SEED: 0x9F41…E8A3
-                    </span>
-                    <span>GATEWAY: UMS-NODE-04</span>
+                    <span>Enterprise SLA 99.99%</span>
                 </div>
             </div>
-
-            <!-- Back to Main Application Link -->
-            <div class="flex items-center justify-center pt-1">
-                <a class="inline-flex items-center gap-1.5 font-label-md text-label-md transition-colors group text-decoration-none" href="{{ route('demo.index') }}" style="color: #047857;">
-                    <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
-                    <span>กลับสู่หน้าหลักแอปพลิเคชัน</span>
-                </a>
-            </div>
         </div>
+    </main>
 
-        <!-- Security Gateway Footer Meta -->
-        <div class="mt-4 flex flex-wrap items-center justify-between px-2 font-label-sm text-label-sm text-slate-500">
-            <span class="flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full" style="background: #047857;"></span>
-                UMS Authentication Cluster Active
-            </span>
-            <span>Enterprise SLA 99.99%</span>
+    <!-- Footer -->
+    <footer class="w-100 py-3 border-top border-emerald-subtle" style="background-color: rgba(240, 253, 244, 0.75);">
+        <div class="container text-center small text-emerald fw-medium">
+            {{ config('app.name', 'Artisan POS & Inventory Hub') }} • UMS BUU Integrated Enterprise Ecosystem
         </div>
-    </div>
+    </footer>
 </div>
 
 <script>
@@ -189,10 +216,10 @@
 
         if (pwdInput.type === 'password') {
             pwdInput.type = 'text';
-            pwdIcon.textContent = 'visibility_off';
+            pwdIcon.className = 'bi bi-eye-slash fs-5';
         } else {
             pwdInput.type = 'password';
-            pwdIcon.textContent = 'visibility';
+            pwdIcon.className = 'bi bi-eye fs-5';
         }
     }
 
@@ -220,7 +247,7 @@
         const btnEl = document.getElementById('btn-biometric-login');
         const statusEl = document.getElementById('biometric-status');
         const usernameVal = document.getElementById('username')?.value.trim() || '';
-        const csrfToken = '{{ csrf_token() }}';
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
         if (!window.PublicKeyCredential) {
             if (typeof Swal !== 'undefined') {
@@ -231,20 +258,22 @@
                     confirmButtonText: 'ตกลง'
                 });
             } else {
-                alert('เบราว์เซอร์หรืออุปกรณ์ของคุณไม่รองรับ WebAuthn / Passkey');
+                alert('เบราว์เซอร์หรืออุปกรณ์ของคุณไม่รองรับการสแกนลายนิ้วมือ');
             }
             return;
         }
 
-        try {
-            if (btnEl) btnEl.disabled = true;
-            if (statusEl) {
-                statusEl.classList.remove('d-none', 'text-danger', 'text-success');
-                statusEl.classList.add('text-secondary');
-                statusEl.textContent = 'กำลังติดต่อเซิร์ฟเวอร์เพื่อขอ Challenge...';
-            }
+        if (btnEl) {
+            btnEl.disabled = true;
+            btnEl.classList.add('opacity-75');
+        }
+        if (statusEl) {
+            statusEl.classList.remove('d-none');
+            statusEl.textContent = 'กำลังขอข้อมูลยืนยันตัวตนชีวมิติจาก UMS...';
+        }
 
-            const optionsRes = await fetch('{{ route("webauthn.login.options") }}', {
+        try {
+            const optRes = await fetch('{{ Route::has("webauthn.login.options") ? route("webauthn.login.options") : url("/webauthn/login/options") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -254,55 +283,23 @@
                 body: JSON.stringify({ username: usernameVal })
             });
 
-            if (!optionsRes.ok) {
-                const errData = await optionsRes.json();
-                throw new Error(errData.error || 'ไม่สามารถสร้าง Challenge ได้');
+            if (!optRes.ok) {
+                const errData = await optRes.json().catch(() => ({}));
+                throw new Error(errData.error || 'ไม่สามารถรับข้อมูล Passkey Challenge ได้');
             }
 
-            const options = await optionsRes.json();
-
-            if (options.total_credentials === 0) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'ยังไม่มีข้อมูลลายนิ้วมือในระบบ',
-                        html: `
-                            <div class="text-start mt-2">
-                                <p class="mb-2">ระบบยังไม่พบลายนิ้วมือที่ผูกกับบัญชีผู้ใช้ใดๆ</p>
-                                <div class="p-3 rounded bg-light border border-secondary-subtle small text-muted">
-                                    <p class="fw-semibold text-emerald-700 mb-1">📌 สำหรับการใช้งานครั้งแรก:</p>
-                                    <ol class="mb-0 ps-3">
-                                        <li>เข้าสู่ระบบด้วย <b>BUU Account</b> เพื่อเข้าสู่ระบบก่อน</li>
-                                        <li>จากนั้นสามารถลงทะเบียนอุปกรณ์หรือ Passkey ในหน้า Demo/Profile ได้</li>
-                                    </ol>
-                                </div>
-                            </div>
-                        `,
-                        confirmButtonText: 'เข้าสู่ระบบด้วยรหัสผ่าน'
-                    }).then(() => {
-                        document.getElementById('username')?.focus();
-                    });
-                } else {
-                    alert('ยังไม่มีข้อมูลลายนิ้วมือในระบบ กรุณาเข้าสู่ระบบด้วยรหัสผ่านก่อน');
-                }
-                return;
-            }
-
+            const options = await optRes.json();
             options.challenge = base64urlToUint8Array(options.challenge);
             if (options.allowCredentials && options.allowCredentials.length > 0) {
-                options.allowCredentials = options.allowCredentials.map(cred => {
-                    const desc = {
-                        id: base64urlToUint8Array(cred.id),
-                        type: cred.type || 'public-key'
-                    };
-                    if (Array.isArray(cred.transports) && cred.transports.length > 0) {
-                        desc.transports = cred.transports;
-                    }
-                    return desc;
-                });
+                options.allowCredentials = options.allowCredentials.map(c => ({
+                    ...c,
+                    id: base64urlToUint8Array(c.id)
+                }));
             }
 
-            if (statusEl) statusEl.textContent = 'กรุณาแตะลายนิ้วมือบนอุปกรณ์ของคุณ (Touch ID / Windows Hello)...';
+            if (statusEl) {
+                statusEl.textContent = 'กรุณาสแกนลายนิ้วมือบนอุปกรณ์ของคุณ (Windows Hello / Touch ID)...';
+            }
 
             const assertion = await navigator.credentials.get({
                 publicKey: options
@@ -311,8 +308,6 @@
             if (!assertion) {
                 throw new Error('การสแกนลายนิ้วมือถูกยกเลิก');
             }
-
-            if (statusEl) statusEl.textContent = 'กำลังตรวจสอบความถูกต้องของลายเซ็นดิจิทัล...';
 
             const payload = {
                 id: assertion.id,
@@ -326,7 +321,11 @@
                 }
             };
 
-            const verifyRes = await fetch('{{ route("webauthn.login.verify") }}', {
+            if (statusEl) {
+                statusEl.textContent = 'กำลังตรวจสอบลายเซ็นชีวมิติ...';
+            }
+
+            const verifyRes = await fetch('{{ Route::has("webauthn.login.verify") ? route("webauthn.login.verify") : url("/webauthn/login/verify") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -338,39 +337,52 @@
 
             const verifyData = await verifyRes.json();
             if (!verifyRes.ok || !verifyData.success) {
-                throw new Error(verifyData.error || 'การยืนยันตัวตนไม่สำเร็จ');
+                throw new Error(verifyData.error || 'การยืนยันลายนิ้วมือล้มเหลว');
             }
 
             if (statusEl) {
-                statusEl.classList.remove('text-secondary');
-                statusEl.classList.add('text-emerald-700');
-                statusEl.textContent = '✓ ยืนยันตัวตนสำเร็จ กำลังเข้าสู่ระบบ...';
+                statusEl.className = 'small text-center text-success fw-bold';
+                statusEl.textContent = 'ยืนยันตัวตนสำเร็จ! กำลังเข้าสู่ระบบ...';
             }
 
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'ยืนยันตัวตนสำเร็จ',
-                    text: 'ยินดีต้อนรับกลับ กำลังนำคุณเข้าสู่ระบบ...',
-                    timer: 1200,
-                    showConfirmButton: false
-                });
-            }
-
-            setTimeout(() => {
-                window.location.href = verifyData.redirect || '{{ route("demo.index") }}';
-            }, 600);
+            window.location.href = verifyData.redirect || '{{ Route::has("demo.index") ? route("demo.index") : url("/") }}';
         } catch (err) {
             console.error(err);
-            const errMsg = err.message || 'การสแกนลายนิ้วมือไม่สำเร็จ';
             if (statusEl) {
-                statusEl.classList.remove('text-secondary');
-                statusEl.classList.add('text-danger');
-                statusEl.textContent = errMsg;
+                statusEl.className = 'small text-center text-danger';
+                statusEl.textContent = 'เกิดข้อผิดพลาด: ' + (err.message || 'ไม่สามารถยืนยันตัวตนได้');
+            }
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'การเข้าสู่ระบบชีวมิติล้มเหลว',
+                    text: err.message || 'ไม่สามารถยืนยันลายนิ้วมือได้ กรุณาลองใหม่อีกครั้งหรือใช้รหัสผ่าน BUU',
+                    confirmButtonText: 'ตกลง'
+                });
+            } else {
+                alert('การเข้าสู่ระบบชีวมิติล้มเหลว: ' + err.message);
             }
         } finally {
-            if (btnEl) btnEl.disabled = false;
+            if (btnEl) {
+                btnEl.disabled = false;
+                btnEl.classList.remove('opacity-75');
+            }
         }
+    }
+
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', () => {
+            const btn = document.getElementById('loginBtn');
+            const btnText = document.getElementById('loginBtnText');
+            const spinner = document.getElementById('loginSpinner');
+            if (btn && btnText && spinner) {
+                btn.disabled = true;
+                btn.classList.add('opacity-75');
+                btnText.textContent = 'กำลังตรวจสอบสิทธิ์ UMS BUU...';
+                spinner.classList.remove('d-none');
+            }
+        });
     }
 </script>
 @endsection

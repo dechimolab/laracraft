@@ -43,10 +43,19 @@ class EmeraldEnterpriseThemePackageTest extends TestCase
         $this->assertStringContainsString('data-bs-theme="light"', $layoutApp);
         $this->assertStringContainsString('data-theme="emerald-enterprise"', $layoutApp);
         $this->assertStringContainsString('css/themes/emerald-enterprise.css', $layoutApp);
+        $this->assertStringContainsString('favicon-emerald.svg', $layoutApp);
         $this->assertStringContainsString('userFullNameTH', $layoutApp);
         $this->assertStringContainsString('userPermitName', $layoutApp);
         $this->assertStringContainsString('userGroup', $layoutApp);
         $this->assertStringContainsString('switch.group', $layoutApp);
+
+        // 2.1 Theme-Adaptive Favicons
+        $this->assertNotFalse($zip->locateName('public/favicon.svg'));
+        $this->assertNotFalse($zip->locateName('public/favicon.ico'));
+        $this->assertNotFalse($zip->locateName('public/favicon-emerald.svg'));
+        $this->assertNotFalse($zip->locateName('public/favicon-nordic.svg'));
+        $exportedFaviconSvg = $zip->getFromName('public/favicon.svg');
+        $this->assertStringContainsString('#047857', $exportedFaviconSvg);
 
         // 3. Demo Index Showcase
         $this->assertNotFalse($zip->locateName('resources/views/demo/index.blade.php'));
@@ -88,7 +97,7 @@ class EmeraldEnterpriseThemePackageTest extends TestCase
         ])->get('/generator/preview-ui?view=theme-package');
 
         $response->assertStatus(200);
-        $response->assertSee('Emerald Enterprise');
+        $response->assertSee('EMERALD ENTERPRISE');
         $response->assertSee('Overview Hub');
         $response->assertSee('Point of Sale');
         $response->assertSee('registerWebauthnBiometric');
