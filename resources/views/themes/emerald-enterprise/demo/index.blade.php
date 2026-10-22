@@ -24,9 +24,13 @@
                 </p>
             </div>
             <div class="col-lg-4 d-flex flex-wrap justify-content-lg-end gap-2">
-                <button class="btn btn-emerald-primary d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold shadow-sm rounded-3" type="button" id="btn-passkey-register">
+                <button class="btn btn-emerald-primary d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold shadow-sm rounded-3" type="button" id="btn-passkey-register" onclick="registerWebauthnBiometric()">
                     <span class="material-symbols-outlined fs-5">fingerprint</span>
                     <span>บันทึกลายนิ้วมือใหม่ (Passkey)</span>
+                </button>
+                <button class="btn btn-white bg-white border d-inline-flex align-items-center gap-2 px-3 py-2 text-dark fw-medium shadow-xs rounded-3" type="button" id="btn-swal-demo">
+                    <span class="material-symbols-outlined fs-5 text-secondary">notifications_active</span>
+                    <span>ทดสอบ SweetAlert2</span>
                 </button>
             </div>
         </div>
@@ -44,6 +48,13 @@
                     $selectedModules[$k] = '1';
                 }
             }
+        }
+        if (empty($selectedModules) || (count($selectedModules) === 1 && isset($selectedModules['ums_buu']))) {
+            if (Route::has('demo.ums') || Route::has('ums.login')) $selectedModules['ums_buu'] = '1';
+            if (Route::has('demo.audit') || class_exists(\App\Models\AuditLog::class) || class_exists(\App\Models\ActivityLog::class)) $selectedModules['audit_trail'] = '1';
+            if (Route::has('switch.group') || Route::has('demo.roles') || class_exists(\App\Models\RolesModel::class) || class_exists(\App\Models\Role::class)) $selectedModules['user_role'] = '1';
+            if (Route::has('demo.ldap') || config('ldap.default') !== null || class_exists(\LdapRecord\Container::class)) $selectedModules['buu_ldap'] = '1';
+            if (Route::has('notifications.index')) $selectedModules['notifications'] = '1';
         }
         if (empty($selectedModules)) {
             $selectedModules = ['ums_buu' => '1'];
@@ -438,7 +449,7 @@
                                 <span class="input-group-text bg-light text-muted">
                                     <span class="material-symbols-outlined fs-6">calendar_month</span>
                                 </span>
-                                <input id="demo-datepicker" class="form-control bg-light" placeholder="วว/ดด/ปปปป (พ.ศ.)" type="text" value="24/10/2567"/>
+                                <input id="demo-datepicker" class="form-control bg-light datepicker" placeholder="วว/ดด/ปปปป (พ.ศ.)" type="text" value="24/10/2567"/>
                             </div>
                             <div class="form-text small text-muted">ปฏิทินไทยปี พ.ศ. (+543) พร้อมปุ่ม “ล้างค่า” ตามมาตรฐาน MA BUCC</div>
                         </div>
@@ -956,7 +967,87 @@
 </div>
 
 <script>
-    // SweetAlert2 Mock / Live Toast simulation
+    // 1. Initialize Frontend Plugins (Select2, Datepicker, AutoNumeric, Dropzone)
+    document.addEventListener('DOMContentLoaded', function () {
+        // A. Select2 Searchable Dropdown
+        if (typeof $ !== 'undefined' && $.fn && $.fn.select2) {
+            $('#demo-select2').select2({
+                placeholder: '---เลือก---',
+                allowClear: true,
+                width: '100%'
+            });
+        }
+
+        // B. jQuery UI Datepicker (Thai Buddhist Calendar พ.ศ. +543)
+        if (typeof initDatePicker === 'function') {
+            initDatePicker();
+        } else if (typeof $ !== 'undefined' && $.fn && $.fn.datepicker) {
+            $('#demo-datepicker').datepicker({
+                dateFormat: 'dd/mm/yy',
+                isBuddhist: true,
+                changeMonth: true,
+                changeYear: true,
+                dayNames: ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'],
+                dayNamesMin: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'],
+                monthNames: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'],
+                monthNamesShort: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.']
+            });
+        }
+
+        // C. AutoNumeric Masking
+        if (typeof AutoNumeric !== 'undefined') {
+            try {
+                if (!AutoNumeric.getAutoNumericElement('#demo-autonumeric')) {
+                    new AutoNumeric('#demo-autonumeric', {
+                        currencySymbol: '฿ ',
+                        decimalPlaces: 2
+                    });
+                }
+            } catch (e) {
+                console.log('AutoNumeric init:', e);
+            }
+        }
+
+        // D. Dropzone File Uploader
+        if (typeof Dropzone !== 'undefined') {
+            Dropzone.autoDiscover = false;
+            const dropzoneEl = document.getElementById('dropzone-box');
+            if (dropzoneEl && !dropzoneEl.dropzone) {
+                try {
+                    new Dropzone('#dropzone-box', {
+                        url: '#',
+                        autoProcessQueue: false,
+                        maxFiles: 5,
+                        maxFilesize: 10,
+                        acceptedFiles: '.pdf,.png,.jpg,.jpeg,.docx',
+                        dictDefaultMessage: 'ลากไฟล์มาวางที่นี่ หรือคลิกเพื่ออัปโหลด',
+                        init: function() {
+                            this.on('addedfile', function(file) {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Dropzone ตรวจพบไฟล์',
+                                        text: 'รับไฟล์: ' + file.name + ' (' + Math.round(file.size / 1024) + ' KB) เรียบร้อย',
+                                        confirmButtonColor: '#005d42'
+                                    });
+                                }
+                            });
+                        }
+                    });
+                } catch (e) {
+                    console.log('Dropzone init:', e);
+                }
+            }
+        }
+
+        // E. Bind Passkey button
+        const btnPasskey = document.getElementById('btn-passkey-register');
+        if (btnPasskey) {
+            btnPasskey.addEventListener('click', registerWebauthnBiometric);
+        }
+    });
+
+    // 2. SweetAlert2 Mock / Live Toast simulation
     const btnSwal = document.getElementById('btn-swal-demo');
     if (btnSwal) {
         btnSwal.addEventListener('click', () => {
@@ -980,14 +1071,27 @@
         });
     }
 
-    // Dropzone click trigger
+    // Dropzone fallback click trigger
     const dropzoneBox = document.getElementById('dropzone-box');
     const dropzoneInput = document.getElementById('dropzone-input');
     if (dropzoneBox && dropzoneInput) {
-        dropzoneBox.addEventListener('click', () => dropzoneInput.click());
+        dropzoneBox.addEventListener('click', () => {
+            if (!dropzoneBox.dropzone) {
+                dropzoneInput.click();
+            }
+        });
         dropzoneInput.addEventListener('change', (e) => {
             if (e.target.files && e.target.files.length > 0) {
-                alert('อัปโหลดสำเร็จ: ' + e.target.files.length + ' ไฟล์ถูกเข้ารหัสด้วย AES-256 เรียบร้อยแล้ว');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'อัปโหลดสำเร็จ',
+                        text: e.target.files.length + ' ไฟล์ถูกเข้ารหัสด้วย AES-256 เรียบร้อยแล้ว',
+                        confirmButtonColor: '#005d42'
+                    });
+                } else {
+                    alert('อัปโหลดสำเร็จ: ' + e.target.files.length + ' ไฟล์ถูกเข้ารหัสด้วย AES-256 เรียบร้อยแล้ว');
+                }
             }
         });
     }

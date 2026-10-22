@@ -19,7 +19,27 @@ class ThemePreviewController extends Controller
         'nordic-clean' => [
             'name' => 'Nordic Clean',
             'badge' => 'Minimalist Scandinavian',
-            'color' => '#0284c7',
+            'color' => '#0F172A',
+        ],
+        'sunset-horizon' => [
+            'name' => 'Sunset Horizon',
+            'badge' => 'Tactile Warm Retail Precision',
+            'color' => '#EA580C',
+        ],
+        'rose-quartz' => [
+            'name' => 'Rose Quartz & Velvet',
+            'badge' => 'Boutique Luxury POS & Velvet Atelier',
+            'color' => '#BE123C',
+        ],
+        'forest-moss' => [
+            'name' => 'Forest Moss & Sage',
+            'badge' => 'Deep Botanical Evergreen & Sage Precision',
+            'color' => '#15803D',
+        ],
+        'solar-amber' => [
+            'name' => 'Solar Amber & Coffee',
+            'badge' => 'Solar Amber & Roasted Coffee Precision',
+            'color' => '#D97706',
         ],
     ];
 
@@ -34,6 +54,16 @@ class ThemePreviewController extends Controller
     {
         $theme = strtolower(trim($theme));
         $page = strtolower(trim($page));
+
+        if ($theme === 'rose-quartz-velvet') {
+            $theme = 'rose-quartz';
+        }
+        if ($theme === 'forest-moss-sage') {
+            $theme = 'forest-moss';
+        }
+        if ($theme === 'solar-amber-coffee') {
+            $theme = 'solar-amber';
+        }
 
         if (!array_key_exists($theme, $this->supportedThemes)) {
             $theme = 'emerald-enterprise';
@@ -52,9 +82,10 @@ class ThemePreviewController extends Controller
             ]);
         }
 
+        $viewTheme = ($theme === 'rose-quartz-velvet') ? 'rose-quartz' : $theme;
         $viewName = $page === 'login'
-            ? "themes.{$theme}.auth.login"
-            : "themes.{$theme}.demo.index";
+            ? "themes.{$viewTheme}.auth.login"
+            : "themes.{$viewTheme}.demo.index";
 
         if (!View::exists($viewName)) {
             abort(404, "Theme preview view [{$viewName}] not found.");
@@ -63,8 +94,15 @@ class ThemePreviewController extends Controller
         return response()->view($viewName, [
             'theme' => $theme,
             'page' => $page,
+            'appName' => 'Artisan POS & Inventory Hub',
             'supportedThemes' => $this->supportedThemes,
             'isPreviewMode' => true,
+            'selectedModules' => [
+                'ums_buu' => '1',
+                'buu_ldap' => '1',
+                'audit_trail' => '1',
+                'user_role' => '1',
+            ],
         ]);
     }
 }

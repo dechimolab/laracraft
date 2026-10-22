@@ -34,8 +34,7 @@ class NordicCleanThemePackageTest extends TestCase
         $this->assertNotFalse($zip->locateName('public/css/themes/nordic-clean.css'));
         $themeCss = $zip->getFromName('public/css/themes/nordic-clean.css');
         $this->assertStringContainsString('--sys-primary: #0F172A;', $themeCss);
-        $this->assertStringContainsString('--sys-secondary: #3B82F6;', $themeCss);
-        $this->assertStringContainsString('--nordic-blue: #3B82F6;', $themeCss);
+        $this->assertStringContainsString('--nordic-slate: #0F172A;', $themeCss);
         $this->assertStringContainsString('--nordic-bg: #F8FAFC;', $themeCss);
 
         // 2. Master App Layout
@@ -60,7 +59,7 @@ class NordicCleanThemePackageTest extends TestCase
         $this->assertNotFalse($zip->locateName('public/favicon.ico'));
         $this->assertNotFalse($zip->locateName('public/favicon-nordic.svg'));
         $exportedFaviconSvg = $zip->getFromName('public/image/favicon.svg');
-        $this->assertStringContainsString('#3B82F6', $exportedFaviconSvg);
+        $this->assertStringContainsString('#0F172A', $exportedFaviconSvg);
 
         // 3. Demo Index Showcase
         $this->assertNotFalse($zip->locateName('resources/views/demo/index.blade.php'));
@@ -81,6 +80,8 @@ class NordicCleanThemePackageTest extends TestCase
         $this->assertStringContainsString('UMS BUU Protocol', $loginBlade);
         $this->assertStringContainsString('256-Bit TLS', $loginBlade);
         $this->assertStringContainsString('loginBtn', $loginBlade);
+        $this->assertStringNotContainsString('#3B82F6', $loginBlade);
+        $this->assertStringNotContainsString('#2563EB', $loginBlade);
 
         $zip->close();
         if (file_exists($zipPath)) {

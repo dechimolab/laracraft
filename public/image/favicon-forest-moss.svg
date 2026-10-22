@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="15" fill="#15803D"/>
+  <rect x="2" y="2" width="60" height="60" rx="13" fill="none" stroke="#86EFAC" stroke-width="2" stroke-opacity="0.6"/>
+  <!-- Isometric 3D Cube / Botanical Faceted Gem in Crisp White -->
+  <g stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Top Face -->
+    <polygon points="32,16 48,25 32,34 16,25" fill="rgba(255,255,255,0.28)"/>
+    <!-- Left Face -->
+    <polygon points="16,25 32,34 32,49 16,40" fill="rgba(5,46,22,0.25)"/>
+    <!-- Right Face -->
+    <polygon points="48,25 32,34 32,49 48,40" fill="rgba(255,255,255,0.08)"/>
+  </g>
+</svg>

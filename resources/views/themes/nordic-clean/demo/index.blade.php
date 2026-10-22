@@ -9,26 +9,26 @@
         <div class="position-relative z-1 row align-items-center g-3">
             <div class="col-lg-8">
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                    <span class="badge rounded-pill badge-nordic text-uppercase px-2.5 py-1">
-                        <i class="bi bi-circle-fill me-1" style="font-size: 6px; color: var(--nordic-blue, #3B82F6);"></i>ArtisanCraft Engine
+                    <span class="badge rounded-pill text-uppercase px-2.5 py-1" style="background-color: var(--nordic-subtle-bg, #F1F5F9); color: var(--nordic-slate, #0F172A); border: 1px solid var(--nordic-border, #E2E8F0);">
+                        <i class="bi bi-circle-fill me-1" style="font-size: 6px; color: var(--nordic-slate, #0F172A);"></i>ArtisanCraft Engine
                     </span>
                     <span class="badge bg-white text-secondary border">Laravel 13.x</span>
                     <span class="badge bg-white text-secondary border">PHP 8.4 JIT</span>
                     <span class="badge bg-white text-secondary border">Bootstrap 5.3.3</span>
                 </div>
                 <h1 class="h4 fw-bold text-dark mt-2 mb-1">
-                    ยินดีต้อนรับสู่ <span class="text-nordic-blue">{{ config('app.name', 'Artisan POS & Inventory Hub') }}</span>
+                    ยินดีต้อนรับสู่ <span style="color: var(--nordic-slate, #0F172A);">{{ $appName ?? ((config('app.name') && config('app.name') !== 'Laravel Generator') ? config('app.name') : 'Artisan POS & Inventory Hub') }}</span>
                 </h1>
                 <p class="text-secondary mb-0 small">
                     ระบบบริหารจัดการและหน้าควบคุมต้นแบบ (Demo Showcase Dashboard) พร้อมส่วนประกอบ UI และระบบรักษาความปลอดภัยครบวงจร Fiduciary Precision Standard
                 </p>
             </div>
             <div class="col-lg-4 d-flex flex-wrap justify-content-lg-end gap-2">
-                <button class="btn btn-nordic-primary d-inline-flex align-items-center gap-2 px-3 py-2 fw-medium shadow-sm" id="btn-passkey-register">
+                <button class="btn btn-nordic-primary d-inline-flex align-items-center gap-2 px-3 py-2 fw-medium shadow-sm" type="button" id="btn-passkey-register" onclick="registerWebauthnBiometric()">
                     <span class="material-symbols-outlined fs-5">fingerprint</span>
                     <span>บันทึกลายนิ้วมือใหม่ (Passkey)</span>
                 </button>
-                <button class="btn btn-white bg-white border d-inline-flex align-items-center gap-2 px-3 py-2 text-dark fw-medium" id="btn-swal-demo">
+                <button class="btn btn-white bg-white border d-inline-flex align-items-center gap-2 px-3 py-2 text-dark fw-medium" type="button" id="btn-swal-demo">
                     <span class="material-symbols-outlined fs-5 text-secondary">notifications_active</span>
                     <span>ทดสอบ SweetAlert2</span>
                 </button>
@@ -49,8 +49,13 @@
                 }
             }
         }
-        if (empty($selectedModules)) {
-            $selectedModules = ['ums_buu' => '1'];
+        if (!empty($isPreviewMode) || empty($selectedModules) || count($selectedModules) < 4) {
+            $selectedModules = [
+                'ums_buu' => '1',
+                'buu_ldap' => '1',
+                'audit_trail' => '1',
+                'user_role' => '1',
+            ];
         }
         $activeModulesList = [];
         if (!empty($selectedModules['ums_buu'])) {
@@ -142,10 +147,10 @@
             ];
         }
     @endphp
-    <section class="card-surface p-4">
-        <div class="d-flex align-items-center justify-content-between pb-2 mb-3 border-bottom">
+    <section class="card-surface p-4 shadow-sm">
+        <div class="d-flex align-items-center justify-content-between pb-2 mb-3 border-bottom border-light">
             <div class="d-flex align-items-center gap-2">
-                <span class="material-symbols-outlined text-nordic-blue fs-5">view_module</span>
+                <span class="material-symbols-outlined fs-5" style="color: var(--nordic-slate, #0F172A);">view_module</span>
                 <h2 class="h6 fw-bold mb-0 text-dark">โมดูลสำเร็จรูปประจำโปรเจกต์ (Enterprise Pre-built Modules Demo Hub)</h2>
             </div>
             <span class="badge badge-nordic text-uppercase px-2.5 py-1">Step 3 Modules</span>
@@ -153,11 +158,11 @@
         <div class="row g-3">
             @foreach($activeModulesList as $mKey => $mod)
             <div class="col-12 col-sm-6 col-lg-3">
-                <div class="subtle-module-card p-3.5 h-100 d-flex flex-column justify-content-between">
+                <div class="subtle-module-card p-4 h-100 d-flex flex-column justify-content-between shadow-xs">
                     <div>
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="badge badge-nordic-success rounded-pill d-inline-flex align-items-center gap-1.5">
-                                <span class="rounded-circle" style="width: 6px; height: 6px; background-color: #10B981;"></span> {{ $mod['status'] }}
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1.5" style="background-color: var(--nordic-subtle-bg, #F1F5F9); color: var(--nordic-slate, #0F172A); border: 1px solid var(--nordic-border, #E2E8F0);">
+                                <span class="rounded-circle" style="width: 6px; height: 6px; background-color: var(--nordic-slate, #0F172A);"></span> {{ $mod['status'] }}
                             </span>
                             <span class="small text-muted font-monospace">{{ $mod['tag'] }}</span>
                         </div>
@@ -166,7 +171,7 @@
                             {{ $mod['desc'] }}
                         </p>
                     </div>
-                    <a href="{{ $mod['btn_link'] }}" class="btn btn-sm btn-white bg-white text-nordic-blue border shadow-sm w-100 d-inline-flex align-items-center justify-content-center gap-1 fw-medium text-decoration-none">
+                    <a href="{{ $mod['btn_link'] }}" class="btn btn-sm btn-white bg-white text-dark border shadow-xs w-100 d-inline-flex align-items-center justify-content-center gap-1 fw-medium text-decoration-none rounded-pill py-2">
                         <span class="material-symbols-outlined fs-6">{{ $mod['btn_icon'] }}</span>
                         <span>{{ $mod['btn_text'] }}</span>
                     </a>
@@ -214,12 +219,12 @@
                     </div>
                     <div class="w-100 my-1 position-relative" style="height: 48px;">
                         <svg class="w-100 h-100" viewBox="0 0 200 40">
-                            <path d="M0,32 Q25,28 50,30 T100,16 T150,22 T200,8 L200,40 L0,40 Z" fill="rgba(59, 130, 246, 0.12)"></path>
-                            <path d="M0,32 Q25,28 50,30 T100,16 T150,22 T200,8" fill="none" stroke="#3B82F6" stroke-width="2.5"></path>
+                            <path d="M0,32 Q25,28 50,30 T100,16 T150,22 T200,8 L200,40 L0,40 Z" fill="rgba(15, 23, 42, 0.06)"></path>
+                            <path d="M0,32 Q25,28 50,30 T100,16 T150,22 T200,8" fill="none" stroke="#0F172A" stroke-width="2.5"></path>
                         </svg>
                     </div>
                     <div class="d-flex align-items-center justify-content-between small text-secondary">
-                        <span class="text-nordic-blue fw-medium">Zero Bottlenecks</span>
+                        <span class="fw-medium" style="color: var(--nordic-slate, #0F172A);">Zero Bottlenecks</span>
                         <span>0.14ms Latency</span>
                     </div>
                 </div>
@@ -361,7 +366,7 @@
                     </div>
                     <div class="d-flex align-items-center gap-3 text-secondary small mb-3">
                         <span class="d-inline-flex align-items-center gap-1.5">
-                            <span class="rounded bg-primary d-inline-block" style="width: 12px; height: 12px; background-color: var(--nordic-blue, #3B82F6) !important;"></span>
+                            <span class="rounded bg-primary d-inline-block" style="width: 12px; height: 12px; background-color: var(--nordic-slate, #0F172A) !important;"></span>
                             การเข้าใช้งานระบบรายวัน (Logins)
                         </span>
                         <span class="text-muted">อัปเดตอัตโนมัติทุก 60 วินาที</span>
@@ -375,20 +380,20 @@
                             <line stroke="#E2E8F0" stroke-dasharray="3 3" x1="0" x2="500" y1="120" y2="120"></line>
                             <defs>
                                 <linearGradient id="chartNordicGrad" x1="0%" x2="0%" y1="0%" y2="100%">
-                                    <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.35"></stop>
-                                    <stop offset="70%" stop-color="#3B82F6" stop-opacity="0.08"></stop>
-                                    <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.0"></stop>
+                                    <stop offset="0%" stop-color="#0F172A" stop-opacity="0.30"></stop>
+                                    <stop offset="70%" stop-color="#0F172A" stop-opacity="0.08"></stop>
+                                    <stop offset="100%" stop-color="#0F172A" stop-opacity="0.0"></stop>
                                 </linearGradient>
                             </defs>
                             <path d="M 10 135 C 70 120, 110 90, 170 80 C 230 70, 270 20, 340 18 C 400 16, 440 95, 490 125 L 490 160 L 10 160 Z" fill="url(#chartNordicGrad)"></path>
-                            <path d="M 10 135 C 70 120, 110 90, 170 80 C 230 70, 270 20, 340 18 C 400 16, 440 95, 490 125" fill="none" stroke="#3B82F6" stroke-linecap="round" stroke-width="2.5"></path>
-                            <circle cx="10" cy="135" fill="#3B82F6" r="4" stroke="#ffffff" stroke-width="2"></circle>
-                            <circle cx="90" cy="115" fill="#3B82F6" r="4" stroke="#ffffff" stroke-width="2"></circle>
-                            <circle cx="170" cy="80" fill="#3B82F6" r="4" stroke="#ffffff" stroke-width="2"></circle>
-                            <circle cx="255" cy="40" fill="#3B82F6" r="4" stroke="#ffffff" stroke-width="2"></circle>
-                            <circle cx="340" cy="18" fill="#3B82F6" r="5" stroke="#ffffff" stroke-width="2"></circle>
-                            <circle cx="420" cy="98" fill="#3B82F6" r="4" stroke="#ffffff" stroke-width="2"></circle>
-                            <circle cx="490" cy="125" fill="#3B82F6" r="4" stroke="#ffffff" stroke-width="2"></circle>
+                            <path d="M 10 135 C 70 120, 110 90, 170 80 C 230 70, 270 20, 340 18 C 400 16, 440 95, 490 125" fill="none" stroke="#0F172A" stroke-linecap="round" stroke-width="2.5"></path>
+                            <circle cx="10" cy="135" fill="#0F172A" r="4" stroke="#ffffff" stroke-width="2"></circle>
+                            <circle cx="90" cy="115" fill="#0F172A" r="4" stroke="#ffffff" stroke-width="2"></circle>
+                            <circle cx="170" cy="80" fill="#0F172A" r="4" stroke="#ffffff" stroke-width="2"></circle>
+                            <circle cx="255" cy="40" fill="#0F172A" r="4" stroke="#ffffff" stroke-width="2"></circle>
+                            <circle cx="340" cy="18" fill="#0F172A" r="5" stroke="#ffffff" stroke-width="2"></circle>
+                            <circle cx="420" cy="98" fill="#0F172A" r="4" stroke="#ffffff" stroke-width="2"></circle>
+                            <circle cx="490" cy="125" fill="#0F172A" r="4" stroke="#ffffff" stroke-width="2"></circle>
                         </svg>
                         <div class="d-flex justify-content-between text-secondary small pt-1" style="font-size: 0.75rem;">
                             <span>จันทร์</span>
@@ -403,7 +408,7 @@
                 </div>
                 <div class="d-flex align-items-center justify-content-between pt-3 small text-muted border-top mt-3">
                     <span>บันทึกทราฟฟิกข้อมูลคลัสเตอร์ BUU-FIN-CLUSTER-04</span>
-                    <span class="text-nordic-blue fw-bold">ค่าเฉลี่ย 384 ครั้ง/วัน</span>
+                    <span class="fw-bold" style="color: var(--nordic-slate, #0F172A);">ค่าเฉลี่ย 384 ครั้ง/วัน</span>
                 </div>
             </div>
         </div>
@@ -413,7 +418,7 @@
                 <div>
                     <div class="d-flex align-items-center justify-content-between pb-2 mb-3 border-bottom">
                         <div class="d-flex align-items-center gap-2">
-                            <span class="material-symbols-outlined text-nordic-blue fs-5">tune</span>
+                            <span class="material-symbols-outlined fs-5" style="color: var(--nordic-slate, #0F172A);">tune</span>
                             <h3 class="h6 fw-bold text-dark mb-0">ส่วนประกอบฟอร์ม (Form UI Elements)</h3>
                         </div>
                         <span class="badge bg-light text-secondary border">Interactive</span>
@@ -438,7 +443,7 @@
                                 <span class="input-group-text bg-white text-muted">
                                     <span class="material-symbols-outlined fs-6">calendar_month</span>
                                 </span>
-                                <input id="demo-datepicker" class="form-control bg-white" placeholder="วว/ดด/ปปปป (พ.ศ.)" type="text" value="24/10/2567"/>
+                                <input id="demo-datepicker" class="form-control bg-white datepicker" placeholder="วว/ดด/ปปปป (พ.ศ.)" type="text" value="24/10/2567"/>
                             </div>
                             <div class="form-text small text-muted">ปฏิทินไทยปี พ.ศ. (+543) พร้อมปุ่ม “ล้างค่า” ตามมาตรฐาน MA BUCC</div>
                         </div>
@@ -469,7 +474,7 @@
                 <div>
                     <div class="d-flex align-items-center justify-content-between pb-2 mb-3 border-bottom">
                         <div class="d-flex align-items-center gap-2">
-                            <span class="material-symbols-outlined text-nordic-blue fs-5">table_chart</span>
+                            <span class="material-symbols-outlined fs-5" style="color: var(--nordic-slate, #0F172A);">table_chart</span>
                             <h3 class="h6 fw-bold text-dark mb-0">ตารางข้อมูลสารสนเทศ (DataTables Bootstrap 5)</h3>
                         </div>
                         <span class="badge bg-light text-secondary border">Data Grid</span>
@@ -872,7 +877,7 @@
                     <div class="mb-3">
                         <span class="form-label small text-secondary fw-semibold d-block mb-2">2. สวิตช์เปิด/ปิดฟังก์ชัน (Switch Toggles):</span>
                         <div class="d-flex flex-column gap-2">
-                            <div class="p-2.5 rounded-2 bg-light border d-flex align-items-center justify-content-between">
+                            <div class="p-3.5 rounded-3 bg-light border border-light-subtle d-flex align-items-center justify-content-between">
                                 <div>
                                     <div class="small fw-semibold text-dark">การยืนยันตัวตน 2 ขั้นตอน (2FA / WebAuthn)</div>
                                     <div class="text-muted" style="font-size: 11px;">บังคับใช้สแกนลายนิ้วมือหรือรหัสผ่านรอบสอง</div>
@@ -881,7 +886,7 @@
                                     <input checked="" class="form-check-input" role="switch" type="checkbox"/>
                                 </div>
                             </div>
-                            <div class="p-2.5 rounded-2 bg-light border d-flex align-items-center justify-content-between">
+                            <div class="p-3.5 rounded-3 bg-light border border-light-subtle d-flex align-items-center justify-content-between">
                                 <div>
                                     <div class="small fw-semibold text-dark">ส่งการแจ้งเตือนทางอีเมลอัตโนมัติ (Email Dispatcher)</div>
                                     <div class="text-muted" style="font-size: 11px;">แจ้งสรุปเหตุการณ์สำคัญประจำวัน</div>
@@ -956,7 +961,87 @@
 </div>
 
 <script>
-    // SweetAlert2 Mock / Live Toast simulation
+    // 1. Initialize Frontend Plugins (Select2, Datepicker, AutoNumeric, Dropzone)
+    document.addEventListener('DOMContentLoaded', function () {
+        // A. Select2 Searchable Dropdown
+        if (typeof $ !== 'undefined' && $.fn && $.fn.select2) {
+            $('#demo-select2').select2({
+                placeholder: '---เลือก---',
+                allowClear: true,
+                width: '100%'
+            });
+        }
+
+        // B. jQuery UI Datepicker (Thai Buddhist Calendar พ.ศ. +543)
+        if (typeof initDatePicker === 'function') {
+            initDatePicker();
+        } else if (typeof $ !== 'undefined' && $.fn && $.fn.datepicker) {
+            $('#demo-datepicker').datepicker({
+                dateFormat: 'dd/mm/yy',
+                isBuddhist: true,
+                changeMonth: true,
+                changeYear: true,
+                dayNames: ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'],
+                dayNamesMin: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'],
+                monthNames: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'],
+                monthNamesShort: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.']
+            });
+        }
+
+        // C. AutoNumeric Masking
+        if (typeof AutoNumeric !== 'undefined') {
+            try {
+                if (!AutoNumeric.getAutoNumericElement('#demo-autonumeric')) {
+                    new AutoNumeric('#demo-autonumeric', {
+                        currencySymbol: '฿ ',
+                        decimalPlaces: 2
+                    });
+                }
+            } catch (e) {
+                console.log('AutoNumeric init:', e);
+            }
+        }
+
+        // D. Dropzone File Uploader
+        if (typeof Dropzone !== 'undefined') {
+            Dropzone.autoDiscover = false;
+            const dropzoneEl = document.getElementById('dropzone-box');
+            if (dropzoneEl && !dropzoneEl.dropzone) {
+                try {
+                    new Dropzone('#dropzone-box', {
+                        url: '#',
+                        autoProcessQueue: false,
+                        maxFiles: 5,
+                        maxFilesize: 10,
+                        acceptedFiles: '.pdf,.png,.jpg,.jpeg,.docx',
+                        dictDefaultMessage: 'ลากไฟล์มาวางที่นี่ หรือคลิกเพื่ออัปโหลด',
+                        init: function() {
+                            this.on('addedfile', function(file) {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Dropzone ตรวจพบไฟล์',
+                                        text: 'รับไฟล์: ' + file.name + ' (' + Math.round(file.size / 1024) + ' KB) เรียบร้อย',
+                                        confirmButtonColor: '#0F172A'
+                                    });
+                                }
+                            });
+                        }
+                    });
+                } catch (e) {
+                    console.log('Dropzone init:', e);
+                }
+            }
+        }
+
+        // E. Bind Passkey button
+        const btnPasskey = document.getElementById('btn-passkey-register');
+        if (btnPasskey) {
+            btnPasskey.addEventListener('click', registerWebauthnBiometric);
+        }
+    });
+
+    // 2. SweetAlert2 Mock / Live Toast simulation
     const btnSwal = document.getElementById('btn-swal-demo');
     if (btnSwal) {
         btnSwal.addEventListener('click', () => {
@@ -965,7 +1050,7 @@
                     icon: 'success',
                     title: 'เชื่อมต่อ SweetAlert2 สำเร็จ',
                     text: 'Artisan POS & Inventory Hub ทำงานปกติทุกระบบ!',
-                    confirmButtonColor: '#3B82F6'
+                    confirmButtonColor: '#0F172A'
                 });
             } else {
                 const toast = document.createElement('div');
@@ -980,14 +1065,27 @@
         });
     }
 
-    // Dropzone click trigger
+    // Dropzone fallback click trigger
     const dropzoneBox = document.getElementById('dropzone-box');
     const dropzoneInput = document.getElementById('dropzone-input');
     if (dropzoneBox && dropzoneInput) {
-        dropzoneBox.addEventListener('click', () => dropzoneInput.click());
+        dropzoneBox.addEventListener('click', () => {
+            if (!dropzoneBox.dropzone) {
+                dropzoneInput.click();
+            }
+        });
         dropzoneInput.addEventListener('change', (e) => {
             if (e.target.files && e.target.files.length > 0) {
-                alert('อัปโหลดสำเร็จ: ' + e.target.files.length + ' ไฟล์ถูกเข้ารหัสด้วย AES-256 เรียบร้อยแล้ว');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'อัปโหลดสำเร็จ',
+                        text: e.target.files.length + ' ไฟล์ถูกเข้ารหัสด้วย AES-256 เรียบร้อยแล้ว',
+                        confirmButtonColor: '#0F172A'
+                    });
+                } else {
+                    alert('อัปโหลดสำเร็จ: ' + e.target.files.length + ' ไฟล์ถูกเข้ารหัสด้วย AES-256 เรียบร้อยแล้ว');
+                }
             }
         });
     }
@@ -1114,7 +1212,7 @@
                     icon: 'success',
                     title: 'บันทึกลายนิ้วมือสำเร็จ',
                     text: 'ลงทะเบียน Passkey สำหรับเครื่องนี้เรียบร้อยแล้ว ท่านสามารถเข้าสู่ระบบครั้งต่อไปได้โดยไม่ต้องกรอกรหัสผ่าน',
-                    confirmButtonColor: '#3B82F6'
+                    confirmButtonColor: '#0F172A'
                 });
             } else {
                 alert('บันทึกลายนิ้วมือสำเร็จ! ท่านสามารถใช้ Passkey เข้าสู่ระบบครั้งต่อไปได้ทันที');
@@ -1126,7 +1224,7 @@
                     icon: 'error',
                     title: 'ลงทะเบียนไม่สำเร็จ',
                     text: err.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อเซ็นเซอร์ลายนิ้วมือ',
-                    confirmButtonColor: '#3B82F6'
+                    confirmButtonColor: '#0F172A'
                 });
             } else {
                 alert('ลงทะเบียนไม่สำเร็จ: ' + (err.message || 'เกิดข้อผิดพลาด'));

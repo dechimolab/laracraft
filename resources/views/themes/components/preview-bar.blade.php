@@ -29,8 +29,10 @@
                 <li><h6 class="dropdown-header">Available Themes</h6></li>
                 @foreach($supportedThemes as $key => $meta)
                 <li>
-                    <a class="dropdown-item d-flex align-items-center gap-2 {{ $theme === $key ? 'active fw-bold' : '' }}" href="{{ route('theme.preview', ['theme' => $key, 'page' => $page]) }}">
-                        <span class="rounded-circle d-inline-block" style="width: 10px; height: 10px; background-color: {{ $meta['color'] }};"></span>
+                    <a class="dropdown-item d-flex align-items-center gap-2 {{ $theme === $key ? 'active fw-bold' : '' }}" 
+                       href="{{ route('theme.preview', ['theme' => $key, 'page' => $page]) }}"
+                       @if($theme === $key) style="background-color: {{ $meta['color'] }}; color: #ffffff;" @endif>
+                        <span class="rounded-circle d-inline-block border border-white" style="width: 10px; height: 10px; background-color: {{ $meta['color'] }};"></span>
                         <span>{{ $meta['name'] }}</span>
                     </a>
                 </li>

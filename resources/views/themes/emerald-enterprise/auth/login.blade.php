@@ -15,7 +15,7 @@
                 <div class="vr mx-2 text-secondary opacity-50 d-none d-sm-block"></div>
                 <div class="d-flex align-items-center gap-1">
                     <span class="fw-semibold text-emerald fs-6">Artisan</span>
-                    <span class="fw-semibold fs-6 text-dark">{{ preg_replace('/^Artisan\s+/i', '', config('app.name', 'POS & Inventory Hub')) }}</span>
+                    <span class="fw-semibold fs-6 text-dark">{{ preg_replace('/^Artisan\s+/i', '', $appName ?? ((config('app.name') && config('app.name') !== 'Laravel Generator') ? config('app.name') : 'POS & Inventory Hub')) }}</span>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2 text-secondary">
@@ -47,7 +47,7 @@
                             </div>
                         </div>
                         <h1 class="fs-4 fw-bold tracking-tight mb-2 text-dark">
-                            {{ config('app.name', 'Artisan POS & Inventory Hub') }}
+                            {{ $appName ?? ((config('app.name') && config('app.name') !== 'Laravel Generator') ? config('app.name') : 'Artisan POS & Inventory Hub') }}
                         </h1>
                         <!-- Enterprise Protocol Badges -->
                         <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-1">

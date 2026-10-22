@@ -4,22 +4,22 @@
 @section('no_header', 'true')
 
 @section('content')
-<div class="d-flex flex-column justify-content-between min-vh-100" style="background: linear-gradient(135deg, rgb(248, 250, 252) 0%, rgb(239, 246, 255) 50%, rgb(241, 245, 249) 100%);">
+<div class="d-flex flex-column justify-content-between min-vh-100" style="background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 50%, #E2E8F0 100%);">
     <!-- Header -->
     <header class="w-100 bg-white bg-opacity-75 backdrop-blur border-bottom border-light-subtle shadow-sm py-2">
         <div class="container-fluid px-4 px-lg-5 d-flex align-items-center justify-content-between" style="max-width: 1320px; height: 3.5rem;">
             <div class="d-flex align-items-center gap-2">
-                <span class="badge rounded-pill d-inline-flex align-items-center gap-2 px-3 py-2 text-uppercase fw-semibold" style="background-color: #EFF6FF; color: #3B82F6; border: 1px solid #DBEAFE; font-size: 0.75rem; letter-spacing: 0.05em;">
-                    <span class="badge-pulse"></span>NORDIC CLEAN
+                <span class="badge rounded-pill d-inline-flex align-items-center gap-2 px-3 py-2 text-uppercase fw-semibold" style="background-color: #0F172A; color: #ffffff; border: none; font-size: 0.75rem; letter-spacing: 0.05em;">
+                    <span class="rounded-circle" style="width: 6px; height: 6px; background-color: #ffffff;"></span>NORDIC CLEAN
                 </span>
                 <div class="vr mx-2 text-secondary opacity-50 d-none d-sm-block"></div>
                 <div class="d-flex align-items-center gap-1">
-                    <span class="fw-bold text-dark fs-6">Artisan</span>
-                    <span class="fw-normal text-secondary fs-6">{{ preg_replace('/^Artisan\s+/i', '', config('app.name', 'POS & Inventory Hub')) }}</span>
+                    <span class="fw-bold fs-6" style="color: #0F172A;">Artisan</span>
+                    <span class="fw-semibold text-dark fs-6">{{ preg_replace('/^Artisan\s+/i', '', $appName ?? ((config('app.name') && config('app.name') !== 'Laravel Generator') ? config('app.name') : 'POS & Inventory Hub')) }}</span>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2 text-secondary">
-                <i class="bi bi-shield-check fs-5" style="color: #3B82F6;"></i>
+                <i class="bi bi-shield-check fs-5" style="color: #0F172A;"></i>
                 <span class="small d-none d-sm-inline fw-medium">Secure Enterprise Auth Gateway</span>
             </div>
         </div>
@@ -43,20 +43,20 @@
                         <!-- Shield Badge with Pulse -->
                         <div class="position-relative mb-3 d-flex align-items-center justify-content-center">
                             <div class="crest-shield rounded-4 d-flex align-items-center justify-content-center shadow-sm">
-                                <i class="bi bi-shield-lock-fill fs-2" style="color: #3B82F6;"></i>
+                                <i class="bi bi-shield-lock-fill fs-2" style="color: #0F172A;"></i>
                             </div>
                         </div>
                         <h1 class="fs-4 fw-bold tracking-tight mb-2" style="color: #0F172A;">
-                            {{ config('app.name', 'Artisan POS & Inventory Hub') }}
+                            {{ $appName ?? ((config('app.name') && config('app.name') !== 'Laravel Generator') ? config('app.name') : 'Artisan POS & Inventory Hub') }}
                         </h1>
                         <!-- Enterprise Protocol Badges -->
                         <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-1">
-                            <span class="badge rounded-pill px-3 py-1 fw-semibold border" style="background-color: #EFF6FF; border-color: #BFDBFE !important; color: #1D4ED8;">
-                                <span class="d-inline-block rounded-circle me-1" style="width: 8px; height: 8px; background-color: #3B82F6;"></span>
+                            <span class="badge rounded-pill px-3 py-1 fw-semibold border" style="background-color: #F1F5F9; border-color: #E2E8F0 !important; color: #0F172A;">
+                                <span class="d-inline-block rounded-circle me-1" style="width: 8px; height: 8px; background-color: #0F172A;"></span>
                                 UMS BUU Protocol
                             </span>
                             <span class="badge rounded-pill px-2.5 py-1 fw-semibold border" style="background-color: #F8FAFC; border-color: #E2E8F0 !important; color: #334155;">
-                                <i class="bi bi-diagram-3 me-1" style="color: #3B82F6;"></i>Active Directory
+                                <i class="bi bi-diagram-3 me-1" style="color: #0F172A;"></i>Active Directory
                             </span>
                             <span class="badge rounded-pill px-2.5 py-1 fw-semibold border text-secondary" style="background-color: #F8FAFC; border-color: #E2E8F0 !important;">
                                 <i class="bi bi-lock me-1"></i>256-Bit TLS
@@ -88,7 +88,7 @@
                                 <label class="form-label mb-0 fw-semibold small text-dark" for="username">
                                     ชื่อผู้ใช้งาน <span class="text-secondary fw-normal">(BUU ACCOUNT / USERNAME)</span>
                                 </label>
-                                <span class="badge bg-transparent text-uppercase px-0 fw-bold" style="font-size: 0.75rem; color: #3B82F6 !important;">Required</span>
+                                <span class="badge bg-transparent text-uppercase px-0 fw-bold" style="font-size: 0.75rem; color: #475569 !important;">Required</span>
                             </div>
                             <div class="input-group">
                                 <span class="input-group-text bg-white border-end-0 text-secondary">
@@ -104,7 +104,7 @@
                                 <label class="form-label mb-0 fw-semibold small text-dark" for="password">
                                     รหัสผ่าน <span class="text-secondary fw-normal">(BUU PASSWORD)</span>
                                 </label>
-                                <a class="small text-decoration-none fw-semibold" href="javascript:void(0)" onclick="alert('กรุณาติดต่อฝ่ายเทคโนโลยีสารสนเทศ UMS หรือรีเซ็ตรหัสผ่านผ่านระบบ BUU Account Portal')" style="color: #2563EB;">
+                                <a class="small text-decoration-none fw-semibold" href="javascript:void(0)" onclick="alert('กรุณาติดต่อฝ่ายเทคโนโลยีสารสนเทศ UMS หรือรีเซ็ตรหัสผ่านผ่านระบบ BUU Account Portal')" style="color: #0F172A !important;">
                                     ลืมรหัสผ่าน?
                                 </a>
                             </div>
@@ -122,7 +122,7 @@
                         <!-- Remember Me Checkbox -->
                         <div class="d-flex align-items-center justify-content-between pt-1">
                             <div class="form-check d-flex align-items-center gap-2 mb-0">
-                                <input class="form-check-input mt-0" id="remember" name="remember" type="checkbox" {{ old('remember', true) ? 'checked' : '' }}>
+                                <input class="form-check-input mt-0" id="remember" name="remember" type="checkbox" {{ old('remember', true) ? 'checked' : '' }} style="accent-color: #0F172A; cursor: pointer;">
                                 <label class="form-check-label text-dark small" for="remember">
                                     จดจำการเข้าสู่ระบบ <span class="text-secondary">(Remember Me)</span>
                                 </label>
@@ -131,7 +131,7 @@
                         </div>
 
                         <!-- Primary Action Button: BUU Account Login -->
-                        <button class="btn btn-nordic-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2 mt-2 shadow-sm" id="loginBtn" type="submit" style="background-color: #2563EB; border-color: #2563EB;">
+                        <button class="btn btn-nordic-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2 mt-2 shadow-sm" id="loginBtn" type="submit" style="background-color: #0F172A; border-color: #0F172A; color: #ffffff;">
                             <i class="bi bi-box-arrow-in-right fs-5"></i>
                             <span class="fw-semibold" id="loginBtnText">เข้าสู่ระบบด้วย BUU Account</span>
                             <div class="spinner-border spinner-border-sm text-light d-none" id="loginSpinner" role="status">
@@ -148,40 +148,40 @@
                         </div>
 
                         <!-- Secondary Action Button: Passkey / Biometrics -->
-                        <button class="btn w-100 py-2 d-flex align-items-center justify-content-center gap-2 border" id="btn-biometric-login" onclick="loginWithBiometrics()" type="button" style="border-color: #BFDBFE !important; color: #1E40AF; background-color: #F8FAFC;">
-                            <i class="bi bi-fingerprint fs-4" style="color: #3B82F6;"></i>
+                        <button class="btn w-100 py-2 d-flex align-items-center justify-content-center gap-2 border" id="btn-biometric-login" onclick="loginWithBiometrics()" type="button" style="border-color: #E2E8F0 !important; color: #0F172A; background-color: #F8FAFC;">
+                            <i class="bi bi-fingerprint fs-4" style="color: #0F172A;"></i>
                             <span>สแกนลายนิ้วมือ / Passkey <span class="small fw-normal text-secondary d-none d-sm-inline">(Windows Hello / Touch ID)</span></span>
                         </button>
                         <div id="biometric-status" class="small text-center text-secondary d-none"></div>
                     </form>
 
                     <!-- Enterprise Security Compliance Section -->
-                    <div class="border rounded-3 p-3 d-flex flex-column gap-2 mt-1" style="background-color: #EFF6FF; border-color: #DBEAFE !important;">
-                        <div class="d-flex align-items-center gap-2 fw-semibold small" style="color: #1E40AF;">
-                            <i class="bi bi-patch-check-fill" style="color: #3B82F6;"></i>
+                    <div class="border rounded-3 p-3 d-flex flex-column gap-2 mt-1" style="background-color: #F8FAFC; border-color: #E2E8F0 !important;">
+                        <div class="d-flex align-items-center gap-2 fw-semibold small" style="color: #0F172A;">
+                            <i class="bi bi-patch-check-fill" style="color: #0F172A;"></i>
                             <span>มาตรฐานความปลอดภัย UMS BUU:</span>
                         </div>
                         <ul class="list-unstyled mb-0 d-flex flex-column gap-1 ps-1 small" style="color: #334155;">
                             <li class="d-flex align-items-start gap-2">
-                                <span class="rounded-circle mt-2 flex-shrink-0" style="width: 6px; height: 6px; background-color: #3B82F6;"></span>
-                                <span>ยืนยันตัวตนผ่าน Active Directory กลางและดึงกลุ่มสิทธิ์จาก <span class="fw-semibold" style="color: #2563EB;">UMS Central Gateway</span></span>
+                                <span class="rounded-circle mt-2 flex-shrink-0" style="width: 6px; height: 6px; background-color: #0F172A;"></span>
+                                <span>ยืนยันตัวตนผ่าน Active Directory กลางและดึงกลุ่มสิทธิ์จาก <span class="fw-semibold" style="color: #0F172A;">UMS Central Gateway</span></span>
                             </li>
                             <li class="d-flex align-items-start gap-2">
-                                <span class="rounded-circle mt-2 flex-shrink-0" style="width: 6px; height: 6px; background-color: #3B82F6;"></span>
-                                <span>รองรับการเข้าสู่ระบบแบบชีวมิติตลับกุญแจ <span class="fw-semibold" style="color: #2563EB;">(W3C WebAuthn &amp; FIDO2 Passkey)</span></span>
+                                <span class="rounded-circle mt-2 flex-shrink-0" style="width: 6px; height: 6px; background-color: #0F172A;"></span>
+                                <span>รองรับการเข้าสู่ระบบแบบชีวมิติตลับกุญแจ <span class="fw-semibold" style="color: #0F172A;">(W3C WebAuthn &amp; FIDO2 Passkey)</span></span>
                             </li>
                             <li class="d-flex align-items-start gap-2">
                                 <span class="rounded-circle mt-2 flex-shrink-0 bg-danger" style="width: 6px; height: 6px;"></span>
                                 <span>ไม่มีบทบาท <code class="px-1.5 py-0.5 rounded text-danger bg-danger-subtle fw-bold" style="font-size: 0.8rem;">superadmin</code> ในระบบ UMS ตามข้อกำหนดการแยกหน้าที่ความปลอดภัย</span>
                             </li>
                             <li class="d-flex align-items-start gap-2">
-                                <span class="rounded-circle mt-2 flex-shrink-0" style="width: 6px; height: 6px; background-color: #3B82F6;"></span>
+                                <span class="rounded-circle mt-2 flex-shrink-0" style="width: 6px; height: 6px; background-color: #0F172A;"></span>
                                 <span>จำกัดความถี่การเข้าสู่ระบบ 5 ครั้ง/นาที เพื่อป้องกันการโจมตีแบบ Brute Force</span>
                             </li>
                         </ul>
                         <div class="mt-1 pt-2 d-flex align-items-center justify-content-between small text-secondary border-top" style="font-size: 0.75rem; border-color: #E2E8F0 !important;">
                             <span class="d-flex align-items-center gap-1">
-                                <i class="bi bi-shield-shaded" style="color: #3B82F6;"></i>SESSION_SEED: 0x9F41…E8A3
+                                <i class="bi bi-shield-shaded" style="color: #0F172A;"></i>SESSION_SEED: 0x9F41…E8A3
                             </span>
                             <span>GATEWAY: UMS-NODE-04</span>
                         </div>
@@ -191,7 +191,7 @@
                 <!-- Security Gateway Footer Meta -->
                 <div class="mt-3 d-flex flex-wrap align-items-center justify-content-between px-2 text-secondary small" style="font-size: 0.8rem;">
                     <span class="d-flex align-items-center gap-1">
-                        <span class="rounded-circle d-inline-block" style="width: 8px; height: 8px; background-color: #3B82F6;"></span>
+                        <span class="rounded-circle d-inline-block" style="width: 8px; height: 8px; background-color: #0F172A;"></span>
                         UMS Authentication Cluster Active
                     </span>
                     <span>Enterprise SLA 99.99%</span>
@@ -201,8 +201,8 @@
     </main>
 
     <!-- Footer -->
-    <footer class="w-100 py-3 border-top" style="background-color: rgba(239, 246, 255, 0.75); border-color: #DBEAFE !important;">
-        <div class="container text-center small fw-medium" style="color: #1D4ED8;">
+    <footer class="w-100 py-3 border-top" style="background-color: #F8FAFC; border-color: #E2E8F0 !important;">
+        <div class="container text-center small fw-medium" style="color: #64748B;">
             {{ config('app.name', 'Artisan POS & Inventory Hub') }} • UMS BUU Integrated Enterprise Ecosystem
         </div>
     </footer>
@@ -255,6 +255,7 @@
                     icon: 'warning',
                     title: 'ไม่รองรับ WebAuthn',
                     text: 'เบราว์เซอร์หรืออุปกรณ์ของคุณไม่รองรับการสแกนลายนิ้วมือ หรือยังไม่ได้เปิดใช้ HTTPS/Localhost',
+                    confirmButtonColor: '#0F172A',
                     confirmButtonText: 'ตกลง'
                 });
             } else {
@@ -357,6 +358,7 @@
                     icon: 'error',
                     title: 'การเข้าสู่ระบบชีวมิติล้มเหลว',
                     text: err.message || 'ไม่สามารถยืนยันลายนิ้วมือได้ กรุณาลองใหม่อีกครั้งหรือใช้รหัสผ่าน BUU',
+                    confirmButtonColor: '#0F172A',
                     confirmButtonText: 'ตกลง'
                 });
             } else {

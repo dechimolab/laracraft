@@ -1,0 +1,609 @@
+/**
+ * ArtisanCraft Modular Theme Tokens: Rose Quartz & Velvet (light)
+ * Theme Key: rose-quartz (alias: rose-quartz-velvet)
+ * WCAG 2.1 Conformance: AA 11.9:1
+ * Design System: Boutique Luxury POS & Velvet Atelier
+ * Reference Prototype: design/theme/rose_quartz_velvet (DESIGN.md & code.html)
+ */
+
+:root,
+[data-bs-theme="light"],
+[data-theme="rose-quartz"],
+[data-theme="rose-quartz-velvet"] {
+    --sys-name: 'Rose Quartz & Velvet';
+    --sys-mode: light;
+    --sys-wcag: 'AA 11.9:1';
+    --sys-primary: #95002A;
+    --sys-primary-velvet: #BE123C;
+    --sys-primary-container: #BE123C;
+    --sys-secondary: #A93349;
+    --sys-secondary-container: #FE7488;
+    --sys-accent: #FE7488;
+    --sys-coral: #F43F5E;
+    --sys-wine: #881337;
+    --sys-ruby: #BE123C;
+    --sys-ruby-dark: #9F1239;
+    --sys-bg: #FFF8F7;
+    --sys-card: #FFFFFF;
+    --sys-surface: #FFF8F7;
+    --sys-surface-low: #FFF0F1;
+    --sys-surface-high: #FFE1E4;
+    --sys-surface-dim: #FFCED4;
+    --sys-text: #400014;
+    --sys-subtext: #7A4B55;
+
+    /* Rose Quartz & Velvet Palette */
+    --rq-primary: #95002A;
+    --rq-primary-dark: #7A0022;
+    --rq-primary-velvet: #BE123C;
+    --rq-velvet-wine: #881337;
+    --rq-ruby: #BE123C;
+    --rq-ruby-dark: #9F1239;
+    --rq-bg-blush: #FFF8F7;
+    --rq-surface-low: #FFF0F1;
+    --rq-surface-high: #FFE1E4;
+    --rq-surface-dim: #FFCED4;
+    --rq-border-rose: rgba(251, 113, 133, 0.3);
+    --rq-text-wine: #400014;
+    --rq-text-muted: #7A4B55;
+    --rq-pink-light: #FFE4E6;
+    --rq-pink-subtle: #FFF1F2;
+    --rq-pink-border: rgba(251, 113, 133, 0.25);
+    --rq-pink-focus: rgba(244, 63, 94, 0.2);
+
+    /* Theme Borders */
+    --theme-border-subtle: #FECDD3;
+    --theme-border-focus: #FB7185;
+
+    /* Bootstrap 5.3 Theme Overrides */
+    --bs-primary: #BE123C;
+    --bs-primary-rgb: 190, 18, 60;
+    --bs-secondary: #881337;
+    --bs-secondary-rgb: 136, 19, 55;
+    --bs-body-bg: #FFF8F7;
+    --bs-body-color: #400014;
+    --bs-card-bg: #FFFFFF;
+    --bs-card-color: #400014;
+    --bs-border-color: #FECDD3;
+    --bs-link-color: #BE123C;
+    --bs-link-hover-color: #881337;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--rq-bg-blush, #FFF8F7);
+    color: var(--rq-text-wine, #400014);
+}
+
+/* ==========================================================================
+   Fixed Layout Chrome & Sidebar
+   ========================================================================== */
+
+.rq-sidebar {
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: linear-gradient(180deg, #FFF0F1 0%, #FFE8EB 100%);
+    border-right: 1px solid var(--rq-border-rose, rgba(251, 113, 133, 0.3));
+    z-index: 1040;
+    display: flex;
+    flex-direction: column;
+}
+
+.rq-brand-box {
+    padding: 1.5rem 1.25rem;
+    border-bottom: 1px solid var(--rq-border-rose, rgba(251, 113, 133, 0.3));
+}
+
+.rq-brand-title {
+    font-size: 0.875rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--rq-primary, #95002A);
+    text-transform: uppercase;
+}
+
+.rq-brand-sub {
+    font-size: 0.75rem;
+    color: var(--rq-text-muted, #7A4B55);
+    font-weight: 600;
+}
+
+.rq-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 1.1rem;
+    margin: 0.2rem 0.75rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--rq-text-wine, #400014);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.rq-nav-link i {
+    font-size: 1.15rem;
+    color: var(--rq-velvet-wine, #881337);
+}
+
+.rq-nav-link:hover {
+    background-color: #FEDEE3;
+    color: var(--rq-primary, #95002A);
+}
+
+.rq-nav-link.active {
+    background: linear-gradient(135deg, #BE123C 0%, #95002A 100%) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(190, 18, 60, 0.28);
+}
+
+.rq-nav-link.active i {
+    color: #FFFFFF !important;
+}
+
+.rq-sidebar-footer {
+    padding: 1rem;
+    background-color: #FFE4E8;
+    border-top: 1px solid var(--rq-border-rose, rgba(251, 113, 133, 0.3));
+    font-size: 0.75rem;
+}
+
+.rq-main-wrapper {
+    margin-left: 280px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 991.98px) {
+    .rq-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .rq-sidebar.show {
+        transform: translateX(0);
+    }
+    .rq-main-wrapper {
+        margin-left: 0;
+    }
+}
+
+.rq-top-header {
+    height: 70px;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: rgba(255, 248, 247, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--rq-border-rose, rgba(251, 113, 133, 0.3));
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* ==========================================================================
+   Cards & Surfaces
+   ========================================================================== */
+
+.rq-card {
+    background: #FFFFFF;
+    border: 1px solid var(--rq-pink-border, rgba(251, 113, 133, 0.25));
+    border-radius: 14px;
+    box-shadow: 0 4px 20px -2px rgba(190, 18, 60, 0.05), 0 2px 6px -1px rgba(136, 19, 55, 0.03);
+    transition: all 0.2s ease-in-out;
+}
+
+.rq-card:hover {
+    box-shadow: 0 10px 25px -4px rgba(190, 18, 60, 0.08);
+}
+
+.rq-card-inner {
+    background: #FFFDFC;
+    border: 1px solid #FED7DC;
+    border-radius: 10px;
+}
+
+/* ==========================================================================
+   Buttons & Actions
+   ========================================================================== */
+
+.rq-btn-ruby {
+    background-color: var(--rq-ruby, #BE123C);
+    color: #FFFFFF !important;
+    border: none;
+    font-weight: 600;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(190, 18, 60, 0.25);
+}
+
+.rq-btn-ruby:hover {
+    background-color: var(--rq-velvet-wine, #881337);
+    box-shadow: 0 6px 18px rgba(190, 18, 60, 0.35);
+    color: #FFFFFF;
+    transform: translateY(-1px);
+}
+
+.rq-btn-rose-subtle {
+    background-color: var(--rq-pink-light, #FFE4E6);
+    color: var(--rq-velvet-wine, #881337);
+    border: 1px solid rgba(251, 113, 133, 0.3);
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+.rq-btn-rose-subtle:hover {
+    background-color: #FECDD3;
+    color: var(--rq-ruby-dark, #9F1239);
+}
+
+.rq-btn-outline-ruby {
+    background-color: transparent;
+    color: var(--rq-ruby, #BE123C);
+    border: 1px solid var(--rq-ruby, #BE123C);
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+.rq-btn-outline-ruby:hover {
+    background-color: var(--rq-pink-light, #FFE4E6);
+    color: var(--rq-velvet-wine, #881337);
+}
+
+/* ==========================================================================
+   Badges, Pills & Indicators
+   ========================================================================== */
+
+.rq-badge-rose {
+    background-color: var(--rq-pink-light, #FFE4E6);
+    color: var(--rq-velvet-wine, #881337);
+    font-weight: 600;
+    font-size: 0.725rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(251, 113, 133, 0.35);
+}
+
+.rq-pill-badge {
+    background: var(--rq-primary-velvet, #BE123C);
+    color: #FFFFFF;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.rq-icon-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--rq-pink-light, #FFE4E6);
+    color: var(--rq-ruby, #BE123C);
+    font-size: 1.25rem;
+}
+
+/* ==========================================================================
+   Executive Split Capsule (Profile & Logout Unified Component - Option 1)
+   ========================================================================== */
+
+.user-executive-capsule {
+    background-color: #FFFFFF;
+    border: 1.5px solid var(--theme-border-subtle, #FECDD3);
+    box-shadow: 0 1px 3px rgba(136, 19, 55, 0.05), 0 1px 2px rgba(190, 18, 60, 0.04);
+    min-height: 44px;
+    padding: 5px 8px 5px 18px;
+    gap: 8px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 100%;
+    cursor: pointer;
+    user-select: none;
+}
+
+.user-executive-capsule:hover {
+    border-color: var(--theme-border-focus, #FB7185);
+    background-color: #FFFDFC;
+    box-shadow: 0 4px 10px rgba(190, 18, 60, 0.1), 0 2px 4px rgba(136, 19, 55, 0.04);
+}
+
+.user-executive-capsule .user-display-name {
+    color: var(--rq-text-wine, #400014);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    padding-left: 0.25rem;
+}
+
+.user-executive-capsule .capsule-divider {
+    background-color: #FECDD3;
+    opacity: 0.6;
+}
+
+.btn-capsule-logout {
+    color: #EF4444 !important;
+    background-color: transparent;
+    transition: all 0.15s ease-in-out;
+}
+
+.btn-capsule-logout:hover {
+    background-color: #FEE2E2 !important;
+    color: #DC2626 !important;
+    transform: scale(1.05);
+}
+
+.user-avatar-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #BE123C 0%, #95002A 100%);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 2px 8px rgba(190, 18, 60, 0.2);
+    transition: transform 0.15s ease;
+}
+
+.user-executive-capsule:hover .user-avatar-circle {
+    transform: scale(1.04);
+}
+
+.user-profile-dropdown {
+    animation: dropdownFadeIn 0.15s ease-out;
+    border: 1px solid rgba(190, 18, 60, 0.15) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(190, 18, 60, 0.05) !important;
+    z-index: 1060;
+}
+
+.user-profile-dropdown .dropdown-item:hover {
+    background-color: #FEE2E2 !important;
+    color: #DC2626 !important;
+}
+
+@keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 767.98px) {
+    .user-executive-capsule {
+        padding: 4px !important;
+        min-height: 40px !important;
+        border-radius: 50rem !important;
+        gap: 0 !important;
+    }
+    .user-avatar-circle {
+        width: 32px !important;
+        height: 32px !important;
+    }
+}
+
+/* ==========================================================================
+   Form Controls & Utilities
+   ========================================================================== */
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--rq-ruby, #BE123C);
+    box-shadow: 0 0 0 0.25rem var(--rq-pink-focus, rgba(244, 63, 94, 0.2));
+}
+
+.form-check-input:checked {
+    background-color: var(--rq-ruby, #BE123C);
+    border-color: var(--rq-ruby, #BE123C);
+}
+
+.rq-dropzone {
+    border: 2px dashed rgba(251, 113, 133, 0.5);
+    background-color: #FFF8F8;
+    border-radius: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.rq-dropzone:hover {
+    background-color: #FFF1F2;
+}
+
+.nav-pills-rose .nav-link {
+    color: #7A4B55;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.nav-pills-rose .nav-link.active {
+    background-color: var(--rq-ruby, #BE123C);
+    color: #FFFFFF;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #FFF0F1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #FE7488;
+    border-radius: 3px;
+}
+
+/* ==========================================================================
+   Standard Unified Layout Chrome (Emerald Enterprise Standard)
+   ========================================================================== */
+
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    z-index: 1030;
+    background-color: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--theme-border-subtle, #FECDD3);
+    box-shadow: 0 1px 3px rgba(190, 18, 60, 0.04);
+}
+
+.app-sidebar {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    bottom: 0;
+    width: 260px;
+    background: linear-gradient(180deg, #FFF0F1 0%, #FFE8EB 100%);
+    border-right: 1px solid var(--rq-border-rose, rgba(251, 113, 133, 0.3));
+    z-index: 1020;
+    overflow-y: auto;
+    color: var(--rq-text-wine, #400014);
+    box-shadow: 4px 0 16px rgba(136, 19, 55, 0.05);
+}
+
+.app-content {
+    margin-left: 260px;
+    padding-top: 64px;
+    min-height: 100vh;
+    background-color: var(--rq-bg-blush, #FFF8F7);
+}
+
+.app-content.no-sidebar {
+    margin-left: 0;
+}
+
+.app-content.no-header {
+    padding-top: 0;
+}
+
+@media (max-width: 991.98px) {
+    .app-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .app-sidebar.show {
+        transform: translateX(0);
+    }
+    .app-content {
+        margin-left: 0;
+    }
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    color: var(--rq-text-wine, #400014);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.15s ease;
+    margin-bottom: 0.25rem;
+}
+
+.sidebar-link:hover {
+    background-color: #FEDEE3;
+    color: var(--rq-primary, #95002A);
+}
+
+.sidebar-link.active {
+    background: linear-gradient(135deg, #BE123C 0%, #95002A 100%) !important;
+    color: #FFFFFF !important;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(190, 18, 60, 0.28);
+}
+
+.sidebar-link.active span,
+.sidebar-link.active i {
+    color: #FFFFFF !important;
+}
+
+.card-surface {
+    background: #FFFFFF;
+    border: 1px solid var(--theme-border-subtle, #FECDD3);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(190, 18, 60, 0.04);
+}
+
+.subtle-module-card {
+    background: #FFFFFF;
+    border: 1px solid var(--theme-border-subtle, #FECDD3);
+    border-radius: 0.75rem;
+    padding: 1rem 1.15rem;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 3px rgba(190, 18, 60, 0.04);
+}
+
+.subtle-module-card:hover {
+    border-color: #BE123C;
+    box-shadow: 0 6px 16px -2px rgba(190, 18, 60, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Login Portal Specific Components */
+.ambient-glow-1 {
+    position: absolute;
+    top: -5rem;
+    left: -5rem;
+    width: 16rem;
+    height: 16rem;
+    background: rgba(254, 205, 211, 0.5);
+    filter: blur(4rem);
+    pointer-events: none;
+    border-radius: 50%;
+}
+
+.ambient-glow-2 {
+    position: absolute;
+    bottom: -5rem;
+    right: -5rem;
+    width: 18rem;
+    height: 18rem;
+    background: rgba(255, 225, 228, 0.45);
+    filter: blur(4rem);
+    pointer-events: none;
+    border-radius: 50%;
+}
+
+.card-top-accent {
+    position: absolute;
+    top: 0;
+    left: 1.5rem;
+    right: 1.5rem;
+    height: 6px;
+    border-radius: 50rem;
+    background: linear-gradient(90deg, #BE123C 0%, #FE7488 100%);
+}
+
+.crest-shield {
+    background: linear-gradient(135deg, #BE123C 0%, #881337 100%);
+    color: #FFFFFF;
+    border: 2px solid #FECDD3;
+    width: 3.5rem;
+    height: 3.5rem;
+    box-shadow: 0 6px 16px rgba(190, 18, 60, 0.25);
+}
+
+.badge-pulse {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #FE7488;
+    animation: pulseAnim 2s infinite;
+}
+
+@keyframes pulseAnim {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.3); }
+}

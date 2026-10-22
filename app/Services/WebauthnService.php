@@ -35,12 +35,14 @@ class WebauthnService
         $challenge = random_bytes(32);
         $encodedChallenge = self::base64urlEncode($challenge);
 
-        $host = $rpId ?: request()->getHost();
+        $host = $rpId ?: (parse_url(config('app.url'), PHP_URL_HOST) ?: request()->getHost());
+        $host = preg_replace('/:\d+$/', '', $host);
+        $userId = $user->getKey() ?? $user->user_id ?? $user->id;
 
         // Save challenge and user ID in session for verification
         session([
             'webauthn.register.challenge' => $encodedChallenge,
-            'webauthn.register.user_id' => $user->user_id,
+            'webauthn.register.user_id' => $userId,
         ]);
 
         // Exclude existing credentials to prevent duplicate registration
@@ -63,7 +65,7 @@ class WebauthnService
                 'id' => $host,
             ],
             'user' => [
-                'id' => self::base64urlEncode((string) $user->user_id),
+                'id' => self::base64urlEncode((string) $userId),
                 'name' => $user->username ?: $user->email,
                 'displayName' => $user->name ?: $user->username,
             ],
@@ -89,8 +91,9 @@ class WebauthnService
     {
         $storedChallenge = session('webauthn.register.challenge');
         $storedUserId = session('webauthn.register.user_id');
+        $userId = $user->getKey() ?? $user->user_id ?? $user->id;
 
-        if (!$storedChallenge || (int) $storedUserId !== (int) $user->user_id) {
+        if (!$storedChallenge || (int) $storedUserId !== (int) $userId) {
             throw new InvalidArgumentException('Challenge การลงทะเบียนหมดอายุหรือไม่ตรงกับผู้ใช้ปัจจุบัน');
         }
 
@@ -176,10 +179,10 @@ class WebauthnService
 
         // Create Credential Record
         $credential = WebauthnCredential::create([
-            'user_id'       => $user->user_id,
+            'user_id'       => $userId,
             'credential_id' => $data['id'],
             'public_key'    => $pemPublicKey,
-            'user_handle'   => (string) $user->user_id,
+            'user_handle'   => (string) $userId,
             'counter'       => $signCount,
             'device_name'   => $deviceName,
             'transports'    => $transports,
@@ -204,7 +207,8 @@ class WebauthnService
         $challenge = random_bytes(32);
         $encodedChallenge = self::base64urlEncode($challenge);
 
-        $host = $rpId ?: request()->getHost();
+        $host = $rpId ?: (parse_url(config('app.url'), PHP_URL_HOST) ?: request()->getHost());
+        $host = preg_replace('/:\d+$/', '', $host);
 
         session(['webauthn.login.challenge' => $encodedChallenge]);
 

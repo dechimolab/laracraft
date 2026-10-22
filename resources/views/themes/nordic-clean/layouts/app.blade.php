@@ -20,6 +20,11 @@
     <!-- Bootstrap 5.3.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Frontend Plugins CSS (Select2, jQuery UI, Dropzone) -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+    <link href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.css" rel="stylesheet">
+
     <!-- Theme Design System Assets -->
     <link rel="stylesheet" href="{{ secure_asset('css/themes/nordic-clean.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/style.css') }}">
@@ -36,6 +41,68 @@
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             vertical-align: middle;
         }
+
+        /* Select2 Bootstrap 5 Integration */
+        .select2-container {
+            width: 100% !important;
+        }
+        .select2-container--default .select2-selection--single {
+            height: 42px !important;
+            padding: 0.375rem 0.75rem !important;
+            border: 1px solid var(--nordic-border, #E2E8F0) !important;
+            border-radius: 0.5rem !important;
+            background-color: #FFFFFF !important;
+            display: flex;
+            align-items: center;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--nordic-slate, #0F172A) !important;
+            line-height: 1.5 !important;
+            padding-left: 0 !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px !important;
+            right: 8px !important;
+        }
+        .select2-dropdown {
+            border: 1px solid var(--nordic-border, #E2E8F0) !important;
+            border-radius: 0.5rem !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+            z-index: 1060 !important;
+        }
+
+        /* jQuery UI Datepicker Thai Buddhist Year Polish */
+        .ui-datepicker {
+            border-radius: 0.75rem !important;
+            border: 1px solid var(--nordic-border, #E2E8F0) !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08) !important;
+            padding: 0.75rem !important;
+            font-family: inherit !important;
+            z-index: 1060 !important;
+            background-color: #FFFFFF !important;
+        }
+        .ui-datepicker-header {
+            background: #F8FAFC !important;
+            border: 0 !important;
+            border-radius: 0.5rem !important;
+        }
+        .ui-datepicker-title select {
+            border: 1px solid #CBD5E1 !important;
+            border-radius: 0.375rem !important;
+            padding: 2px 4px !important;
+        }
+
+        /* Dropzone Styling Polish */
+        .dropzone {
+            border: 2px dashed var(--nordic-border, #E2E8F0) !important;
+            border-radius: 0.75rem !important;
+            background-color: #F8FAFC !important;
+            transition: all 0.2s ease-in-out;
+        }
+        .dropzone:hover {
+            border-color: var(--nordic-slate, #0F172A) !important;
+            background-color: var(--nordic-subtle-bg, #F1F5F9) !important;
+        }
     </style>
 </head>
 <body>
@@ -48,14 +115,14 @@
             <!-- Brand & Left Navigation Items -->
             <div class="d-flex align-items-center gap-3">
                 <div class="d-flex align-items-center gap-2">
-                    <span class="badge rounded-pill badge-nordic px-2.5 py-1 text-uppercase d-inline-flex align-items-center gap-1.5" style="font-size: 0.7rem; letter-spacing: 0.05em;">
-                        <span class="rounded-circle" style="width: 6px; height: 6px; background-color: var(--nordic-blue, #3B82F6);"></span>
+                    <span class="badge rounded-pill px-2.5 py-1 text-uppercase d-inline-flex align-items-center gap-1.5" style="font-size: 0.7rem; letter-spacing: 0.05em; background-color: var(--nordic-slate, #0F172A); color: #ffffff; border: none;">
+                        <span class="rounded-circle" style="width: 6px; height: 6px; background-color: #ffffff;"></span>
                         Nordic Clean
                     </span>
                     <div class="vr mx-1 d-none d-sm-block text-secondary opacity-25" style="height: 18px;"></div>
                     <a href="{{ Route::has('demo.index') ? route('demo.index') : url('/') }}" class="d-flex align-items-center gap-1 text-decoration-none">
-                        <span class="fw-bold text-nordic-blue fs-6">Artisan</span>
-                        <span class="fw-semibold text-dark fs-6">{{ preg_replace('/^Artisan\s+/i', '', config('app.name', 'POS & Inventory Hub')) }}</span>
+                        <span class="fw-bold fs-6" style="color: var(--nordic-slate, #0F172A) !important;">Artisan</span>
+                        <span class="fw-semibold text-dark fs-6">{{ preg_replace('/^Artisan\s+/i', '', $appName ?? ((config('app.name') && config('app.name') !== 'Laravel Generator') ? config('app.name') : 'POS & Inventory Hub')) }}</span>
                     </a>
                 </div>
                 <div class="d-none d-xl-flex align-items-center gap-1 ms-3">
@@ -77,32 +144,28 @@
 
             <!-- Right User Identity & Logout Unified Split Capsule with Dropdown (Nordic Clean) -->
             <div class="dropdown">
+                <!-- Right User Identity & Direct Logout Capsule (Option 1 Enhanced) -->
                 @auth
-                <div class="user-executive-capsule d-inline-flex align-items-center bg-white rounded-pill shadow-sm border border-primary-subtle"
-                     role="button"
-                     data-bs-toggle="dropdown"
-                     data-bs-auto-close="true"
-                     aria-expanded="false"
-                     title="คลิกเพื่อเปิดเมนูผู้ใช้งาน">
-                    <div class="d-none d-md-flex align-items-center gap-2 pe-1" data-permit="{{ session('userPermitName') ?? '' }}" data-group="{{ is_array(session('userGroup')) ? implode(',', session('userGroup')) : session('userGroup') }}">
+                <div class="user-executive-capsule d-inline-flex align-items-center bg-white rounded-pill shadow-sm border border-light-subtle pe-1">
+                    <div class="d-none d-md-flex align-items-center gap-2 px-2" data-permit="{{ session('userPermitName') ?? '' }}" data-group="{{ is_array(session('userGroup')) ? implode(',', array_map(fn($g) => is_object($g) ? ($g->GPNAMET ?? $g->GPID ?? $g->name ?? '') : (is_array($g) ? ($g['GPNAMET'] ?? $g['GPID'] ?? $g['name'] ?? '') : (string)$g), session('userGroup'))) : (is_scalar(session('userGroup')) ? session('userGroup') : '') }}">
                         <span class="user-display-name small fw-semibold text-dark">
                             {{ session('userFullNameTH') ?? (Auth::user()->name ?? Auth::user()->username) }}
                         </span>
                     </div>
-                    <div class="user-avatar-circle rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs flex-shrink-0" style="width: 32px; height: 32px; background-color: var(--nordic-blue, #3B82F6); font-size: 0.85rem;">
+                    <div class="user-avatar-circle rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs flex-shrink-0" style="width: 32px; height: 32px; background-color: var(--nordic-slate, #0F172A); font-size: 0.85rem;">
                         {{ strtoupper(substr(Auth::user()->username ?? (session('userFullNameTH') ?? 'P'), 0, 1)) }}
                     </div>
-                    <div class="capsule-divider vr mx-1 text-secondary opacity-25 d-none d-md-block" style="height: 18px;"></div>
-                    <form method="POST" action="{{ Route::has('logout') ? route('logout') : '#' }}" class="m-0 p-0 d-none d-md-inline-flex pe-1">
+                    <div class="capsule-divider vr mx-1 text-secondary opacity-25" style="height: 18px;"></div>
+                    <form method="POST" action="{{ Route::has('logout') ? route('logout') : '#' }}" class="m-0 p-0 d-inline-flex">
                         @csrf
-                        <button type="submit" class="btn-capsule-logout btn btn-link p-0 text-danger d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 28px; height: 28px; text-decoration: none;" title="ออกจากระบบ" onclick="event.stopPropagation();">
+                        <button type="submit" class="btn-capsule-logout btn btn-link p-0 text-danger d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 28px; height: 28px; text-decoration: none;" title="ออกจากระบบ (Logout)">
                             <span class="material-symbols-outlined fs-6 align-middle">logout</span>
                         </button>
                     </form>
                 </div>
 
-                <!-- Dropdown Menu for Mobile & Desktop -->
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2 p-1 user-profile-dropdown" style="min-width: 170px;">
+                <!-- Dropdown Menu for Mobile (Hidden on Desktop) -->
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2 p-1 user-profile-dropdown d-md-none" style="min-width: 170px;">
                     <li>
                         <form method="POST" action="{{ Route::has('logout') ? route('logout') : '#' }}" class="m-0 p-0">
                             @csrf
@@ -114,37 +177,32 @@
                     </li>
                 </ul>
                 @else
-                <div class="user-executive-capsule d-inline-flex align-items-center bg-white rounded-pill shadow-sm border border-primary-subtle"
-                     role="button"
-                     data-bs-toggle="dropdown"
-                     data-bs-auto-close="true"
-                     aria-expanded="false"
-                     title="คลิกเพื่อเปิดเมนูผู้ใช้งาน">
-                    <div class="d-none d-md-flex align-items-center gap-2 pe-1" data-permit="{{ session('userPermitName') ?? '' }}" data-group="{{ is_array(session('userGroup')) ? implode(',', session('userGroup')) : session('userGroup') }}">
+                <div class="user-executive-capsule d-inline-flex align-items-center bg-white rounded-pill shadow-sm border border-light-subtle pe-1">
+                    <div class="d-none d-md-flex align-items-center gap-2 px-2" data-permit="{{ session('userPermitName') ?? '' }}" data-group="{{ is_array(session('userGroup')) ? implode(',', array_map(fn($g) => is_object($g) ? ($g->GPNAMET ?? $g->GPID ?? $g->name ?? '') : (is_array($g) ? ($g['GPNAMET'] ?? $g['GPID'] ?? $g['name'] ?? '') : (string)$g), session('userGroup'))) : (is_scalar(session('userGroup')) ? session('userGroup') : '') }}">
                         <span class="user-display-name small fw-semibold text-dark">
                             {{ session('userFullNameTH') ?? 'นายพันธกานต์ มั่นจันทร์ (ผู้ดูแลตำแหน่ง)' }}
                         </span>
                     </div>
-                    <div class="user-avatar-circle rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs flex-shrink-0" style="width: 32px; height: 32px; background-color: var(--nordic-blue, #3B82F6); font-size: 0.85rem;">
+                    <div class="user-avatar-circle rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs flex-shrink-0" style="width: 32px; height: 32px; background-color: var(--nordic-slate, #0F172A); font-size: 0.85rem;">
                         P
                     </div>
-                    <div class="capsule-divider vr mx-1 text-secondary opacity-25 d-none d-md-block" style="height: 18px;"></div>
+                    <div class="capsule-divider vr mx-1 text-secondary opacity-25" style="height: 18px;"></div>
                     @if(Route::has('logout'))
-                    <form method="POST" action="{{ route('logout') }}" class="m-0 p-0 d-none d-md-inline-flex pe-1">
+                    <form method="POST" action="{{ route('logout') }}" class="m-0 p-0 d-inline-flex">
                         @csrf
-                        <button type="submit" class="btn-capsule-logout btn btn-link p-0 text-danger d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 28px; height: 28px; text-decoration: none;" title="ออกจากระบบ" onclick="event.stopPropagation();">
+                        <button type="submit" class="btn-capsule-logout btn btn-link p-0 text-danger d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 28px; height: 28px; text-decoration: none;" title="ออกจากระบบ (Logout)">
                             <span class="material-symbols-outlined fs-6 align-middle">logout</span>
                         </button>
                     </form>
                     @else
-                    <a href="{{ Route::has('login') ? route('login') : '#' }}" class="btn-capsule-logout btn btn-link p-0 text-danger d-none d-md-inline-flex align-items-center justify-content-center rounded-circle pe-1" style="width: 28px; height: 28px; text-decoration: none;" title="ออกจากระบบ" onclick="event.stopPropagation();">
+                    <a href="{{ Route::has('login') ? route('login') : '#' }}" class="btn-capsule-logout btn btn-link p-0 text-danger d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 28px; height: 28px; text-decoration: none;" title="ออกจากระบบ (Logout)">
                         <span class="material-symbols-outlined fs-6 align-middle">logout</span>
                     </a>
                     @endif
                 </div>
 
-                <!-- Dropdown Menu for Mobile & Desktop -->
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2 p-1 user-profile-dropdown" style="min-width: 170px;">
+                <!-- Dropdown Menu for Mobile (Hidden on Desktop) -->
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2 p-1 user-profile-dropdown d-md-none" style="min-width: 170px;">
                     <li>
                         @if(Route::has('logout'))
                         <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
@@ -225,7 +283,13 @@
         </main>
     </div>
 
-    <!-- Bootstrap 5.3 & Runtime Scripts -->
+    <!-- Runtime Scripts & Frontend Plugins -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.10.5/dist/autoNumeric.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ secure_asset('js/function.js') }}"></script>
     @stack('scripts')

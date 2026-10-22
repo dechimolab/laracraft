@@ -1,0 +1,196 @@
+/* Custom Modern Datepicker CSS for MA BUCC & ArtisanCraft Dynamic Themes (Bootstrap 5) */
+
+.ui-datepicker {
+    width: 320px;
+    padding: 12px;
+    display: none;
+    background: var(--sys-card, #ffffff);
+    border: 1px solid rgba(var(--bs-primary-rgb, 5, 148, 103), 0.2);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    font-family: 'Inter', 'Sarabun', sans-serif;
+    z-index: 1060 !important;
+}
+
+.ui-datepicker .ui-datepicker-header {
+    position: relative;
+    padding: 10px 6px;
+    background: rgba(var(--bs-primary-rgb, 5, 148, 103), 0.12);
+    border-radius: 12px;
+    color: var(--sys-primary, #059467);
+    font-weight: 600;
+}
+
+.ui-datepicker .ui-datepicker-prev,
+.ui-datepicker .ui-datepicker-next {
+    position: absolute;
+    top: 10px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.ui-datepicker .ui-datepicker-prev {
+    left: 8px;
+}
+
+.ui-datepicker .ui-datepicker-next {
+    right: 8px;
+}
+
+.ui-datepicker .ui-datepicker-prev:hover,
+.ui-datepicker .ui-datepicker-next:hover {
+    background-color: rgba(var(--bs-primary-rgb, 5, 148, 103), 0.2);
+}
+
+.ui-datepicker .ui-datepicker-prev span,
+.ui-datepicker .ui-datepicker-next span {
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    text-indent: -9999px;
+}
+
+.ui-datepicker .ui-datepicker-prev span {
+    border-width: 6px 7px 6px 0;
+    border-color: transparent var(--sys-primary, #059467) transparent transparent;
+}
+
+.ui-datepicker .ui-datepicker-next span {
+    border-width: 6px 0 6px 7px;
+    border-color: transparent transparent transparent var(--sys-primary, #059467);
+}
+
+.ui-datepicker .ui-datepicker-title {
+    margin: 0 36px;
+    line-height: 32px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+.ui-datepicker .ui-datepicker-title select {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--sys-primary, #059467);
+    border: 1px solid rgba(var(--bs-primary-rgb, 5, 148, 103), 0.3);
+    border-radius: 8px;
+    padding: 3px 8px;
+    background-color: var(--sys-card, #ffffff);
+    cursor: pointer;
+    outline: none;
+}
+
+.ui-datepicker .ui-datepicker-title select:focus {
+    border-color: var(--sys-primary, #059467);
+}
+
+.ui-datepicker select.ui-datepicker-month {
+    width: 55%;
+}
+
+.ui-datepicker select.ui-datepicker-year {
+    width: 45%;
+}
+
+.ui-datepicker table {
+    width: 100%;
+    font-size: 0.875rem;
+    border-collapse: collapse;
+    margin: 10px 0 6px 0;
+}
+
+.ui-datepicker th {
+    padding: 8px 0;
+    text-align: center;
+    font-weight: 600;
+    color: var(--sys-subtext, #64748b);
+    border: 0;
+    font-size: 0.8rem;
+}
+
+.ui-datepicker td {
+    border: 0;
+    padding: 2px;
+    text-align: center;
+}
+
+.ui-datepicker td span,
+.ui-datepicker td a {
+    display: block;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    margin: 0 auto;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 50%;
+    color: var(--sys-text, #1e293b);
+    font-weight: 500;
+    transition: all 0.15s ease-in-out;
+}
+
+.ui-datepicker td a:hover {
+    background-color: rgba(var(--bs-primary-rgb, 5, 148, 103), 0.15);
+    color: var(--sys-primary, #059467);
+    font-weight: bold;
+}
+
+.ui-datepicker td.ui-datepicker-today a {
+    border: 1px dashed var(--sys-primary, #059467);
+    color: var(--sys-primary, #059467);
+}
+
+.ui-datepicker td.ui-datepicker-current-day a,
+.ui-datepicker td .ui-state-active {
+    background-color: var(--sys-primary, #059467) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 6px -1px rgba(var(--bs-primary-rgb, 5, 148, 103), 0.35);
+}
+
+.ui-datepicker td.ui-state-disabled span {
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+/* Button pane at the bottom */
+.ui-datepicker .ui-datepicker-buttonpane {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(var(--bs-primary-rgb, 5, 148, 103), 0.12);
+}
+
+.ui-datepicker .ui-datepicker-buttonpane button {
+    border: none;
+    background: transparent;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
+    color: var(--sys-primary, #059467);
+    background-color: rgba(var(--bs-primary-rgb, 5, 148, 103), 0.12);
+}
+
+.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-clean {
+    color: #dc2626;
+    background-color: #fee2e2;
+}
+
+.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-close {
+    color: var(--sys-subtext, #475569);
+    background-color: rgba(var(--bs-primary-rgb, 5, 148, 103), 0.08);
+}

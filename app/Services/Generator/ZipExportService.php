@@ -72,7 +72,7 @@ class ZipExportService
 
         // Theme-Adaptive Favicons (From public/image/)
         $themeKey = $projectConfig['theme_key'] ?? 'nordic-clean';
-        $shortTheme = str_replace(['-clean', '-enterprise'], '', $themeKey);
+        $shortTheme = str_replace(['-clean', '-enterprise', '-horizon', '-velvet', '-sage', '-coffee'], '', $themeKey);
 
         $resolveFavicon = function(string $filename) {
             if (file_exists(public_path("image/{$filename}"))) {
@@ -103,7 +103,7 @@ class ZipExportService
             $files['public/favicon.ico'] = $icoContent;
         }
 
-        $allVariants = ['nordic', 'nordic-clean', 'emerald', 'emerald-enterprise'];
+        $allVariants = ['nordic', 'nordic-clean', 'emerald', 'emerald-enterprise', 'sunset', 'sunset-horizon', 'rose', 'rose-quartz', 'rose-quartz-velvet', 'forest', 'forest-moss', 'forest-moss-sage', 'solar', 'solar-amber', 'solar-amber-coffee'];
         foreach ($allVariants as $var) {
             $vSvg = $resolveFavicon("favicon-{$var}.svg");
             if ($vSvg && file_exists($vSvg)) {
@@ -2134,7 +2134,13 @@ PHP;
     protected function buildAppLayout(array $config): string
     {
         [$themeKey, $theme] = $this->getActiveThemeData($config);
-        $themeLayoutPath = resource_path("views/themes/{$themeKey}/layouts/app.blade.php");
+        $themeViewKey = match($themeKey) {
+            'rose-quartz-velvet' => 'rose-quartz',
+            'forest-moss-sage' => 'forest-moss',
+            'solar-amber-coffee' => 'solar-amber',
+            default => $themeKey,
+        };
+        $themeLayoutPath = resource_path("views/themes/{$themeViewKey}/layouts/app.blade.php");
         if (file_exists($themeLayoutPath)) {
             $content = file_get_contents($themeLayoutPath);
             $appName = htmlspecialchars($config['name'] ?? 'Artisan App');
@@ -3062,6 +3068,7 @@ JS;
                 '.DS_Store',
                 '/.agents',
                 '/.ai',
+                '.gitlab',
                 'node_modules',
                 'vendor',
                 'bootstrap/cache/**',
@@ -3171,7 +3178,7 @@ function Run-Step {
 
 Run-Step "[1/10] Starting container {$slug}-web with volume {$volume}..." "docker run --name {$slug}-web --volume={$volume}:/var/www/html -p {$httpsPort}:443 -p {$sshPort}:22 -t -d {$image} sh -c '(/usr/sbin/sshd || echo SSH not found, continuing...); apache2-foreground'"
 
-Run-Step "[2/10] Setting up OpenSSH Server, Node.js and npm inside container..." "docker exec {$slug}-web sh -c 'apt-get update && apt-get install -y openssh-server nodejs npm'; docker exec {$slug}-web mkdir -p /var/run/sshd; docker exec {$slug}-web sh -c 'echo root:dockerpwd | chpasswd'; docker exec {$slug}-web service ssh start"
+Run-Step "[2/10] Setting up OpenSSH Server, Node.js and npm inside container..." "docker exec {$slug}-web sh -c 'apt-get update && apt-get install -y openssh-server nodejs npm'; docker exec {$slug}-web mkdir -p /var/run/sshd; docker exec {$slug}-web sh -c 'echo root:dockerpwd | chpasswd'; docker exec {$slug}-web sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config; docker exec {$slug}-web service ssh start"
 
 # Inject ErrorDocument 400 redirect fallback into default-ssl.conf
 Run-Step "[3/10] Configuring Apache HTTPS redirect fallback on port {$httpsPort}..." "docker exec {$slug}-web sh -c 'echo {$b64Ssl} | base64 -d | sh'"
@@ -3228,6 +3235,9 @@ BAT;
         $volume = $config['docker_volume'] ?? ($slug . '-code');
         $sftpJson = trim($this->buildSftpJson($config));
 
+        $sslScript = "sed -i '/<VirtualHost \\*:443>/a \\\tErrorDocument 400 \"<html><head><meta http-equiv=\\\\\\\"refresh\\\\\\\" content=\\\\\\\"0;url=https://localhost:{$httpsPort}/\\\\\\\"><script>location.href=\\\\\\\"https://\\\\\\\" + location.host + location.pathname;</script></head><body>Redirecting to HTTPS...</body></html>\"' /etc/apache2/sites-available/default-ssl.conf\napache2ctl graceful\n";
+        $b64Ssl = base64_encode($sslScript);
+
         return <<<SH
 #!/usr/bin/env bash
 # ==============================================================================
@@ -3277,10 +3287,10 @@ run_step "[1/10] Starting container {$slug}-web with volume {$volume}..." \\
   "docker run --name {$slug}-web --volume={$volume}:/var/www/html -p {$httpsPort}:443 -p {$sshPort}:22 -t -d {$image} sh -c '(/usr/sbin/sshd || echo SSH not found, continuing...); apache2-foreground'"
 
 run_step "[2/10] Setting up OpenSSH Server, Node.js and npm inside container..." \\
-  "docker exec {$slug}-web sh -c 'apt-get update && apt-get install -y openssh-server nodejs npm'; docker exec {$slug}-web mkdir -p /var/run/sshd; docker exec {$slug}-web sh -c \"echo 'root:dockerpwd' | chpasswd\"; docker exec {$slug}-web service ssh start"
+  "docker exec {$slug}-web sh -c 'apt-get update && apt-get install -y openssh-server nodejs npm'; docker exec {$slug}-web mkdir -p /var/run/sshd; docker exec {$slug}-web sh -c \"echo 'root:dockerpwd' | chpasswd\"; docker exec {$slug}-web sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config; docker exec {$slug}-web service ssh start"
 
 run_step "[3/10] Configuring Apache HTTPS redirect fallback on port {$httpsPort}..." \\
-  "docker exec {$slug}-web sed -i '/<VirtualHost \\*:443>/a \\\\\\\\tErrorDocument 400 \"<html><head><meta http-equiv=\\\\\\\"refresh\\\\\\\" content=\\\\\\\"0;url=https://localhost:{$httpsPort}/\\\\\\\"><script>location.href=\\\\\\\"https://\\\\\\\" + location.host + location.pathname;</script></head><body>Redirecting to HTTPS...</body></html>\"' /etc/apache2/sites-available/default-ssl.conf; docker exec {$slug}-web apache2ctl graceful"
+  "docker exec {$slug}-web sh -c 'echo {$b64Ssl} | base64 -d | sh'"
 
 run_step "[4/10] Copying project files into container volume..." \\
   "docker cp . {$slug}-web:/var/www/html/"
@@ -3429,6 +3439,9 @@ BAT;
         $image = $config['docker_image'] ?? 'bucchub/php-apache-dev:8.4';
         $httpsPort = $config['docker_https_port'] ?? 443;
 
+        $sslScript = "sed -i '/<VirtualHost \\*:443>/a \\\tErrorDocument 400 \"<html><head><meta http-equiv=\\\\\\\"refresh\\\\\\\" content=\\\\\\\"0;url=https://localhost:{$httpsPort}/\\\\\\\"><script>location.href=\\\\\\\"https://\\\\\\\" + location.host + location.pathname;</script></head><body>Redirecting to HTTPS...</body></html>\"' /etc/apache2/sites-available/default-ssl.conf\napache2ctl graceful\n";
+        $b64Ssl = base64_encode($sslScript);
+
         return <<<SH
 #!/usr/bin/env bash
 # ==============================================================================
@@ -3481,7 +3494,7 @@ run_step "[2/8] Setting up Node.js and npm inside container..." \\
   "docker exec {$slug}-web sh -c 'apt-get update && apt-get install -y nodejs npm'"
 
 run_step "[3/8] Configuring Apache HTTPS redirect fallback on port {$httpsPort}..." \\
-  "docker exec {$slug}-web sed -i '/<VirtualHost \\*:443>/a \\\\\\\\tErrorDocument 400 \"<html><head><meta http-equiv=\\\\\\\"refresh\\\\\\\" content=\\\\\\\"0;url=https://localhost:{$httpsPort}/\\\\\\\"><script>location.href=\\\\\\\"https://\\\\\\\" + location.host + location.pathname;</script></head><body>Redirecting to HTTPS...</body></html>\"' /etc/apache2/sites-available/default-ssl.conf; docker exec {$slug}-web apache2ctl graceful"
+  "docker exec {$slug}-web sh -c 'echo {$b64Ssl} | base64 -d | sh'"
 
 run_step "[4/8] Setting permissions (775) on storage and cache..." \\
   "docker exec {$slug}-web chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache"
@@ -3787,7 +3800,7 @@ MD;
 
         // Theme-Adaptive Favicons (From public/image/)
         $themeKey = $projectConfig['theme_key'] ?? 'nordic-clean';
-        $shortTheme = str_replace(['-clean', '-enterprise'], '', $themeKey);
+        $shortTheme = str_replace(['-clean', '-enterprise', '-horizon', '-velvet', '-sage', '-coffee'], '', $themeKey);
 
         $resolveFavicon = function(string $filename) {
             if (file_exists(public_path("image/{$filename}"))) {
@@ -3817,7 +3830,7 @@ MD;
             $zip->addFromString('public/image/favicon.ico', $icoContent);
             $zip->addFromString('public/favicon.ico', $icoContent);
         }
-        $allVariants = ['nordic', 'nordic-clean', 'emerald', 'emerald-enterprise'];
+        $allVariants = ['nordic', 'nordic-clean', 'emerald', 'emerald-enterprise', 'sunset', 'sunset-horizon', 'rose', 'rose-quartz', 'rose-quartz-velvet', 'forest', 'forest-moss', 'forest-moss-sage', 'solar', 'solar-amber', 'solar-amber-coffee'];
         foreach ($allVariants as $var) {
             $vSvg = $resolveFavicon("favicon-{$var}.svg");
             if ($vSvg && file_exists($vSvg)) {
@@ -4199,8 +4212,8 @@ XML;
         $customPackages = $config['custom_packages'] ?? '';
         $files = [];
 
-        $hasJqueryUi = in_array('jquery-ui-datepicker', $packages) || str_contains($customPackages, 'jquery-ui');
-        $hasDropzone = in_array('dropzone', $packages) || str_contains($customPackages, 'dropzone');
+        $hasJqueryUi = true; // Always bundle jQuery UI & Buddhist datepicker for rich UI demo
+        $hasDropzone = true; // Always bundle Dropzone for media vault uploader
         $hasDatatables = in_array('datatables-bs5', $packages) || in_array('yajra/laravel-datatables', $packages) || str_contains($customPackages, 'datatables');
 
         $baseTpl = resource_path('plugins_template');
@@ -6295,7 +6308,13 @@ PHP;
     protected function buildLoginUmsBlade(array $config): string
     {
         [$themeKey, $theme] = $this->getActiveThemeData($config);
-        $themeLoginPath = resource_path("views/themes/{$themeKey}/auth/login.blade.php");
+        $themeViewKey = match($themeKey) {
+            'rose-quartz-velvet' => 'rose-quartz',
+            'forest-moss-sage' => 'forest-moss',
+            'solar-amber-coffee' => 'solar-amber',
+            default => $themeKey,
+        };
+        $themeLoginPath = resource_path("views/themes/{$themeViewKey}/auth/login.blade.php");
         if (file_exists($themeLoginPath)) {
             $content = file_get_contents($themeLoginPath);
             $appName = htmlspecialchars($config['name'] ?? 'Artisan POS & Inventory Hub');
@@ -6599,40 +6618,41 @@ HTML;
 @extends('layouts.app')
 
 @section('content')
-<div class="row justify-content-center mt-4">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-lg border-theme bg-theme-card">
-            <div class="card-header text-center py-4 border-bottom border-theme">
-                <div class="d-inline-flex p-3 rounded-circle mb-3 bg-theme-primary">
-                    <i class="bi bi-arrow-left-right fs-2"></i>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 card-surface">
+                <div class="text-center pb-3 mb-4 border-bottom">
+                    <div class="d-inline-flex p-3 rounded-circle mb-3 bg-primary-subtle text-primary">
+                        <span class="material-symbols-outlined fs-2">switch_account</span>
+                    </div>
+                    <h4 class="fw-bold mb-1 text-dark">สลับบทบาทการทำงาน (Switch Role)</h4>
+                    <p class="text-secondary small mb-0 font-monospace">มหาวิทยาลัยบูรพา • UMS Identity Management</p>
                 </div>
-                <h4 class="fw-bold mb-1 text-white">สลับบทบาทการทำงาน (Switch Role)</h4>
-                <small class="text-secondary font-monospace">มหาวิทยาลัยบูรพา · UMS Identity Management</small>
-            </div>
-            <div class="card-body p-4">
+
                 @if(session('error'))
-                    <div class="alert alert-danger py-2.5 px-3 small mb-3" role="alert">
+                    <div class="alert alert-danger py-2.5 px-3 small mb-3 rounded-3" role="alert">
                         <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
                     </div>
                 @endif
                 @if(session('success'))
-                    <div class="alert alert-success py-2.5 px-3 small mb-3" role="alert">
+                    <div class="alert alert-success py-2.5 px-3 small mb-3 rounded-3" role="alert">
                         <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
                     </div>
                 @endif
 
-                <div class="p-3 rounded border border-theme mb-4 bg-dark bg-opacity-25">
-                    <div class="text-secondary small mb-1">บทบาทที่กำลังใช้งานในปัจจุบัน:</div>
+                <div class="p-3 rounded-3 border bg-light mb-4">
+                    <div class="text-secondary small mb-1 fw-medium">บทบาทที่กำลังใช้งานในปัจจุบัน:</div>
                     <div class="d-flex align-items-center gap-2">
-                        <span class="badge bg-success px-2.5 py-1.5 fs-6">
+                        <span class="badge bg-success rounded-pill px-3 py-1.5 fs-6">
                             <i class="bi bi-person-check-fill me-1"></i> {{ session('userPermitName', 'ผู้ใช้งานทั่วไป') }}
                         </span>
-                        <code class="text-theme-subtext font-monospace small">GPID: {{ session('userPermitId', '-') }}</code>
+                        <code class="text-muted font-monospace small">GPID: {{ session('userPermitId', '-') }}</code>
                     </div>
                 </div>
 
-                <div class="fw-semibold text-body mb-2 small">
-                    <i class="bi bi-collection-fill me-1 text-theme-primary"></i> เลือกบทบาทที่ต้องการสลับ:
+                <div class="fw-semibold text-dark mb-2 small">
+                    <span class="material-symbols-outlined fs-6 align-middle text-primary">group</span> เลือกบทบาทที่ต้องการสลับ:
                 </div>
 
                 @php
@@ -6647,21 +6667,21 @@ HTML;
                             $name = is_object($grp) ? ($grp->GPNAMET ?? $grp->gpnamet ?? '') : ($grp['GPNAMET'] ?? $grp['gpnamet'] ?? '');
                             $isActive = ((string) $gpid === $currentGpid);
                         @endphp
-                        <form method="POST" action="{{ route('switch.group') }}">
+                        <form method="POST" action="{{ route('switch.group') }}" class="m-0">
                             @csrf
                             <input type="hidden" name="gpid" value="{{ $gpid }}">
-                            <div class="d-flex align-items-center justify-content-between p-3 rounded border border-theme {{ $isActive ? 'border-primary bg-primary bg-opacity-10' : 'bg-dark bg-opacity-10' }}">
+                            <div class="d-flex align-items-center justify-content-between p-3 rounded-3 border {{ $isActive ? 'border-primary bg-primary bg-opacity-10' : 'bg-white' }}">
                                 <div>
-                                    <div class="fw-semibold text-body {{ $isActive ? 'text-primary' : '' }}">
+                                    <div class="fw-semibold text-dark {{ $isActive ? 'text-primary' : '' }}">
                                         {{ $name }}
                                     </div>
-                                    <code class="text-theme-subtext font-monospace small">GPID: {{ $gpid }}</code>
+                                    <code class="text-secondary font-monospace small">GPID: {{ $gpid }}</code>
                                 </div>
                                 <div>
                                     @if($isActive)
-                                        <span class="badge bg-primary">กำลังใช้งาน</span>
+                                        <span class="badge bg-primary rounded-pill px-2.5 py-1">กำลังใช้งาน</span>
                                     @else
-                                        <button type="submit" class="btn btn-outline-theme-primary btn-sm px-3">
+                                        <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill px-3">
                                             สลับไปยังบทบาทนี้
                                         </button>
                                     @endif
@@ -6669,20 +6689,22 @@ HTML;
                             </div>
                         </form>
                     @empty
-                        <div class="alert alert-secondary py-2 small mb-0">
+                        <div class="alert alert-light border py-2.5 small mb-0 rounded-3 text-secondary text-center">
                             ไม่พบรายการกลุ่มสิทธิ์เพิ่มเติม
                         </div>
                     @endforelse
                 </div>
 
-                <div class="text-center">
-                    <a href="{{ route('demo.index') }}" class="btn btn-outline-secondary btn-sm px-4">
+                <div class="text-center pt-2">
+                    <a href="{{ Route::has('demo.index') ? route('demo.index') : url('/') }}" class="btn btn-outline-secondary btn-sm px-4 rounded-pill">
                         <i class="bi bi-arrow-left me-1"></i> กลับสู่หน้าแดชบอร์ด
                     </a>
                 </div>
             </div>
         </div>
     </div>
+</div>
+@endsection
 </div>
 @endsection
 HTML;
@@ -7121,7 +7143,13 @@ PHP;
     protected function buildLoginBlade(array $config): string
     {
         [$themeKey, $theme] = $this->getActiveThemeData($config);
-        $themeLoginPath = resource_path("views/themes/{$themeKey}/auth/login.blade.php");
+        $themeViewKey = match($themeKey) {
+            'rose-quartz-velvet' => 'rose-quartz',
+            'forest-moss-sage' => 'forest-moss',
+            'solar-amber-coffee' => 'solar-amber',
+            default => $themeKey,
+        };
+        $themeLoginPath = resource_path("views/themes/{$themeViewKey}/auth/login.blade.php");
         if (file_exists($themeLoginPath)) {
             $content = file_get_contents($themeLoginPath);
             $appName = htmlspecialchars($config['name'] ?? 'Artisan POS & Inventory Hub');
@@ -7740,11 +7768,27 @@ PHP;
     protected function buildDemoIndexBlade(array $config): string
     {
         [$themeKey, $theme] = $this->getActiveThemeData($config);
-        $themeDemoPath = resource_path("views/themes/{$themeKey}/demo/index.blade.php");
+        $themeViewKey = match($themeKey) {
+            'rose-quartz-velvet' => 'rose-quartz',
+            'forest-moss-sage' => 'forest-moss',
+            'solar-amber-coffee' => 'solar-amber',
+            default => $themeKey,
+        };
+        $themeDemoPath = resource_path("views/themes/{$themeViewKey}/demo/index.blade.php");
         if (file_exists($themeDemoPath)) {
             $content = file_get_contents($themeDemoPath);
             $appName = htmlspecialchars($config['name'] ?? 'Artisan POS & Inventory Hub');
-            return str_replace(['Artisan POS & Inventory Hub', 'Artisan POS &amp; Inventory Hub'], $appName, $content);
+            $content = str_replace(['Artisan POS & Inventory Hub', 'Artisan POS &amp; Inventory Hub'], $appName, $content);
+
+            // Bake selected modules directly into the demo page so they persist after export
+            $modulesExport = var_export($config['modules'] ?? [], true);
+            $content = str_replace(
+                "\$rawModules = \$selectedModules ?? session('project.modules', []);",
+                "\$rawModules = \$selectedModules ?? session('project.modules', {$modulesExport});",
+                $content
+            );
+
+            return $content;
         }
 
         $appName = htmlspecialchars($config['name'] ?? 'Laravel Application');
@@ -9466,20 +9510,22 @@ HTML;
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small">
-                    <li class="breadcrumb-item"><a href="{{ route('demo.index') }}" class="text-primary text-decoration-none"><i class="bi bi-house-door me-1"></i>Demo Hub</a></li>
+                    <li class="breadcrumb-item"><a href="{{ Route::has('demo.index') ? route('demo.index') : url('/') }}" class="text-primary text-decoration-none"><i class="bi bi-house-door me-1"></i>Demo Hub</a></li>
                     <li class="breadcrumb-item active text-secondary" aria-current="page">UMS BUU &amp; Kong Gateway</li>
                 </ol>
             </nav>
-            <h2 class="fw-bold text-body mb-0"><i class="bi bi-hub text-primary me-2"></i> UMS BUU &amp; Kong API Gateway</h2>
+            <h2 class="fw-bold text-dark mb-0"><i class="bi bi-hub text-primary me-2"></i> UMS BUU &amp; Kong API Gateway</h2>
             <p class="text-secondary small mb-0">ระบบเชื่อมโยงผู้ใช้งานและตรวจสอบสิทธิ์กลาง มหาวิทยาลัยบูรพา (Single Sign-On &amp; Kong API Gateway)</p>
         </div>
         <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('demo.index') }}" class="btn btn-outline-theme-primary btn-sm">
+            <a href="{{ Route::has('demo.index') ? route('demo.index') : url('/') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
                 <i class="bi bi-arrow-left me-1"></i> กลับหน้าหลัก Demo
             </a>
-            <a href="{{ route('switch.group') }}" class="btn btn-theme-primary btn-sm">
+            @if(Route::has('switch.group'))
+            <a href="{{ route('switch.group') }}" class="btn btn-primary btn-sm rounded-pill px-3">
                 <i class="bi bi-arrow-repeat me-1"></i> สลับกลุ่มงาน (Switch Group)
             </a>
+            @endif
         </div>
     </div>
 
@@ -9487,47 +9533,47 @@ HTML;
     <div class="row g-4 mb-4">
         <!-- UMS & Kong Connection Card -->
         <div class="col-12 col-lg-7">
-            <div class="card border border-theme bg-theme-card shadow-sm h-100">
-                <div class="card-header border-bottom border-theme py-3 d-flex align-items-center justify-content-between">
+            <div class="card border-0 shadow-sm rounded-4 p-4 card-surface h-100">
+                <div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom">
                     <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-broadcast text-theme-primary"></i>
-                        <span class="fw-semibold text-body">การเชื่อมต่อ UMS Central Gateway &amp; Kong API</span>
+                        <span class="material-symbols-outlined text-primary fs-5">settings_ethernet</span>
+                        <span class="fw-bold text-dark">การเชื่อมต่อ UMS Central Gateway &amp; Kong API</span>
                     </div>
-                    <span class="badge bg-theme-primary font-monospace" id="ums-status-badge">READY TO TEST</span>
+                    <span class="badge bg-primary-subtle text-primary font-monospace rounded-pill px-2.5 py-1" id="ums-status-badge">READY TO TEST</span>
                 </div>
-                <div class="card-body p-4 d-flex flex-column gap-3">
+                <div class="d-flex flex-column gap-3">
                     <ul class="list-unstyled mb-0 d-flex flex-column gap-2 small">
                         <li class="d-flex justify-content-between border-bottom pb-2">
                             <span class="text-secondary">UMS System ID (SystemID):</span>
-                            <span class="fw-semibold font-monospace text-theme-primary">{{ config('constants.configUms.SystemID', config('ums.system_id', env('UMS_SYSTEM_ID', '-'))) }}</span>
+                            <span class="fw-semibold font-monospace text-primary">{{ config('constants.configUms.SystemID', config('ums.system_id', env('UMS_SYSTEM_ID', '-'))) }}</span>
                         </li>
                         <li class="d-flex justify-content-between border-bottom pb-2">
                             <span class="text-secondary">UMS Service URL:</span>
-                            <span class="fw-semibold font-monospace text-body">{{ config('constants.configUms.ServiceUrl', config('ums.service_url', 'https://ums.buu.ac.th/index.php')) }}</span>
+                            <span class="fw-semibold font-monospace text-dark">{{ config('constants.configUms.ServiceUrl', config('ums.service_url', 'https://ums.buu.ac.th/index.php')) }}</span>
                         </li>
                         <li class="d-flex justify-content-between border-bottom pb-2">
                             <span class="text-secondary">Kong Domain (domain_prod):</span>
-                            <span class="fw-semibold font-monospace text-body">{{ config('constants.kong.domain_prod', 'https://api-gw.buu.ac.th') }}</span>
+                            <span class="fw-semibold font-monospace text-dark">{{ config('constants.kong.domain_prod', 'https://api-gw.buu.ac.th') }}</span>
                         </li>
                         <li class="d-flex justify-content-between border-bottom pb-2">
                             <span class="text-secondary">Active Service Key:</span>
-                            <span class="badge bg-secondary-subtle text-secondary font-monospace">{{ substr(config('constants.configUms.ServiceKey', config('ums.service_key', '42963d28e7e0996c39d4a1658f8bd763')), 0, 8) }}••••••••••••••••</span>
+                            <span class="badge bg-light text-secondary border font-monospace">{{ substr(config('constants.configUms.ServiceKey', config('ums.service_key', '42963d28e7e0996c39d4a1658f8bd763')), 0, 8) }}••••••••••••••••</span>
                         </li>
                         <li class="d-flex justify-content-between">
                             <span class="text-secondary">Authentication Standard:</span>
-                            <span class="text-theme-subtext small"><i class="bi bi-shield-check me-1"></i>Active Directory + Central HR Personnel DB</span>
+                            <span class="text-muted small"><i class="bi bi-shield-check me-1 text-success"></i>Active Directory + Central HR Personnel DB</span>
                         </li>
                     </ul>
 
                     <div class="pt-2">
-                        <button type="button" class="btn btn-theme-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2" id="btn-test-ums" onclick="runUmsConnectionTest()">
-                            <i class="bi bi-hdd-network"></i>
+                        <button type="button" class="btn btn-primary rounded-pill w-100 fw-semibold d-flex align-items-center justify-content-center gap-2 py-2" id="btn-test-ums" onclick="runUmsConnectionTest()">
+                            <span class="material-symbols-outlined fs-5">network_check</span>
                             <span id="btn-test-ums-text">ทดสอบการเชื่อมต่อ UMS &amp; Kong Gateway เดี๋ยวนี้</span>
                         </button>
                     </div>
 
                     <!-- Live Test Output Container -->
-                    <div id="ums-test-result" class="d-none alert alert-light border border-theme bg-theme-card mt-2 mb-0 p-3 small">
+                    <div id="ums-test-result" class="d-none alert alert-light border rounded-3 mt-2 mb-0 p-3 small">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="fw-bold" id="result-title"></span>
                             <span class="badge bg-secondary font-monospace" id="result-latency"></span>
@@ -9540,26 +9586,26 @@ HTML;
 
         <!-- Current User UMS Context Card -->
         <div class="col-12 col-lg-5">
-            <div class="card border border-theme bg-theme-card shadow-sm h-100">
-                <div class="card-header border-bottom border-theme py-3 d-flex align-items-center justify-content-between">
+            <div class="card border-0 shadow-sm rounded-4 p-4 card-surface h-100">
+                <div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom">
                     <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-person-badge text-success"></i>
-                        <span class="fw-semibold text-body">สิทธิ์และข้อมูลบัญชี UMS ปัจจุบัน</span>
+                        <span class="material-symbols-outlined text-success fs-5">badge</span>
+                        <span class="fw-bold text-dark">สิทธิ์และข้อมูลบัญชี UMS ปัจจุบัน</span>
                     </div>
-                    <span class="badge bg-success bg-opacity-25 text-success">ACTIVE SESSION</span>
+                    <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1">ACTIVE SESSION</span>
                 </div>
-                <div class="card-body p-4">
+                <div>
                     @php
                         $user = auth()->user();
                         $activePermit = session('userPermitName', session('authLogin.permitName', 'ผู้ใช้งานทั่วไป'));
                         $activePermitId = session('userPermitId', session('authLogin.permitId', '-'));
                     @endphp
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="avatar-lg bg-theme-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 50px; height: 50px;">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold fs-4 shadow-xs" style="width: 50px; height: 50px;">
                             {{ strtoupper(substr($user->username ?? 'U', 0, 1)) }}
                         </div>
                         <div>
-                            <h5 class="fw-bold text-body mb-0">{{ $user->name ?? $user->username ?? 'UMS User' }}</h5>
+                            <h5 class="fw-bold text-dark mb-0">{{ $user->name ?? $user->username ?? 'UMS User' }}</h5>
                             <span class="text-secondary small font-monospace">{{ $user->username ?? '-' }} (PSN: {{ $user->psn_id ?? '-' }})</span>
                         </div>
                     </div>
@@ -9567,15 +9613,15 @@ HTML;
                     <ul class="list-unstyled mb-0 d-flex flex-column gap-2 small">
                         <li class="d-flex justify-content-between border-bottom pb-2">
                             <span class="text-secondary">บทบาทที่กำลังใช้งาน:</span>
-                            <span class="badge bg-theme-primary">{{ $activePermit }} (ID: {{ $activePermitId }})</span>
+                            <span class="badge bg-primary rounded-pill">{{ $activePermit }} (ID: {{ $activePermitId }})</span>
                         </li>
                         <li class="d-flex justify-content-between border-bottom pb-2">
                             <span class="text-secondary">ตำแหน่งงาน:</span>
-                            <span class="fw-semibold text-body">{{ $user->position ?? '-' }}</span>
+                            <span class="fw-semibold text-dark">{{ $user->position ?? '-' }}</span>
                         </li>
                         <li class="d-flex justify-content-between border-bottom pb-2">
                             <span class="text-secondary">หน่วยงาน / ส่วนงาน:</span>
-                            <span class="fw-semibold text-body">{{ $user->fac_name ?? $user->dep_name ?? '-' }}</span>
+                            <span class="fw-semibold text-dark">{{ $user->fac_name ?? $user->dep_name ?? '-' }}</span>
                         </li>
                         <li class="d-flex justify-content-between">
                             <span class="text-secondary">Biometric Passkey:</span>
@@ -9621,7 +9667,7 @@ async function runUmsConnectionTest() {
         btnText.textContent = 'ทดสอบการเชื่อมต่อ UMS & Kong Gateway อีกครั้ง';
 
         if (data.success) {
-            badge.className = 'badge bg-success bg-opacity-25 text-success font-monospace';
+            badge.className = 'badge bg-success-subtle text-success font-monospace rounded-pill px-2.5 py-1';
             badge.textContent = 'ONLINE (CONNECTED)';
             resultTitle.className = 'fw-bold text-success';
             resultTitle.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> ' + (data.message || 'เชื่อมต่อสำเร็จ');
@@ -9629,25 +9675,33 @@ async function runUmsConnectionTest() {
             let groupsHtml = (data.groups || []).map(g => '<span class="badge bg-secondary-subtle text-secondary me-1">' + g + '</span>').join('');
             resultBody.innerHTML = '<div class="mb-1"><b>Kong Status:</b> ' + (data.kong_message || 'พร้อมให้บริการ') + '</div>' +
                                    '<div><b>กลุ่มสิทธิ์ที่ตรวจพบ:</b> ' + (data.groups_count || 0) + ' กลุ่ม ' + groupsHtml + '</div>';
-            if (window.artisanNotify) {
-                window.artisanNotify.success('เชื่อมต่อสำเร็จ', data.message);
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'เชื่อมต่อสำเร็จ',
+                    text: data.message
+                });
             }
         } else {
-            badge.className = 'badge bg-danger bg-opacity-25 text-danger font-monospace';
+            badge.className = 'badge bg-danger-subtle text-danger font-monospace rounded-pill px-2.5 py-1';
             badge.textContent = 'FAILED';
             resultTitle.className = 'fw-bold text-danger';
             resultTitle.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i> การเชื่อมต่อล้มเหลว';
             resultLatency.textContent = (data.latency_ms || 0) + ' ms';
             resultBody.innerHTML = '<div class="text-danger mb-1">' + (data.message || 'ไม่สามารถเชื่อมต่อได้') + '</div>' +
                                    '<div><b>Kong Status:</b> ' + (data.kong_message || 'ไม่ได้เชื่อมต่อ') + '</div>';
-            if (window.artisanNotify) {
-                window.artisanNotify.error('เชื่อมต่อไม่สำเร็จ', data.message);
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เชื่อมต่อไม่สำเร็จ',
+                    text: data.message
+                });
             }
         }
     } catch (err) {
         btn.disabled = false;
         btnText.textContent = 'ทดสอบการเชื่อมต่อ UMS & Kong Gateway อีกครั้ง';
-        badge.className = 'badge bg-danger bg-opacity-25 text-danger font-monospace';
+        badge.className = 'badge bg-danger-subtle text-danger font-monospace rounded-pill px-2.5 py-1';
         badge.textContent = 'NETWORK ERROR';
         resultTitle.className = 'fw-bold text-danger';
         resultTitle.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i> Network Error';
@@ -10315,11 +10369,13 @@ class WebauthnService
     {
         $challenge = random_bytes(32);
         $encodedChallenge = self::base64urlEncode($challenge);
-        $host = $rpId ?: request()->getHost();
+        $host = $rpId ?: (parse_url(config('app.url'), PHP_URL_HOST) ?: request()->getHost());
+        $host = preg_replace('/:\d+$/', '', $host);
+        $userId = $user->getKey() ?? $user->user_id ?? $user->id;
 
         session([
             'webauthn.register.challenge' => $encodedChallenge,
-            'webauthn.register.user_id' => $user->user_id,
+            'webauthn.register.user_id' => $userId,
         ]);
 
         $excludeCredentials = $user->userCredentials ? $user->userCredentials->map(function (UsersCredentialsModel $cred) {
@@ -10341,7 +10397,7 @@ class WebauthnService
                 'id' => $host,
             ],
             'user' => [
-                'id' => self::base64urlEncode((string) $user->user_id),
+                'id' => self::base64urlEncode((string) $userId),
                 'name' => $user->username ?: $user->email,
                 'displayName' => $user->name ?: $user->username,
             ],
@@ -10364,8 +10420,9 @@ class WebauthnService
     {
         $storedChallenge = session('webauthn.register.challenge');
         $storedUserId = session('webauthn.register.user_id');
+        $userId = $user->getKey() ?? $user->user_id ?? $user->id;
 
-        if (!$storedChallenge || (int) $storedUserId !== (int) $user->user_id) {
+        if (!$storedChallenge || (int) $storedUserId !== (int) $userId) {
             throw new InvalidArgumentException('Challenge การลงทะเบียนหมดอายุหรือไม่ตรงกับผู้ใช้ปัจจุบัน');
         }
 
@@ -10441,10 +10498,10 @@ class WebauthnService
         }
 
         $credential = UsersCredentialsModel::create([
-            'user_id'       => $user->user_id,
+            'user_id'       => $userId,
             'credential_id' => $data['id'],
             'public_key'    => $pemPublicKey,
-            'user_handle'   => (string) $user->user_id,
+            'user_handle'   => (string) $userId,
             'counter'       => $signCount,
             'device_name'   => $deviceName,
             'transports'    => $transports,
@@ -10464,7 +10521,8 @@ class WebauthnService
     {
         $challenge = random_bytes(32);
         $encodedChallenge = self::base64urlEncode($challenge);
-        $host = $rpId ?: request()->getHost();
+        $host = $rpId ?: (parse_url(config('app.url'), PHP_URL_HOST) ?: request()->getHost());
+        $host = preg_replace('/:\d+$/', '', $host);
 
         session(['webauthn.login.challenge' => $encodedChallenge]);
 

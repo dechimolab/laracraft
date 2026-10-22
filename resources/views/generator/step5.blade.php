@@ -91,6 +91,17 @@
             }
             return ['icon' => 'description', 'color' => 'text-outline', 'badge' => '', 'badge_class' => ''];
         };
+
+        $previewFiles = $previewFiles ?? [];
+        if (empty($previewFiles) && !empty($generatedFiles)) {
+            foreach ($generatedFiles as $k => $v) {
+                if (str_ends_with($k, '.ico') || !mb_check_encoding($v, 'UTF-8')) {
+                    $previewFiles[$k] = '[Binary file: ' . basename($k) . ']';
+                } else {
+                    $previewFiles[$k] = $v;
+                }
+            }
+        }
     @endphp
 
     <!-- Pipeline Status Strip -->
@@ -292,8 +303,13 @@
                             <span class="material-symbols-outlined text-[16px] text-tertiary">web</span>
                             <select id="preview-screen-select" onchange="changePreviewScreen(this.value)" class="w-full bg-surface-container-highest text-on-surface text-label-sm font-code-inline px-3 py-1.5 rounded-lg border border-surface-container-highest/60 outline-none cursor-pointer">
                                 <option value="dashboard">Dashboard (Welcome Screen)</option>
-                                @if(($projectConfig['theme_key'] ?? '') === 'emerald-enterprise' || session('project.theme_key') === 'emerald-enterprise')
-                                <option value="theme-package">✨ Emerald Enterprise Modular Hub (Pixel-Perfect)</option>
+                                @php
+                                    $activeThemeKey = $projectConfig['theme_key'] ?? session('project.theme_key', 'nordic-clean');
+                                    $themeDemoExists = view()->exists("themes.{$activeThemeKey}.demo.index");
+                                    $themeName = config("themes.themes.{$activeThemeKey}.name", ucwords(str_replace('-', ' ', $activeThemeKey)));
+                                @endphp
+                                @if($themeDemoExists)
+                                <option value="theme-package">✨ {{ $themeName }} Modular Hub (Pixel-Perfect)</option>
                                 @endif
                                 @if($hasBuuLdap)
                                 <option value="login">Login Screen (BUU LDAP &amp; Passkey)</option>
@@ -440,7 +456,7 @@ docker exec {{ session('project.slug', 'artisan-pos-system') }}-web php artisan 
 
 <script>
     // 100% Real Generated File Dictionary straight from ZipExportService
-    const allGeneratedFiles = @json($generatedFiles ?? []);
+    const allGeneratedFiles = @json($previewFiles ?? $generatedFiles ?? []);
     let currentActivePath = '{{ $activePath }}';
     let currentActiveFilename = '{{ $activeFile }}';
 
@@ -495,11 +511,44 @@ docker exec {{ session('project.slug', 'artisan-pos-system') }}-web php artisan 
     }
 
     function displayCodeContent(code, filename) {
-        artisanWorkspace.displayCode(code, filename);
+        if (window.artisanWorkspace && typeof window.artisanWorkspace.displayCode === 'function') {
+            window.artisanWorkspace.displayCode(code, filename);
+        } else {
+            const display = document.getElementById('code-display');
+            if (display) display.textContent = code;
+            const badge = document.getElementById('file-size-badge');
+            if (badge) {
+                const bytes = new Blob([code]).size;
+                let formattedSize = bytes + ' B';
+                if (bytes >= 1024) formattedSize = (bytes / 1024).toFixed(1) + ' KB';
+                const lines = code.split('\n').length;
+                badge.textContent = `${lines} lines • ${formattedSize}`;
+            }
+        }
     }
 
     function switchWorkspaceTab(tab) {
-        artisanWorkspace.switchTab(tab);
+        if (window.artisanWorkspace && typeof window.artisanWorkspace.switchTab === 'function') {
+            window.artisanWorkspace.switchTab(tab);
+        } else {
+            document.querySelectorAll('.workspace-tab').forEach(btn => {
+                btn.classList.remove('active-tab', 'border-primary', 'text-primary', 'font-semibold');
+                btn.classList.add('border-transparent', 'text-on-surface-variant');
+            });
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.add('hidden');
+            });
+
+            const activeBtn = document.getElementById('btn-tab-' + tab);
+            const activePane = document.getElementById('pane-' + tab);
+            if (activeBtn) {
+                activeBtn.classList.remove('border-transparent', 'text-on-surface-variant');
+                activeBtn.classList.add('active-tab', 'border-primary', 'text-primary', 'font-semibold');
+            }
+            if (activePane) {
+                activePane.classList.remove('hidden');
+            }
+        }
     }
 
     function changePreviewScreen(view) {

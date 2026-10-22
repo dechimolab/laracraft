@@ -716,10 +716,21 @@ class GeneratorController extends Controller
         $generatedComposerJson = $zipExportService->generateComposerJson($projectConfig);
         $generatedPackageJson = $zipExportService->generatePackageJson($projectConfig);
 
+        // Sanitize preview files to ensure 100% valid UTF-8 for JSON encoding (excluding binary .ico)
+        $previewFiles = [];
+        foreach ($generatedFiles as $path => $content) {
+            if (str_ends_with($path, '.ico') || !mb_check_encoding($content, 'UTF-8')) {
+                $previewFiles[$path] = '[Binary file: ' . basename($path) . ']';
+            } else {
+                $previewFiles[$path] = $content;
+            }
+        }
+
         return view('generator.step5', [
             'activeStep' => '5',
             'projectConfig' => $projectConfig,
             'generatedFiles' => $generatedFiles,
+            'previewFiles' => $previewFiles,
             'generatedEnv' => $generatedEnv,
             'generatedComposerJson' => $generatedComposerJson,
             'generatedPackageJson' => $generatedPackageJson,
@@ -734,6 +745,10 @@ class GeneratorController extends Controller
 
         if ($content === null) {
             return response()->json(['error' => 'File not found', 'path' => $path], 404);
+        }
+
+        if (str_ends_with($path, '.ico') || !mb_check_encoding($content, 'UTF-8')) {
+            $content = '[Binary file: ' . basename($path) . ']';
         }
 
         return response()->json([

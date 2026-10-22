@@ -1,0 +1,457 @@
+/**
+ * ArtisanCraft Modular Theme Tokens: Sunset Horizon (light)
+ * Theme Key: sunset-horizon
+ * WCAG 2.1 Conformance: AAA 13.8:1
+ * Design System: Warm Sunset Horizon & Tactile Commercial Precision
+ * Reference Prototype: design/theme/sunset_horizon (DESIGN.md & code.html)
+ */
+
+:root,
+[data-bs-theme="light"],
+[data-theme="sunset-horizon"] {
+    --sys-name: 'Sunset Horizon';
+    --sys-mode: light;
+    --sys-wcag: 'AAA 13.8:1';
+    --sys-primary: #EA580C;
+    --sys-primary-container: #C2410C;
+    --sys-secondary: #7C2D12;
+    --sys-accent: #FB923C;
+    --sys-coral: #F43F5E;
+    --sys-bg: #FFFBEB;
+    --sys-card: #FFFFFF;
+    --sys-surface: #FFFFFF;
+    --sys-text: #431407;
+    --sys-subtext: #9A3412;
+
+    /* Sunset Horizon Palette */
+    --sunset-bg: #FFFBEB;
+    --sunset-surface: #FFFFFF;
+    --sunset-border: #FED7AA;
+    --sunset-border-light: #FFEDD5;
+    --sunset-border-focus: #FDBA74;
+    --sunset-primary: #EA580C;
+    --sunset-primary-hover: #C2410C;
+    --sunset-primary-subtle: #FFF7ED;
+    --sunset-secondary: #7C2D12;
+    --sunset-coral: #F43F5E;
+    --sunset-tangerine: #FB923C;
+    --sunset-text-dark: #431407;
+    --sunset-text-muted: #9A3412;
+    --sunset-sidebar-bg: #2A1208;
+    --sunset-sidebar-hover: #431A0B;
+    --sunset-sidebar-text: #FDBA74;
+
+    /* Bootstrap 5.3 Theme Overrides */
+    --bs-primary: #EA580C;
+    --bs-primary-rgb: 234, 88, 12;
+    --bs-secondary: #7C2D12;
+    --bs-secondary-rgb: 124, 45, 18;
+    --bs-body-bg: #FFFBEB;
+    --bs-body-color: #431407;
+    --bs-card-bg: #FFFFFF;
+    --bs-card-color: #431407;
+    --bs-border-color: #FED7AA;
+    --bs-link-color: #EA580C;
+    --bs-link-hover-color: #C2410C;
+}
+
+/* ==========================================================================
+   Fixed Layout Chrome
+   ========================================================================== */
+
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    z-index: 1030;
+    background-color: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--sunset-border, #FED7AA);
+    box-shadow: 0 1px 3px rgba(124, 45, 18, 0.04);
+}
+
+.app-sidebar {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    bottom: 0;
+    width: 250px;
+    background-color: var(--sunset-sidebar-bg, #2A1208);
+    border-right: 1px solid rgba(254, 215, 170, 0.15);
+    z-index: 1020;
+    overflow-y: auto;
+    color: var(--sunset-sidebar-text, #FDBA74);
+    box-shadow: 4px 0 16px rgba(42, 18, 8, 0.2);
+}
+
+.app-content {
+    margin-left: 250px;
+    padding-top: 64px;
+    min-height: 100vh;
+    background-color: var(--sunset-bg, #FFFBEB);
+}
+
+@media (max-width: 991.98px) {
+    .app-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .app-sidebar.show {
+        transform: translateX(0);
+    }
+    .app-content {
+        margin-left: 0;
+    }
+}
+
+/* ==========================================================================
+   Sidebar Navigation Items
+   ========================================================================== */
+
+.sidebar-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    color: #FDBA74;
+    text-decoration: none;
+    font-size: 0.84rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.15s ease;
+    margin-bottom: 0.25rem;
+}
+
+.sidebar-nav-link:hover {
+    background-color: var(--sunset-sidebar-hover, #431A0B);
+    color: #FFFFFF;
+}
+
+.sidebar-nav-link.active {
+    background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
+    color: #FFFFFF;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+}
+
+/* ==========================================================================
+   Cards & Surfaces
+   ========================================================================== */
+
+.card-sunset,
+.card-surface {
+    background-color: #FFFFFF;
+    border: 1px solid var(--sunset-border, #FED7AA);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(124, 45, 18, 0.04), 0 2px 8px -2px rgba(124, 45, 18, 0.06);
+    transition: all 0.2s ease;
+}
+
+.card-sunset-inner {
+    background: #FFFFFF;
+    border: 1px solid var(--sunset-border-light, #FFEDD5);
+    border-radius: 0.5rem;
+}
+
+.hero-glow-sunset {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(234, 88, 12, 0.12) 0%, rgba(244, 63, 94, 0.06) 50%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   Buttons & Actions
+   ========================================================================== */
+
+.btn-sunset-primary {
+    background: linear-gradient(135deg, #EA580C 0%, #F43F5E 100%);
+    border: none;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-sunset-primary:hover {
+    background: linear-gradient(135deg, #C2410C 0%, #E11D48 100%);
+    box-shadow: 0 6px 18px rgba(234, 88, 12, 0.45);
+    transform: translateY(-1px);
+}
+
+.btn-sunset-primary:active {
+    transform: translateY(0);
+}
+
+.btn-sunset-secondary {
+    background-color: var(--sunset-secondary, #7C2D12);
+    border-color: var(--sunset-secondary, #7C2D12);
+    color: #FFFFFF !important;
+    transition: all 0.15s ease;
+}
+
+.btn-sunset-secondary:hover {
+    background-color: #5C1D08;
+    border-color: #5C1D08;
+}
+
+.btn-sunset-soft {
+    background-color: var(--sunset-primary-subtle, #FFF7ED);
+    border: 1px solid var(--sunset-border, #FED7AA);
+    color: var(--sunset-primary, #EA580C) !important;
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+.btn-sunset-soft:hover {
+    background-color: #FFEDD5;
+    border-color: var(--sunset-primary, #EA580C);
+    color: var(--sunset-primary-hover, #C2410C) !important;
+}
+
+.btn-sunset-coral {
+    background-color: var(--sunset-coral, #F43F5E);
+    border-color: var(--sunset-coral, #F43F5E);
+    color: #FFFFFF !important;
+    transition: all 0.15s ease;
+}
+
+.btn-sunset-coral:hover {
+    background-color: #E11D48;
+    border-color: #E11D48;
+}
+
+/* ==========================================================================
+   Executive Split Capsule (Profile & Logout Unified Component - Option 1)
+   ========================================================================== */
+
+.user-executive-capsule {
+    background-color: #FFFFFF;
+    border: 1.5px solid var(--sunset-border, #FED7AA);
+    box-shadow: 0 1px 3px rgba(124, 45, 18, 0.05), 0 1px 2px rgba(234, 88, 12, 0.04);
+    min-height: 44px;
+    padding: 5px 8px 5px 18px;
+    gap: 8px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 100%;
+    cursor: pointer;
+    user-select: none;
+}
+
+.user-executive-capsule:hover {
+    border-color: var(--sunset-border-focus, #FDBA74);
+    background-color: #FFFDF9;
+    box-shadow: 0 4px 10px rgba(234, 88, 12, 0.1), 0 2px 4px rgba(124, 45, 18, 0.04);
+}
+
+.user-executive-capsule .user-display-name {
+    color: var(--sunset-text-dark, #431407);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    padding-left: 0.25rem;
+}
+
+.user-executive-capsule .capsule-divider {
+    background-color: #FED7AA;
+    opacity: 0.6;
+}
+
+.btn-capsule-logout {
+    color: #EF4444 !important;
+    background-color: transparent;
+    transition: all 0.15s ease-in-out;
+}
+
+.btn-capsule-logout:hover {
+    background-color: #FEE2E2 !important;
+    color: #DC2626 !important;
+    transform: scale(1.05);
+}
+
+.user-avatar-circle {
+    background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
+    color: #FFFFFF;
+    transition: transform 0.15s ease;
+}
+
+.user-executive-capsule:hover .user-avatar-circle {
+    transform: scale(1.04);
+}
+
+.user-profile-dropdown {
+    animation: dropdownFadeIn 0.15s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Dropzone Uploader
+   ========================================================================== */
+
+.dropzone-box {
+    border: 2px dashed var(--sunset-border-focus, #FDBA74);
+    background-color: #FFFAF0;
+    border-radius: 0.75rem;
+    padding: 2.2rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dropzone-box:hover {
+    border-color: var(--sunset-primary, #EA580C);
+    background-color: #FFF7ED;
+}
+
+/* ==========================================================================
+   Badges, Tags & Typography
+   ========================================================================== */
+
+.badge-sunset {
+    background-color: #FFF7ED;
+    color: #EA580C;
+    border: 1px solid #FED7AA;
+    font-weight: 600;
+}
+
+.badge-pill-soft {
+    font-weight: 500;
+    padding: 0.28rem 0.55rem;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+}
+
+.badge-sunset-dot::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10B981;
+    margin-right: 5px;
+}
+
+.code-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    background: #FFF7ED;
+    color: #C2410C;
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid #FFEDD5;
+}
+
+/* Form Controls Focus */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--sunset-primary, #EA580C) !important;
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15) !important;
+}
+
+/* ==========================================================================
+   Sidebar Standard Navigation Link Alias
+   ========================================================================== */
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    color: #FDBA74;
+    text-decoration: none;
+    font-size: 0.84rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.15s ease;
+    margin-bottom: 0.25rem;
+}
+.sidebar-link:hover {
+    background-color: var(--sunset-sidebar-hover, #431A0B);
+    color: #FFFFFF;
+}
+.sidebar-link.active {
+    background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
+    color: #FFFFFF;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+}
+
+/* ==========================================================================
+   Section 2 Subtle Module Card (Emerald Enterprise Standard)
+   ========================================================================== */
+.subtle-module-card {
+    background: #FFFFFF;
+    border: 1px solid #FED7AA;
+    border-radius: 0.75rem;
+    padding: 1rem 1.15rem;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 3px rgba(124, 45, 18, 0.04);
+}
+.subtle-module-card:hover {
+    border-color: #EA580C;
+    box-shadow: 0 6px 16px -2px rgba(234, 88, 12, 0.12);
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Login Portal Specific Components (Emerald Enterprise Standard)
+   ========================================================================== */
+.ambient-glow-1 {
+    position: absolute;
+    top: -5rem;
+    left: -5rem;
+    width: 16rem;
+    height: 16rem;
+    background: rgba(254, 215, 170, 0.45);
+    filter: blur(4rem);
+    pointer-events: none;
+    border-radius: 50%;
+}
+.ambient-glow-2 {
+    position: absolute;
+    bottom: -5rem;
+    right: -5rem;
+    width: 18rem;
+    height: 18rem;
+    background: rgba(255, 237, 213, 0.45);
+    filter: blur(4rem);
+    pointer-events: none;
+    border-radius: 50%;
+}
+.card-top-accent {
+    position: absolute;
+    top: 0;
+    left: 1.5rem;
+    right: 1.5rem;
+    height: 6px;
+    border-radius: 50rem;
+    background: linear-gradient(90deg, #F97316 0%, #EA580C 50%, #C2410C 100%);
+}
+.crest-shield {
+    background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
+    color: #FFFFFF;
+    border: 2px solid #FED7AA;
+    width: 3.5rem;
+    height: 3.5rem;
+    box-shadow: 0 6px 14px rgba(234, 88, 12, 0.25);
+}
+.badge-pulse {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #FED7AA;
+    animation: pulseAnim 2s infinite;
+}
+@keyframes pulseAnim {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.3); }
+}
